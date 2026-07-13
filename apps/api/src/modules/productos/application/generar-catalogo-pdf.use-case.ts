@@ -70,7 +70,7 @@ export class GenerarCatalogoPdfUseCase {
     // página mientras haya espacio, para que catálogos con categorías cortas
     // no dejen páginas casi vacías. Solo se agrega una página nueva cuando el
     // contenido realmente no cabe.
-    const ALTO_ENCABEZADO = 50;
+    const ALTO_ENCABEZADO = 36;
     let y = MARGEN;
     let columna = 0;
 
@@ -103,7 +103,7 @@ export class GenerarCatalogoPdfUseCase {
         y += TARJETA_ALTO + 14;
         columna = 0;
       }
-      y += 24;
+      y += 12;
     }
 
     this.numerarPaginas(doc);
@@ -157,17 +157,17 @@ export class GenerarCatalogoPdfUseCase {
   ): number {
     doc
       .font('Helvetica-Bold')
-      .fontSize(18)
+      .fontSize(14)
       .fillColor(COLOR_SAGE_DEEP)
       .text(continuacion ? `${categoria} (cont.)` : categoria, MARGEN, y, { width: anchoUtil });
-    const yLinea = doc.y + 4;
+    const yLinea = doc.y + 3;
     doc
       .moveTo(MARGEN, yLinea)
       .lineTo(MARGEN + anchoUtil, yLinea)
       .strokeColor(COLOR_LINE)
       .lineWidth(1)
       .stroke();
-    return yLinea + 18;
+    return yLinea + 12;
   }
 
   private dibujarTarjetaProducto(
