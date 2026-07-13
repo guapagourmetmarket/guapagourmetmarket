@@ -14,19 +14,39 @@
 .gg-header-brand {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   min-width: 0;
+  flex-shrink: 0;
 }
 
 .gg-header-brand img {
   border-radius: 50%;
   flex-shrink: 0;
+  box-shadow: var(--shadow-card);
+}
+
+.gg-header-brand-texto {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
 }
 
 .gg-header-brand-name {
-  font-weight: 600;
+  font-weight: 700;
   color: var(--c-sageDeep);
-  font-size: 16px;
+  font-size: 20px;
+  line-height: 1.15;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.gg-header-brand-autora {
+  font-size: 12px;
+  font-weight: 500;
+  font-style: italic;
+  color: var(--c-roseDeep);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -44,11 +64,11 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 16px;
+  padding: 7px 14px;
   border-radius: var(--radius-pill);
   border: none;
   background: none;
-  font-size: 14px;
+  font-size: 13px;
   font-family: inherit;
   font-weight: 600;
   color: var(--c-muted);

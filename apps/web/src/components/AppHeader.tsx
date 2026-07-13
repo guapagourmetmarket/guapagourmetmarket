@@ -33,8 +33,11 @@ export function AppHeader({ onCerrarSesion }: AppHeaderProps) {
   return (
     <header className="gg-header">
       <div className="gg-header-brand">
-        <img src={brand.logo.full} alt={brand.name} width={40} height={40} />
-        <span className="font-display gg-header-brand-name">{brand.name}</span>
+        <img src={brand.logo.full} alt={brand.name} width={48} height={48} />
+        <div className="gg-header-brand-texto">
+          <span className="font-display gg-header-brand-name">{brand.name}</span>
+          <span className="gg-header-brand-autora">by {brand.creator}</span>
+        </div>
       </div>
 
       <nav className="gg-header-nav">
