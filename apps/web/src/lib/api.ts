@@ -10,10 +10,22 @@ export { API_URL }
 
 export class ApiError extends Error {}
 
+const CLAVE_TOKEN = 'guapa_token'
+
 let authToken: string | null = null
 
+/** Guarda el token en localStorage para no perder la sesión al refrescar la página. */
 export function setAuthToken(token: string | null) {
   authToken = token
+  if (token) {
+    localStorage.setItem(CLAVE_TOKEN, token)
+  } else {
+    localStorage.removeItem(CLAVE_TOKEN)
+  }
+}
+
+export function obtenerTokenGuardado(): string | null {
+  return localStorage.getItem(CLAVE_TOKEN)
 }
 
 async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
