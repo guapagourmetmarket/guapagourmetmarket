@@ -155,6 +155,10 @@ export function duplicarProducto(id: string) {
   return api.post<Producto>(`/productos/${id}/duplicar`, {})
 }
 
+export function eliminarProducto(id: string) {
+  return api.delete<void>(`/productos/${id}`)
+}
+
 export function subirImagenProducto(id: string, archivo: File) {
   return subirArchivo<Producto>(`/productos/${id}/imagen`, 'imagen', archivo)
 }

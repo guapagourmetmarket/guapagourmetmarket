@@ -13,6 +13,7 @@ import { AgregarImagenProductoUseCase } from './application/agregar-imagen-produ
 import { MarcarImagenPrincipalUseCase } from './application/marcar-imagen-principal.use-case';
 import { EliminarImagenProductoUseCase } from './application/eliminar-imagen-producto.use-case';
 import { DuplicarProductoUseCase } from './application/duplicar-producto.use-case';
+import { EliminarProductoUseCase } from './application/eliminar-producto.use-case';
 import { ListarCategoriasUseCase } from './application/listar-categorias.use-case';
 import { ObtenerOCrearCategoriaUseCase } from './application/obtener-o-crear-categoria.use-case';
 import { RenombrarCategoriaUseCase } from './application/renombrar-categoria.use-case';
@@ -46,6 +47,7 @@ import { MARCAS_REPOSITORY } from './domain/marcas.repository';
     MarcarImagenPrincipalUseCase,
     EliminarImagenProductoUseCase,
     DuplicarProductoUseCase,
+    EliminarProductoUseCase,
     ListarCategoriasUseCase,
     ObtenerOCrearCategoriaUseCase,
     RenombrarCategoriaUseCase,

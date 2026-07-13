@@ -271,6 +271,15 @@
   cursor: not-allowed;
 }
 
+.gg-producto-accion--peligro {
+  color: var(--c-danger);
+}
+
+.gg-producto-accion--peligro:hover {
+  background: var(--c-danger);
+  color: var(--c-surface);
+}
+
 .gg-carrito-flotante {
   position: fixed;
   bottom: 20px;

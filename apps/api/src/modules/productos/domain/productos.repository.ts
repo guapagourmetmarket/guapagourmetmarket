@@ -11,6 +11,7 @@ export interface ProductosRepository {
   marcarImagenPrincipal(id: string, imagenId: string): Promise<Producto>;
   eliminarImagen(id: string, imagenId: string): Promise<Producto>;
   duplicar(id: string, codigoInterno: string): Promise<Producto>;
+  eliminar(id: string): Promise<void>;
 }
 
 export const PRODUCTOS_REPOSITORY = 'PRODUCTOS_REPOSITORY';

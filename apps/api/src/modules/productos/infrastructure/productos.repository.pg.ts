@@ -232,6 +232,24 @@ export class ProductosRepositoryPg implements ProductosRepository {
     });
   }
 
+  async eliminar(id: string): Promise<void> {
+    let resultado;
+    try {
+      resultado = await this.pool.query(`DELETE FROM productos WHERE id = $1`, [id]);
+    } catch (err) {
+      const codigo = (err as { code?: string }).code;
+      if (codigo === '23503') {
+        throw new ConflictException(
+          'Este producto ya tiene ventas, compras o movimientos de inventario registrados, así que no se puede eliminar definitivamente. Puedes desactivarlo en su lugar.',
+        );
+      }
+      throw err;
+    }
+    if (resultado.rowCount === 0) {
+      throw new NotFoundException('Producto no encontrado.');
+    }
+  }
+
   async obtenerPorId(id: string): Promise<Producto> {
     const { rows } = await this.pool.query(`${SELECT_BASE} WHERE p.id = $1`, [id]);
     if (rows.length === 0) {

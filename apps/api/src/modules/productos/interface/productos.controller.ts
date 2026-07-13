@@ -6,6 +6,7 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
   Param,
   Patch,
   Post,
@@ -30,6 +31,7 @@ import { AgregarImagenProductoUseCase } from '../application/agregar-imagen-prod
 import { MarcarImagenPrincipalUseCase } from '../application/marcar-imagen-principal.use-case';
 import { EliminarImagenProductoUseCase } from '../application/eliminar-imagen-producto.use-case';
 import { DuplicarProductoUseCase } from '../application/duplicar-producto.use-case';
+import { EliminarProductoUseCase } from '../application/eliminar-producto.use-case';
 import { ExportarProductosUseCase } from '../application/exportar-productos.use-case';
 import { GenerarPlantillaProductosUseCase } from '../application/generar-plantilla-productos.use-case';
 import { GenerarCatalogoPdfUseCase } from '../application/generar-catalogo-pdf.use-case';
@@ -53,6 +55,7 @@ export class ProductosController {
     private readonly marcarImagenPrincipalUseCase: MarcarImagenPrincipalUseCase,
     private readonly eliminarImagenProductoUseCase: EliminarImagenProductoUseCase,
     private readonly duplicarProductoUseCase: DuplicarProductoUseCase,
+    private readonly eliminarProductoUseCase: EliminarProductoUseCase,
     private readonly exportarProductosUseCase: ExportarProductosUseCase,
     private readonly generarPlantillaProductosUseCase: GenerarPlantillaProductosUseCase,
     private readonly generarCatalogoPdfUseCase: GenerarCatalogoPdfUseCase,
@@ -156,6 +159,13 @@ export class ProductosController {
   @UseGuards(JwtAuthGuard)
   duplicar(@Param('id') id: string) {
     return this.duplicarProductoUseCase.ejecutar(id);
+  }
+
+  @Delete(':id')
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(204)
+  eliminar(@Param('id') id: string) {
+    return this.eliminarProductoUseCase.ejecutar(id);
   }
 
   @Post(':id/imagen')

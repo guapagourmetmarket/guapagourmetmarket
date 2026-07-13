@@ -1,16 +1,18 @@
 import { useMemo, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Link, useNavigate } from 'react-router-dom'
-import { Copy, Download, FileText, Leaf, Pencil, Plus, Power, Settings, ShoppingCart, Search, Upload } from 'lucide-react'
+import { Copy, Download, FileText, Leaf, Pencil, Plus, Power, Settings, ShoppingCart, Search, Trash2, Upload } from 'lucide-react'
 import { Card } from '../../components/Card'
 import { Button } from '../../components/Button'
 import { AppHeader } from '../../components/AppHeader'
 import { useCarrito } from '../../lib/carrito'
 import {
   API_URL,
+  ApiError,
   cambiarEstadoProducto,
   descargarCatalogoPdf,
   duplicarProducto,
+  eliminarProducto,
   exportarProductos,
   obtenerNegocio,
   obtenerProductos,
@@ -66,9 +68,21 @@ export function ProductosScreen({ onCerrarSesion }: ProductosScreenProps) {
 
   const mutacionDuplicar = useMutation({
     mutationFn: duplicarProducto,
-    onSuccess: (copia) => {
+    onSuccess: () => {
+      // Se queda en la lista (no entra al formulario) para que "Duplicar" se
+      // sienta distinto de "Editar": crea una copia ahí mismo, lista para
+      // ajustarla cuando quieras.
       queryClient.invalidateQueries({ queryKey: ['productos'] })
-      navigate(`/productos/${copia.id}/editar`)
+    },
+  })
+
+  const mutacionEliminar = useMutation({
+    mutationFn: eliminarProducto,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['productos'] }),
+    onError: (err) => {
+      window.alert(
+        err instanceof ApiError ? err.message : 'No pudimos eliminar el producto. Intenta de nuevo.',
+      )
     },
   })
 
@@ -96,9 +110,16 @@ export function ProductosScreen({ onCerrarSesion }: ProductosScreenProps) {
 
   function handleDesactivar(id: string, nombre: string) {
     const confirmado = window.confirm(
-      `¿Desactivar "${nombre}"? Dejará de aparecer en la tienda, pero su historial de ventas se conserva.`,
+      `¿Desactivar "${nombre}"? Dejará de aparecer en la tienda, pero puedes volver a activarlo cuando quieras y su historial de ventas se conserva.`,
     )
     if (confirmado) mutacionEstado.mutate({ id, activo: false })
+  }
+
+  function handleEliminar(id: string, nombre: string) {
+    const confirmado = window.confirm(
+      `¿Eliminar "${nombre}" para siempre? Esta acción no se puede deshacer. Si prefieres poder recuperarlo más adelante, usa "Desactivar" en su lugar.`,
+    )
+    if (confirmado) mutacionEliminar.mutate(id)
   }
 
   return (
@@ -280,7 +301,7 @@ export function ProductosScreen({ onCerrarSesion }: ProductosScreenProps) {
                   <button
                     type="button"
                     className="gg-producto-accion"
-                    title="Duplicar producto"
+                    title="Crear una copia de este producto (queda en la lista, sin salir de aquí)"
                     disabled={mutacionDuplicar.isPending}
                     onClick={() => mutacionDuplicar.mutate(producto.id)}
                   >
@@ -289,7 +310,11 @@ export function ProductosScreen({ onCerrarSesion }: ProductosScreenProps) {
                   <button
                     type="button"
                     className="gg-producto-accion"
-                    title={producto.activo === false ? 'Reactivar producto' : 'Desactivar producto'}
+                    title={
+                      producto.activo === false
+                        ? 'Reactivar producto (volver a mostrarlo en la tienda)'
+                        : 'Desactivar producto por un tiempo (se puede reactivar luego)'
+                    }
                     onClick={() =>
                       producto.activo === false
                         ? mutacionEstado.mutate({ id: producto.id, activo: true })
@@ -297,6 +322,15 @@ export function ProductosScreen({ onCerrarSesion }: ProductosScreenProps) {
                     }
                   >
                     <Power size={16} />
+                  </button>
+                  <button
+                    type="button"
+                    className="gg-producto-accion gg-producto-accion--peligro"
+                    title="Eliminar producto para siempre (no se puede deshacer)"
+                    disabled={mutacionEliminar.isPending}
+                    onClick={() => handleEliminar(producto.id, producto.nombre)}
+                  >
+                    <Trash2 size={16} />
                   </button>
                 </div>
               </Card>
