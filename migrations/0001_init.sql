@@ -10,7 +10,7 @@ CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 -- fija el diccionario y se declara IMMUTABLE para poder indexarla.
 CREATE OR REPLACE FUNCTION unaccent_inmutable(text)
   RETURNS text AS $$
-    SELECT unaccent('unaccent', $1)
+    SELECT unaccent('unaccent'::regdictionary, $1)
   $$ LANGUAGE sql IMMUTABLE PARALLEL SAFE STRICT;
 
 -- ─── Usuarios ────────────────────────────────────────────────────────────
