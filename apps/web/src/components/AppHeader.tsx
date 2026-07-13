@@ -34,7 +34,7 @@ export function AppHeader({ onCerrarSesion }: AppHeaderProps) {
     <header className="gg-header">
       <div className="gg-header-marca">
         <div className="gg-header-marca-fila">
-          <img src={brand.logo.full} alt={brand.name} width={40} height={40} />
+          <img src={brand.logo.hi} alt={brand.name} width={64} height={64} />
           <span className="font-display gg-header-marca-nombre">{brand.name}</span>
         </div>
         <span className="gg-header-marca-autora">by {brand.creator}</span>

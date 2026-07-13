@@ -48,8 +48,8 @@ export function LoginScreen({ onIniciarSesion }: LoginScreenProps) {
           <img
             src={brand.logo.hi}
             alt={brand.name}
-            width={88}
-            height={88}
+            width={112}
+            height={112}
             className="gg-login-logo"
           />
           <h1 className="font-display gg-login-title">{brand.name}</h1>

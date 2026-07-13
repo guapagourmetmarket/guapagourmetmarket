@@ -160,6 +160,10 @@
   .gg-header-marca-nombre {
     font-size: 17px;
   }
+  .gg-header-marca img {
+    width: 48px;
+    height: 48px;
+  }
   .gg-header-fila-nav {
     padding: 8px 16px;
     justify-content: flex-end;
