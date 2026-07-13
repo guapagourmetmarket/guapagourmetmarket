@@ -1,16 +1,16 @@
 -- Guapa Gourmet Market — migración inicial
 -- Núcleo de Fase 1: usuarios (auth) y catálogo de productos con búsqueda inteligente.
 
-CREATE EXTENSION IF NOT EXISTS pg_trgm;
-CREATE EXTENSION IF NOT EXISTS unaccent;
-CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+CREATE EXTENSION IF NOT EXISTS pg_trgm SCHEMA public;
+CREATE EXTENSION IF NOT EXISTS unaccent SCHEMA public;
+CREATE EXTENSION IF NOT EXISTS "pgcrypto" SCHEMA public;
 
 -- unaccent() no está marcada IMMUTABLE por Postgres (depende del diccionario
 -- de búsqueda), así que no se puede usar directo en un índice. Esta versión
 -- fija el diccionario y se declara IMMUTABLE para poder indexarla.
 CREATE OR REPLACE FUNCTION unaccent_inmutable(text)
   RETURNS text AS $$
-    SELECT unaccent('unaccent'::regdictionary, $1)
+    SELECT public.unaccent('public.unaccent'::regdictionary, $1)
   $$ LANGUAGE sql IMMUTABLE PARALLEL SAFE STRICT;
 
 -- ─── Usuarios ────────────────────────────────────────────────────────────
