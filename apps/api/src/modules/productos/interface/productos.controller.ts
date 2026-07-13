@@ -1,5 +1,3 @@
-import { randomUUID } from 'node:crypto';
-import { extname } from 'node:path';
 import {
   BadRequestException,
   Body,
@@ -18,9 +16,9 @@ import {
 } from '@nestjs/common';
 import type { Response } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { diskStorage, memoryStorage } from 'multer';
+import { memoryStorage } from 'multer';
 import { JwtAuthGuard } from '../../auth/interface/jwt-auth.guard';
-import { PRODUCTOS_UPLOADS_DIR } from '../../../uploads-path';
+import { subirImagenProductoACloudinary } from '../infrastructure/cloudinary';
 import { ListarProductosUseCase } from '../application/listar-productos.use-case';
 import { BuscarProductosUseCase } from '../application/buscar-productos.use-case';
 import { CrearProductoUseCase } from '../application/crear-producto.use-case';
@@ -172,13 +170,7 @@ export class ProductosController {
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(
     FileInterceptor('imagen', {
-      storage: diskStorage({
-        destination: PRODUCTOS_UPLOADS_DIR,
-        filename: (_req, file, cb) => {
-          const ext = extname(file.originalname) || '.jpg';
-          cb(null, `${randomUUID()}${ext}`);
-        },
-      }),
+      storage: memoryStorage(),
       limits: { fileSize: 5 * 1024 * 1024 },
       fileFilter: (_req, file, cb) => {
         if (!/^image\/(jpeg|png|webp)$/.test(file.mimetype)) {
@@ -189,11 +181,15 @@ export class ProductosController {
       },
     }),
   )
-  subirImagen(@Param('id') id: string, @UploadedFile() file: Express.Multer.File) {
+  async subirImagen(@Param('id') id: string, @UploadedFile() file: Express.Multer.File) {
     if (!file) {
       throw new BadRequestException('No se recibió ninguna imagen.');
     }
-    return this.agregarImagenProductoUseCase.ejecutar(id, `/uploads/productos/${file.filename}`);
+    // Se sube a Cloudinary (almacenamiento permanente) en vez del disco del
+    // servidor: en el plan gratis de Render el disco se borra en cada
+    // despliegue y las fotos se perderían.
+    const url = await subirImagenProductoACloudinary(file.buffer);
+    return this.agregarImagenProductoUseCase.ejecutar(id, url);
   }
 
   @Patch(':id/imagen/:imagenId/principal')

@@ -33,6 +33,10 @@ Tres cuentas gratis, sin dominio propio — el link va a ser algo como
    - `WEB_ORIGIN` → la URL que te dé Vercel en el siguiente paso (se agrega
      después, o se deja `http://localhost:5173` por ahora y se actualiza luego)
    - `DATABASE_SSL` → `true`
+   - `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET` →
+     de tu cuenta gratis en [cloudinary.com](https://cloudinary.com) (sin
+     tarjeta), sección "API Keys" del dashboard. Ahí viven las fotos de
+     producto de forma permanente — el disco de Render no es persistente.
 5. Nota sobre el plan gratis de Render: el servicio "se duerme" tras ~15 min
    sin uso, y tarda 30-60 segundos en despertar la primera vez que alguien
    entra después de eso. Normal y esperado en el plan gratis.
@@ -59,11 +63,8 @@ Tres cuentas gratis, sin dominio propio — el link va a ser algo como
 
 ### Nota sobre las fotos de productos
 
-En el plan gratis, las fotos que se suban quedan guardadas en el disco del
-servicio de Render, que **se puede perder si el servicio se redespliega**. No
-es grave para probar; si más adelante quieren que las fotos queden 100%
-seguras, lo resolvemos moviendo el guardado a un servicio de almacenamiento
-(hay opciones gratis también, como Cloudflare R2).
+Las fotos de producto se guardan en Cloudinary (no en el disco de Render),
+así que quedan seguras y no se pierden cuando la API se vuelve a desplegar.
 
 ### Cuando tengas las 3 cuentas creadas
 

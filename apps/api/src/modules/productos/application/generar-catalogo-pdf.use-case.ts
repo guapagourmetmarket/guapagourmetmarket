@@ -1,8 +1,7 @@
 import { existsSync } from 'node:fs';
-import { basename, join } from 'node:path';
+import { join } from 'node:path';
 import { Inject, Injectable } from '@nestjs/common';
 import PDFDocument from 'pdfkit';
-import { PRODUCTOS_UPLOADS_DIR } from '../../../uploads-path';
 import { PRODUCTOS_REPOSITORY } from '../domain/productos.repository';
 import type { ProductosRepository } from '../domain/productos.repository';
 import type { Producto } from '../domain/producto.entity';
@@ -32,10 +31,16 @@ const formatoCOP = new Intl.NumberFormat('es-CO', {
   maximumFractionDigits: 0,
 });
 
-function rutaImagen(url: string | null): string | null {
-  if (!url) return null;
-  const ruta = join(PRODUCTOS_UPLOADS_DIR, basename(url));
-  return existsSync(ruta) ? ruta : null;
+/** Las fotos de producto viven en Cloudinary (URL completa); se descargan para incrustarlas en el PDF. */
+async function obtenerBufferImagen(url: string | null): Promise<Buffer | null> {
+  if (!url || !/^https?:\/\//.test(url)) return null;
+  try {
+    const respuesta = await fetch(url);
+    if (!respuesta.ok) return null;
+    return Buffer.from(await respuesta.arrayBuffer());
+  } catch {
+    return null;
+  }
 }
 
 function agruparPorCategoria(productos: Producto[]): Map<string, Producto[]> {
@@ -57,6 +62,13 @@ export class GenerarCatalogoPdfUseCase {
   async ejecutar(): Promise<Buffer> {
     const productos = await this.productosRepository.listar(false);
     const porCategoria = agruparPorCategoria(productos);
+
+    const imagenesPorProducto = new Map<string, Buffer | null>();
+    await Promise.all(
+      productos.map(async (p) => {
+        imagenesPorProducto.set(p.id, await obtenerBufferImagen(p.imagenUrl));
+      }),
+    );
 
     const doc = new PDFDocument({ size: 'A4', margin: MARGEN, bufferPages: true });
     const chunks: Buffer[] = [];
@@ -95,7 +107,14 @@ export class GenerarCatalogoPdfUseCase {
         }
 
         const x = MARGEN + columna * (anchoTarjeta + GAP);
-        this.dibujarTarjetaProducto(doc, producto, x, y, anchoTarjeta);
+        this.dibujarTarjetaProducto(
+          doc,
+          producto,
+          x,
+          y,
+          anchoTarjeta,
+          imagenesPorProducto.get(producto.id) ?? null,
+        );
 
         columna += 1;
         if (columna >= COLUMNAS) {
@@ -253,6 +272,7 @@ export class GenerarCatalogoPdfUseCase {
     x: number,
     y: number,
     ancho: number,
+    imagenBuffer: Buffer | null,
   ) {
     const radio = 12;
 
@@ -265,12 +285,10 @@ export class GenerarCatalogoPdfUseCase {
       .lineWidth(1)
       .stroke();
 
-    const rutaImg = rutaImagen(producto.imagenUrl);
-
     doc.save();
     doc.roundedRect(x, y, ancho, TARJETA_ALTO, radio).clip();
-    if (rutaImg) {
-      doc.image(rutaImg, x, y, { cover: [ancho, IMAGEN_ALTO], align: 'center', valign: 'center' });
+    if (imagenBuffer) {
+      doc.image(imagenBuffer, x, y, { cover: [ancho, IMAGEN_ALTO], align: 'center', valign: 'center' });
     } else {
       doc.rect(x, y, ancho, IMAGEN_ALTO).fillColor(COLOR_SAGE_SOFT).fill();
       doc
