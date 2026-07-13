@@ -62,7 +62,14 @@ export function ProductosScreen({ onCerrarSesion }: ProductosScreenProps) {
   const mutacionEstado = useMutation({
     mutationFn: ({ id, activo }: { id: string; activo: boolean }) =>
       cambiarEstadoProducto(id, activo),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['productos'] }),
+    onSuccess: (_producto, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['productos'] })
+      // Al desactivar, se enciende "Mostrar desactivados" para que el producto
+      // se quede visible ahí mismo (atenuado, con su etiqueta) en vez de
+      // desaparecer sin explicación — así se ve claro que sigue existiendo y
+      // dónde volver a activarlo.
+      if (variables.activo === false) setMostrarDesactivados(true)
+    },
   })
 
   const mutacionDuplicar = useMutation({
