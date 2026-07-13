@@ -1,0 +1,92 @@
+.gg-recibo-imprimible {
+  width: 100%;
+  max-width: 320px;
+  margin: 0 auto;
+  font-family: 'Courier New', monospace;
+  font-size: 13px;
+  color: var(--c-ink);
+}
+
+.gg-recibo-header {
+  text-align: center;
+}
+
+.gg-recibo-header p {
+  margin: 2px 0;
+}
+
+.gg-recibo-negocio {
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.gg-recibo-linea {
+  border-top: 1px dashed var(--c-sand);
+  margin: 10px 0;
+}
+
+.gg-recibo-meta p {
+  margin: 2px 0;
+}
+
+.gg-recibo-tabla {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.gg-recibo-tabla th {
+  text-align: left;
+  font-size: 11px;
+  text-transform: uppercase;
+  color: var(--c-muted);
+  padding-bottom: 4px;
+}
+
+.gg-recibo-tabla th:last-child,
+.gg-recibo-tabla td:last-child {
+  text-align: right;
+}
+
+.gg-recibo-tabla td {
+  padding: 3px 0;
+  vertical-align: top;
+}
+
+.gg-recibo-fila {
+  display: flex;
+  justify-content: space-between;
+  padding: 2px 0;
+}
+
+.gg-recibo-total {
+  font-weight: 700;
+  font-size: 15px;
+  border-top: 1px solid var(--c-ink);
+  margin-top: 4px;
+  padding-top: 6px;
+}
+
+.gg-recibo-nota {
+  margin-top: 10px;
+  font-size: 8px;
+  text-align: center;
+  color: var(--c-faint);
+  font-family: var(--font-body);
+}
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .gg-recibo-imprimible,
+  .gg-recibo-imprimible * {
+    visibility: visible;
+  }
+  .gg-recibo-imprimible {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 80mm;
+    max-width: 80mm;
+  }
+}

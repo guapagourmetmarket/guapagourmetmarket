@@ -1,0 +1,84 @@
+.gg-importar {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.gg-importar-texto {
+  font-size: 13.5px;
+  color: var(--c-muted);
+  margin: 0;
+}
+
+.gg-importar-plantilla {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  align-self: flex-start;
+  border: none;
+  background: transparent;
+  color: var(--c-sageDeep);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+}
+
+.gg-importar-plantilla:hover {
+  text-decoration: underline;
+}
+
+.gg-importar-archivo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  border: 1px dashed var(--c-sand);
+  border-radius: var(--radius-md);
+  background: var(--c-surface);
+  color: var(--c-muted);
+  font-size: 13.5px;
+  cursor: pointer;
+  text-align: center;
+}
+
+.gg-importar-archivo:hover {
+  background: var(--c-sageSoft);
+}
+
+.gg-importar-resumen {
+  border-top: 1px solid var(--c-line);
+  padding-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.gg-importar-resumen-ok {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  color: var(--c-sageDeep);
+  font-size: 13.5px;
+  font-weight: 600;
+}
+
+.gg-importar-resumen-error {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  color: var(--c-danger);
+  font-size: 13.5px;
+  font-weight: 600;
+}
+
+.gg-importar-errores ul {
+  margin: 6px 0 0;
+  padding-left: 20px;
+  font-size: 12.5px;
+  color: var(--c-muted);
+  max-height: 160px;
+  overflow-y: auto;
+}

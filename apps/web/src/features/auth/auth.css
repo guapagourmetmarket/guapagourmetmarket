@@ -1,0 +1,56 @@
+.gg-login-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: linear-gradient(180deg, var(--c-cream) 0%, var(--c-beige) 100%);
+}
+
+.gg-login-card {
+  width: 100%;
+  max-width: 380px;
+}
+
+.gg-login-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.gg-login-logo {
+  border-radius: 50%;
+  margin-bottom: 16px;
+}
+
+.gg-login-title {
+  font-size: 22px;
+  font-weight: 600;
+  margin: 0;
+  color: var(--c-sageDeep);
+}
+
+.gg-login-author {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: var(--c-muted);
+}
+
+.gg-login-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.gg-login-submit {
+  width: 100%;
+}
+
+@media (max-width: 420px) {
+  .gg-login-card {
+    padding: 20px;
+  }
+}

@@ -1,0 +1,320 @@
+.gg-compras-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.gg-compras-main {
+  flex: 1;
+  padding: 24px;
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.gg-compras-layout {
+  display: grid;
+  grid-template-columns: minmax(320px, 480px) 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+.gg-compras-title {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0 0 4px;
+  color: var(--c-ink);
+}
+
+.gg-compras-subtitulo {
+  margin: 0 0 20px;
+  font-size: 13px;
+  color: var(--c-muted);
+}
+
+.gg-compra-subtitulo-h2 {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 16px;
+  color: var(--c-ink);
+}
+
+.gg-compra-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.gg-compra-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.gg-compra-buscador {
+  position: relative;
+}
+
+.gg-compra-buscador-icono {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--c-faint);
+  pointer-events: none;
+}
+
+.gg-compra-buscador-input {
+  padding-left: 40px;
+}
+
+.gg-compra-sugerencias {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  z-index: 20;
+  background: var(--c-surface);
+  border: 1px solid var(--c-sand);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-pop);
+  list-style: none;
+  margin: 0;
+  padding: 4px;
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.gg-compra-sugerencias li button {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 10px;
+  border: none;
+  background: transparent;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  color: var(--c-ink);
+  cursor: pointer;
+  text-align: left;
+}
+
+.gg-compra-sugerencias li button:hover {
+  background: var(--c-sageSoft);
+}
+
+.gg-compra-sugerencia-stock {
+  color: var(--c-muted);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.gg-compra-vacio {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--c-muted);
+  font-size: 13px;
+  margin: 0;
+}
+
+.gg-compra-lineas {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.gg-compra-linea {
+  position: relative;
+  padding: 12px 32px 12px 12px;
+  background: var(--c-beige);
+  border-radius: var(--radius-md);
+}
+
+.gg-compra-linea-nombre {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--c-ink);
+  margin-bottom: 8px;
+}
+
+.gg-compra-linea-campos {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.gg-compra-linea-campo label {
+  display: block;
+  font-size: 11px;
+  color: var(--c-muted);
+  margin-bottom: 3px;
+}
+
+.gg-compra-linea-campo .gg-input {
+  padding: 6px 8px;
+  font-size: 13px;
+}
+
+.gg-compra-cantidad {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.gg-compra-cantidad button {
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--c-sand);
+  background: var(--c-surface);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  color: var(--c-sageDeep);
+}
+
+.gg-compra-cantidad span {
+  min-width: 16px;
+  text-align: center;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+.gg-compra-linea-subtotal {
+  margin-top: 8px;
+  text-align: right;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--c-sageDeep);
+  font-variant-numeric: tabular-nums;
+}
+
+.gg-compra-linea-quitar {
+  position: absolute;
+  top: 10px;
+  right: 8px;
+  border: none;
+  background: transparent;
+  color: var(--c-danger);
+  cursor: pointer;
+  display: flex;
+  padding: 4px;
+}
+
+.gg-compra-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--c-ink);
+  padding-top: 4px;
+  border-top: 1px solid var(--c-line);
+}
+
+.gg-compras-estado {
+  color: var(--c-muted);
+  font-size: 14px;
+}
+
+.gg-compra-lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 640px;
+  overflow-y: auto;
+}
+
+.gg-compra-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px;
+  border-radius: var(--radius-md);
+  border-bottom: 1px solid var(--c-line);
+}
+
+.gg-compra-item-icono {
+  color: var(--c-sageDeep);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.gg-compra-item-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.gg-compra-item-linea1 {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--c-ink);
+}
+
+.gg-compra-item-valor {
+  font-variant-numeric: tabular-nums;
+  color: var(--c-sageDeep);
+  white-space: nowrap;
+}
+
+.gg-compra-item-linea2 {
+  display: flex;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--c-muted);
+  margin-top: 2px;
+}
+
+.gg-compra-item-anular {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  border: none;
+  background: transparent;
+  color: var(--c-danger);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  padding: 0;
+  align-self: center;
+}
+
+.gg-compra-item-anular:hover {
+  text-decoration: underline;
+}
+
+.gg-compra-item-anular:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@media (max-width: 900px) {
+  .gg-compras-layout {
+    grid-template-columns: 1fr;
+  }
+  .gg-compra-linea-campos {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .gg-compras-main {
+    padding: 16px;
+  }
+  .gg-compra-grid-2 {
+    grid-template-columns: 1fr;
+  }
+}

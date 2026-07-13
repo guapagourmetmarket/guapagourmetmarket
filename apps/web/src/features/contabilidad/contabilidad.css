@@ -1,0 +1,314 @@
+.gg-contabilidad-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.gg-contabilidad-main {
+  flex: 1;
+  padding: 24px;
+  max-width: 1100px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.gg-contabilidad-title {
+  font-size: 22px;
+  font-weight: 600;
+  margin: 0;
+  color: var(--c-ink);
+}
+
+.gg-contabilidad-subtitulo {
+  margin: 0 0 20px;
+  font-size: 13px;
+  color: var(--c-muted);
+}
+
+.gg-contabilidad-subtitulo-h2 {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 14px;
+  color: var(--c-ink);
+}
+
+.gg-contabilidad-estado {
+  color: var(--c-muted);
+  font-size: 13.5px;
+}
+
+.gg-contabilidad-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+/* ---- dashboard toolbar / date range ---- */
+.gg-contabilidad-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.gg-contabilidad-rango {
+  display: flex;
+  gap: 12px;
+}
+
+.gg-contabilidad-rango .gg-input {
+  padding: 8px 12px;
+}
+
+/* ---- metric cards ---- */
+.gg-contabilidad-tarjetas {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.gg-metrica-card {
+  padding: 20px 22px;
+}
+
+.gg-metrica-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--c-ink);
+  margin-bottom: 14px;
+}
+
+.gg-metrica-fila {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 6px 0;
+  font-size: 13.5px;
+  color: var(--c-ink);
+  border-bottom: 1px solid var(--c-line);
+}
+
+.gg-metrica-fila:last-child {
+  border-bottom: none;
+}
+
+.gg-metrica-subtotal {
+  font-weight: 600;
+}
+
+.gg-metrica-total {
+  font-weight: 700;
+  font-size: 15px;
+  padding-top: 10px;
+  border-top: 1px solid var(--c-ink);
+  margin-top: 4px;
+}
+
+.gg-metrica-positivo {
+  color: var(--c-sageDeep);
+  font-variant-numeric: tabular-nums;
+}
+
+.gg-metrica-negativo {
+  color: var(--c-danger);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- cartera ---- */
+.gg-contabilidad-seccion {
+  margin-bottom: 20px;
+}
+
+.gg-contabilidad-estado-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--c-sageDeep);
+  padding: 18px 20px;
+}
+
+.gg-contabilidad-estado-card p {
+  margin: 0;
+  color: var(--c-muted);
+}
+
+.gg-cartera-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.gg-cartera-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 18px;
+}
+
+.gg-cartera-proveedor {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--c-ink);
+}
+
+.gg-cartera-meta {
+  margin: 2px 0 0;
+  font-size: 12px;
+  color: var(--c-muted);
+}
+
+.gg-cartera-valor {
+  margin-left: auto;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--c-danger);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.gg-cartera-pagar {
+  flex-shrink: 0;
+  border: 1px solid var(--c-sand);
+  background: var(--c-surface);
+  color: var(--c-sageDeep);
+  font-size: 12.5px;
+  font-weight: 600;
+  padding: 7px 14px;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.gg-cartera-pagar:hover {
+  background: var(--c-sageSoft);
+}
+
+.gg-cartera-pagar:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.gg-contabilidad-link-gastos {
+  font-size: 13px;
+  color: var(--c-muted);
+  margin-top: 12px;
+}
+
+.gg-contabilidad-link-gastos a {
+  color: var(--c-sageDeep);
+  font-weight: 600;
+}
+
+/* ---- gastos screen layout (shares the contabilidad page shell) ---- */
+.gg-contabilidad-layout {
+  display: grid;
+  grid-template-columns: minmax(300px, 420px) 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+.gg-gasto-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.gg-gasto-lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 640px;
+  overflow-y: auto;
+}
+
+.gg-gasto-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px;
+  border-radius: var(--radius-md);
+  border-bottom: 1px solid var(--c-line);
+}
+
+.gg-gasto-item-icono {
+  color: var(--c-sageDeep);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.gg-gasto-item-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.gg-gasto-item-linea1 {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--c-ink);
+}
+
+.gg-gasto-item-valor {
+  font-variant-numeric: tabular-nums;
+  color: var(--c-danger);
+  white-space: nowrap;
+}
+
+.gg-gasto-item-linea2 {
+  display: flex;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--c-muted);
+  margin-top: 2px;
+}
+
+.gg-gasto-item-eliminar {
+  border: none;
+  background: transparent;
+  color: var(--c-danger);
+  cursor: pointer;
+  display: flex;
+  padding: 4px;
+  align-self: center;
+}
+
+.gg-gasto-item-eliminar:hover {
+  opacity: 0.7;
+}
+
+.gg-gasto-item-eliminar:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@media (max-width: 900px) {
+  .gg-contabilidad-tarjetas,
+  .gg-contabilidad-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .gg-contabilidad-main {
+    padding: 16px;
+  }
+  .gg-contabilidad-grid-2 {
+    grid-template-columns: 1fr;
+  }
+  .gg-contabilidad-rango {
+    flex-direction: column;
+    gap: 8px;
+  }
+}

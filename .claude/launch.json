@@ -1,0 +1,27 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "web",
+      "runtimeExecutable": "/Users/camilosanchez/.local/node/bin/node",
+      "runtimeArgs": [
+        "/Users/camilosanchez/Desktop/GUAPA GOURMET MARKET PROGRAMA/node_modules/.bin/vite",
+        "/Users/camilosanchez/Desktop/GUAPA GOURMET MARKET PROGRAMA/apps/web",
+        "--host"
+      ],
+      "port": 5173
+    },
+    {
+      "name": "api",
+      "runtimeExecutable": "/Users/camilosanchez/.local/node/bin/node",
+      "runtimeArgs": [
+        "/Users/camilosanchez/Desktop/GUAPA GOURMET MARKET PROGRAMA/node_modules/.bin/ts-node",
+        "-T",
+        "-P",
+        "/Users/camilosanchez/Desktop/GUAPA GOURMET MARKET PROGRAMA/apps/api/tsconfig.json",
+        "/Users/camilosanchez/Desktop/GUAPA GOURMET MARKET PROGRAMA/apps/api/src/main.ts"
+      ],
+      "port": 3000
+    }
+  ]
+}

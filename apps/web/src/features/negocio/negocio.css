@@ -1,0 +1,47 @@
+.gg-negocio-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.gg-negocio-main {
+  flex: 1;
+  padding: 24px;
+  max-width: 480px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.gg-negocio-title {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0 0 6px;
+  color: var(--c-ink);
+}
+
+.gg-negocio-subtitulo {
+  margin: 0 0 20px;
+  font-size: 13px;
+  color: var(--c-muted);
+}
+
+.gg-negocio-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.gg-negocio-acciones {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.gg-negocio-guardado {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--c-success);
+  font-size: 13px;
+  font-weight: 600;
+}

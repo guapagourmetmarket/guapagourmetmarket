@@ -1,0 +1,93 @@
+.gg-gestion-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.gg-gestion-columna {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.gg-gestion-titulo {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--c-ink);
+}
+
+.gg-gestion-nueva {
+  display: flex;
+  gap: 6px;
+}
+
+.gg-gestion-lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.gg-gestion-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 8px;
+  border-radius: var(--radius-sm);
+  background: var(--c-surface);
+  border: 1px solid var(--c-line);
+}
+
+.gg-gestion-nombre {
+  flex: 1;
+  font-size: 13px;
+  color: var(--c-ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.gg-gestion-input-edicion {
+  flex: 1;
+  padding: 4px 8px;
+  font-size: 13px;
+}
+
+.gg-gestion-boton-icono {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  flex-shrink: 0;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--c-sand);
+  background: var(--c-surface);
+  color: var(--c-sageDeep);
+  cursor: pointer;
+}
+
+.gg-gestion-boton-icono:hover {
+  background: var(--c-sageSoft);
+}
+
+.gg-gestion-boton-eliminar {
+  color: var(--c-danger);
+}
+
+.gg-gestion-vacio {
+  font-size: 12.5px;
+  color: var(--c-muted);
+  margin: 4px 0;
+}
+
+@media (max-width: 560px) {
+  .gg-gestion-grid {
+    grid-template-columns: 1fr;
+  }
+}

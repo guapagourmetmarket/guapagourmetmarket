@@ -1,0 +1,17 @@
+export const COLUMNAS_PRODUCTOS = [
+  { header: 'Código interno', key: 'codigoInterno', width: 16 },
+  { header: 'Código de barras', key: 'codigoBarras', width: 18 },
+  { header: 'Nombre', key: 'nombre', width: 30 },
+  { header: 'Descripción', key: 'descripcion', width: 24 },
+  { header: 'Categoría', key: 'categoria', width: 18 },
+  { header: 'Marca', key: 'marca', width: 18 },
+  { header: 'Precio de compra', key: 'precioCompra', width: 16 },
+  { header: 'Precio de venta', key: 'precioVenta', width: 16 },
+  { header: 'IVA (0/5/19)', key: 'iva', width: 14 },
+  { header: 'Unidad de medida', key: 'unidadMedida', width: 16 },
+  { header: 'Existencias', key: 'existencias', width: 12 },
+  { header: 'Ingredientes', key: 'ingredientes', width: 30 },
+  { header: 'Peso', key: 'peso', width: 10 },
+  { header: 'Unidad de peso', key: 'pesoUnidad', width: 14 },
+  { header: 'Activo (Sí/No)', key: 'activo', width: 14 },
+] as const;

@@ -1,0 +1,378 @@
+.gg-ventas-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.gg-ventas-main {
+  flex: 1;
+  padding: 24px;
+  max-width: 1100px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.gg-venta-cliente-info {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  background: var(--c-sageSoft);
+}
+
+.gg-cliente-puntos-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 700;
+  background: var(--c-surface);
+  color: var(--c-sageDeep);
+  padding: 3px 10px;
+  border-radius: var(--radius-pill);
+}
+
+.gg-toggle-desactivados {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--c-muted);
+  cursor: pointer;
+}
+
+.gg-cliente-badge-fiado {
+  font-size: 10.5px;
+  font-weight: 700;
+  background: var(--c-warning);
+  color: var(--c-surface);
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+}
+
+.gg-negocio-banda {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  padding: 10px 16px;
+  margin-bottom: 20px;
+  background: var(--c-sageSoft);
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  color: var(--c-sageDeep);
+}
+
+.gg-ventas-layout {
+  display: grid;
+  grid-template-columns: minmax(280px, 380px) 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+.gg-ventas-title {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0 0 4px;
+  color: var(--c-ink);
+}
+
+.gg-ventas-subtitulo {
+  margin: 0 0 20px;
+  font-size: 13px;
+  color: var(--c-muted);
+}
+
+.gg-ventas-subtitulo-h2 {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 16px;
+  color: var(--c-ink);
+}
+
+.gg-venta-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.gg-venta-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.gg-venta-form select.gg-input {
+  appearance: none;
+  cursor: pointer;
+}
+
+.gg-venta-buscador {
+  position: relative;
+  margin-bottom: 16px;
+}
+
+.gg-venta-buscador-icono {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--c-faint);
+  pointer-events: none;
+}
+
+.gg-venta-buscador-input {
+  padding-left: 40px;
+}
+
+.gg-venta-sugerencias {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  z-index: 20;
+  background: var(--c-surface);
+  border: 1px solid var(--c-sand);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-pop);
+  list-style: none;
+  margin: 0;
+  padding: 4px;
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.gg-venta-sugerencias li button {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 10px;
+  border: none;
+  background: transparent;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  color: var(--c-ink);
+  cursor: pointer;
+  text-align: left;
+}
+
+.gg-venta-sugerencias li button:hover {
+  background: var(--c-sageSoft);
+}
+
+.gg-venta-sugerencia-precio {
+  color: var(--c-sageDeep);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.gg-carrito-lista {
+  list-style: none;
+  margin: 0 0 16px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.gg-carrito-linea {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  background: var(--c-beige);
+  border-radius: var(--radius-md);
+}
+
+.gg-carrito-linea-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.gg-carrito-linea-nombre {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--c-ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.gg-carrito-linea-precio {
+  font-size: 12px;
+  color: var(--c-muted);
+}
+
+.gg-carrito-linea-controles {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.gg-carrito-linea-controles button {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--c-sand);
+  background: var(--c-surface);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  color: var(--c-sageDeep);
+}
+
+.gg-carrito-linea-controles span {
+  min-width: 18px;
+  text-align: center;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+.gg-carrito-linea-subtotal {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--c-sageDeep);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.gg-carrito-linea-quitar {
+  border: none;
+  background: transparent;
+  color: var(--c-danger);
+  cursor: pointer;
+  display: flex;
+  padding: 4px;
+}
+
+.gg-venta-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--c-ink);
+  padding-top: 4px;
+  border-top: 1px solid var(--c-line);
+}
+
+.gg-venta-item-acciones {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  align-self: center;
+}
+
+.gg-venta-item-recibo {
+  border: none;
+  background: transparent;
+  color: var(--c-sageDeep);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.gg-venta-item-recibo:hover {
+  text-decoration: underline;
+}
+
+.gg-venta-item-anular {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  border: none;
+  background: transparent;
+  color: var(--c-danger);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  padding: 0;
+}
+
+.gg-venta-item-anular:hover {
+  text-decoration: underline;
+}
+
+.gg-venta-item-anular:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.gg-ventas-estado {
+  color: var(--c-muted);
+  font-size: 14px;
+}
+
+.gg-venta-lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 560px;
+  overflow-y: auto;
+}
+
+.gg-venta-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px;
+  border-radius: var(--radius-md);
+  border-bottom: 1px solid var(--c-line);
+}
+
+.gg-venta-item-icono {
+  color: var(--c-sageDeep);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.gg-venta-item-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.gg-venta-item-linea1 {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--c-ink);
+}
+
+.gg-venta-item-valor {
+  font-variant-numeric: tabular-nums;
+  color: var(--c-sageDeep);
+  white-space: nowrap;
+}
+
+.gg-venta-item-linea2 {
+  display: flex;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--c-muted);
+  margin-top: 2px;
+}
+
+@media (max-width: 860px) {
+  .gg-ventas-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .gg-ventas-main {
+    padding: 16px;
+  }
+}
