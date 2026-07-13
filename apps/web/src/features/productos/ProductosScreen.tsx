@@ -7,7 +7,6 @@ import { Button } from '../../components/Button'
 import { AppHeader } from '../../components/AppHeader'
 import { useCarrito } from '../../lib/carrito'
 import {
-  API_URL,
   ApiError,
   cambiarEstadoProducto,
   descargarCatalogoPdf,
@@ -259,7 +258,7 @@ export function ProductosScreen({ onCerrarSesion }: ProductosScreenProps) {
               >
                 <div className="gg-producto-imagen">
                   {producto.imagenUrl ? (
-                    <img src={`${API_URL}${producto.imagenUrl}`} alt={producto.nombre} />
+                    <img src={producto.imagenUrl} alt={producto.nombre} />
                   ) : (
                     <Leaf size={32} strokeWidth={1.5} />
                   )}

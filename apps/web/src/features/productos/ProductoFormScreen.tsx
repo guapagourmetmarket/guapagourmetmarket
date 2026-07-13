@@ -8,7 +8,6 @@ import { Card } from '../../components/Card'
 import { Button } from '../../components/Button'
 import { Input } from '../../components/Input'
 import {
-  API_URL,
   ApiError,
   actualizarProducto,
   crearCategoria,
@@ -236,7 +235,7 @@ export function ProductoFormScreen({ onCerrarSesion }: ProductoFormScreenProps) 
                 <div className="gg-galeria-grid">
                   {imagenes.map((img) => (
                     <div key={img.id} className="gg-galeria-item">
-                      <img src={`${API_URL}${img.url}`} alt={nombre} />
+                      <img src={img.url} alt={nombre} />
                       <div className="gg-galeria-item-acciones">
                         <button
                           type="button"
