@@ -17,20 +17,21 @@ export const brand = {
   },
 
   colors: {
-    // Marca (del logo)
-    sage: "#9AAD9C",        // verde del logo (marca, superficies suaves)
-    sageDeep: "#5F7A64",    // salvia fuerte: botones y texto sobre claro
-    sageDark: "#4C6351",    // hover
-    sageSoft: "#EAF0E8",    // tintes, chips
+    // Marca (del logo) — un punto más vivos que el pastel original, a pedido
+    // de Paola ("se veía muy pálido"), sin llegar a colores saturados.
+    sage: "#7EB484",        // verde del logo (marca, superficies suaves)
+    sageDeep: "#4A8054",    // salvia fuerte: botones y texto sobre claro
+    sageDark: "#3C6946",    // hover
+    sageSoft: "#E6F0E3",    // tintes, chips
 
-    rose: "#E2C1BC",        // rosa empolvado del logo (acento cálido)
-    roseSoft: "#F5E7E4",
-    roseDeep: "#A97D77",    // texto sobre rosa / acentos
+    rose: "#E7B0A7",        // rosa empolvado del logo (acento cálido)
+    roseSoft: "#F6E2DE",
+    roseDeep: "#B6665B",    // texto sobre rosa / acentos
 
     // Superficies naturales
-    cream: "#FAF5EC",       // fondo de la app
-    beige: "#EFE7D8",       // superficie alterna
-    sand: "#E3DAC6",        // bordes marcados
+    cream: "#FAF4E9",       // fondo de la app
+    beige: "#F0E6D2",       // superficie alterna
+    sand: "#E5D9BF",        // bordes marcados
     surface: "#FFFFFF",     // tarjetas
     line: "#ECE4D5",        // hairline
 
@@ -40,9 +41,9 @@ export const brand = {
     faint: "#A7ABA1",       // pistas / placeholders
 
     // Semánticos (suaves)
-    success: "#5F7A64",
-    warning: "#CFA24E",     // próximo a vencer
-    danger: "#C0705E",      // stock bajo / error
+    success: "#4A8054",
+    warning: "#D9A13A",     // próximo a vencer
+    danger: "#CB6149",      // stock bajo / error
   },
 
   typography: {
