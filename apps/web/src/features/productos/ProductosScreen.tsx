@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { Copy, Download, FileText, Leaf, Pencil, Plus, Power, Settings, ShoppingCart, Search, Trash2, Upload } from 'lucide-react'
 import { Card } from '../../components/Card'
 import { Button } from '../../components/Button'
@@ -35,7 +35,6 @@ const formatoCOP = new Intl.NumberFormat('es-CO', {
 })
 
 export function ProductosScreen({ onCerrarSesion }: ProductosScreenProps) {
-  const navigate = useNavigate()
   const queryClient = useQueryClient()
   const carrito = useCarrito()
 
