@@ -29,8 +29,8 @@ export const brand = {
     roseDeep: "#B6665B",    // texto sobre rosa / acentos
 
     // Superficies naturales
-    cream: "#FAF4E9",       // fondo de la app
-    beige: "#F0E6D2",       // superficie alterna
+    cream: "#FBEBCF",       // fondo de la app
+    beige: "#F0E1C3",       // superficie alterna
     sand: "#E5D9BF",        // bordes marcados
     surface: "#FFFFFF",     // tarjetas
     line: "#ECE4D5",        // hairline
