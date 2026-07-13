@@ -9,15 +9,23 @@ import type { Producto } from '../domain/producto.entity';
 const LOGO_PATH = join(__dirname, '..', '..', '..', '..', 'assets', 'brand', 'logo-guapa.png');
 
 const COLOR_SAGE_DEEP = '#5F7A64';
+const COLOR_SAGE_DARK = '#3C6946';
 const COLOR_SAGE_SOFT = '#EAF0E8';
 const COLOR_ROSE = '#E2C1BC';
 const COLOR_ROSE_DEEP = '#C4948C';
+const COLOR_GOLD = '#D9A13A';
 const COLOR_INK = '#2E332C';
 const COLOR_MUTED = '#8A8F84';
 const COLOR_LINE = '#ECE4D5';
 const COLOR_CREAM = '#FAF5EC';
 
 const MARGEN = 40;
+
+const CONTACTO_TELEFONO = '317 404 7796';
+const CONTACTO_DIRECCION = 'Calle 1 # 4-09, Barrio Las Villas, Mosquera, Cundinamarca';
+const CONTACTO_INSTAGRAM = '@guapa_gourmet';
+const CONTACTO_TIKTOK = '@guapagourmet';
+const LINEA_CONTACTO_PIE = `${CONTACTO_DIRECCION}  ·  Tel. ${CONTACTO_TELEFONO}  ·  IG ${CONTACTO_INSTAGRAM}  ·  TikTok ${CONTACTO_TIKTOK}`;
 const COLUMNAS = 2;
 const GAP = 18;
 const IMAGEN_ALTO = 148;
@@ -141,46 +149,54 @@ export class GenerarCatalogoPdfUseCase {
     totalProductos: number,
     totalCategorias: number,
   ) {
-    // Franja de color de fondo, de borde a borde, para que la portada no sea
-    // una hoja en blanco con texto centrado sino que se sienta diseñada.
-    doc.rect(0, 0, doc.page.width, doc.page.height).fillColor(COLOR_CREAM).fill();
-    doc.rect(0, 0, doc.page.width, 210).fillColor(COLOR_SAGE_SOFT).fill();
-    doc.rect(0, doc.page.height - 90, doc.page.width, 90).fillColor(COLOR_ROSE).fillOpacity(0.35).fill();
-    doc.fillOpacity(1);
-
     const centroX = MARGEN + anchoUtil / 2;
 
+    // Fondo verde de borde a borde (identidad de marca), con dos círculos
+    // suaves de textura para que no se sienta un panel plano.
+    doc.rect(0, 0, doc.page.width, doc.page.height).fillColor(COLOR_SAGE_DEEP).fill();
+    doc.save();
+    doc.circle(doc.page.width + 30, 10, 150).fillColor('#FFFFFF').fillOpacity(0.05).fill();
+    doc.circle(-20, doc.page.height - 40, 170).fillColor(COLOR_ROSE).fillOpacity(0.14).fill();
+    doc.restore();
+
     if (existsSync(LOGO_PATH)) {
-      doc.save();
-      doc.circle(centroX, 210, 58).fillColor('#FFFFFF').fill();
-      doc.restore();
-      doc.image(LOGO_PATH, centroX - 50, 160, { width: 100, height: 100 });
+      doc.circle(centroX, 118, 56).fillColor('#FFFFFF').fill();
+      doc.image(LOGO_PATH, centroX - 48, 70, { width: 96, height: 96 });
     }
 
     doc
       .font('Helvetica-Bold')
-      .fontSize(30)
-      .fillColor(COLOR_INK)
-      .text('Guapa Gourmet Market', MARGEN, 300, { width: anchoUtil, align: 'center' });
+      .fontSize(34)
+      .fillColor('#FFFFFF')
+      .text('GUAPA GOURMET MARKET', MARGEN, 200, { width: anchoUtil, align: 'center', characterSpacing: 0.4 });
 
     doc
       .font('Helvetica')
       .fontSize(13)
-      .fillColor(COLOR_MUTED)
-      .text('by Paola Rodríguez', MARGEN, 338, { width: anchoUtil, align: 'center' });
+      .fillColor(COLOR_CREAM)
+      .text('C A T Á L O G O   D E   P R O D U C T O S', MARGEN, 242, { width: anchoUtil, align: 'center' });
 
-    doc
-      .moveTo(centroX - 30, 372)
-      .lineTo(centroX + 30, 372)
-      .strokeColor(COLOR_ROSE_DEEP)
-      .lineWidth(2)
-      .stroke();
+    doc.moveTo(centroX - 40, 272).lineTo(centroX + 40, 272).strokeColor(COLOR_ROSE).lineWidth(2).stroke();
 
     doc
       .font('Helvetica-Bold')
-      .fontSize(18)
-      .fillColor(COLOR_SAGE_DEEP)
-      .text('Catálogo de productos', MARGEN, 390, { width: anchoUtil, align: 'center' });
+      .fontSize(19)
+      .fillColor(COLOR_CREAM)
+      .text('Chef Paola Rodríguez', MARGEN, 288, { width: anchoUtil, align: 'center' });
+
+    // Escudo diseñado a mano (no es el logo oficial de la escuela, que no
+    // tenemos autorización para reproducir): un sello propio que representa
+    // la credencial sin usar una marca ajena.
+    this.dibujarEscudoGastronomia(doc, centroX, 326, 52, 58);
+
+    doc
+      .font('Helvetica-Oblique')
+      .fontSize(10)
+      .fillColor(COLOR_CREAM)
+      .text('Egresada de la Escuela de Gastronomía Mariana Moreno', MARGEN, 396, {
+        width: anchoUtil,
+        align: 'center',
+      });
 
     const resumen =
       totalProductos === 0
@@ -189,8 +205,77 @@ export class GenerarCatalogoPdfUseCase {
     doc
       .font('Helvetica')
       .fontSize(11)
-      .fillColor(COLOR_MUTED)
-      .text(resumen, MARGEN, 416, { width: anchoUtil, align: 'center' });
+      .fillColor(COLOR_CREAM)
+      .text(resumen, MARGEN, 412, { width: anchoUtil, align: 'center' });
+
+    doc.moveTo(centroX - 26, 460).lineTo(centroX + 26, 460).strokeColor(COLOR_ROSE).lineWidth(1.4).stroke();
+
+    doc
+      .font('Helvetica-Oblique')
+      .fontSize(13)
+      .fillColor(COLOR_CREAM)
+      .text('“Alimentación consciente, sabor auténtico”', MARGEN, 478, { width: anchoUtil, align: 'center' });
+
+    // Tarjeta de contacto: dirección, teléfono y redes sociales con su ícono.
+    const cardY = 570;
+    const cardAlto = 158;
+    doc.roundedRect(MARGEN, cardY, anchoUtil, cardAlto, 16).fillColor(COLOR_CREAM).fill();
+
+    doc
+      .font('Helvetica-Bold')
+      .fontSize(9.5)
+      .fillColor(COLOR_SAGE_DARK)
+      .text('VISÍTANOS Y SÍGUENOS', MARGEN, cardY + 18, {
+        width: anchoUtil,
+        align: 'center',
+        characterSpacing: 1.2,
+      });
+
+    doc
+      .font('Helvetica')
+      .fontSize(10.5)
+      .fillColor(COLOR_INK)
+      .text(CONTACTO_DIRECCION, MARGEN + 24, cardY + 40, { width: anchoUtil - 48, align: 'center' });
+
+    doc
+      .font('Helvetica')
+      .fontSize(10.5)
+      .fillColor(COLOR_INK)
+      .text(`Tel. ${CONTACTO_TELEFONO}`, MARGEN, cardY + 60, { width: anchoUtil, align: 'center' });
+
+    doc
+      .moveTo(MARGEN + 60, cardY + 84)
+      .lineTo(MARGEN + anchoUtil - 60, cardY + 84)
+      .strokeColor(COLOR_LINE)
+      .lineWidth(1)
+      .stroke();
+
+    doc.font('Helvetica-Bold').fontSize(10.5);
+    const anchoIg = doc.widthOfString(CONTACTO_INSTAGRAM);
+    const anchoTt = doc.widthOfString(CONTACTO_TIKTOK);
+    const iconoSize = 15;
+    const gapIconoTexto = 6;
+    const gapGrupos = 30;
+    const grupoIgAncho = iconoSize + gapIconoTexto + anchoIg;
+    const grupoTtAncho = iconoSize + gapIconoTexto + anchoTt;
+    const filaAncho = grupoIgAncho + gapGrupos + grupoTtAncho;
+    let cursorX = centroX - filaAncho / 2;
+    const filaY = cardY + 100;
+
+    this.dibujarIconoInstagram(doc, cursorX, filaY - 1, iconoSize, COLOR_ROSE_DEEP);
+    doc
+      .font('Helvetica-Bold')
+      .fontSize(10.5)
+      .fillColor(COLOR_INK)
+      .text(CONTACTO_INSTAGRAM, cursorX + iconoSize + gapIconoTexto, filaY, { lineBreak: false });
+    cursorX += grupoIgAncho + gapGrupos;
+
+    this.dibujarIconoTikTok(doc, cursorX, filaY - 1, iconoSize, COLOR_INK);
+    doc
+      .font('Helvetica-Bold')
+      .fontSize(10.5)
+      .fillColor(COLOR_INK)
+      .text(CONTACTO_TIKTOK, cursorX + iconoSize + gapIconoTexto, filaY, { lineBreak: false });
 
     const hoy = new Date().toLocaleDateString('es-CO', {
       day: 'numeric',
@@ -199,9 +284,71 @@ export class GenerarCatalogoPdfUseCase {
     });
     doc
       .font('Helvetica')
-      .fontSize(9.5)
-      .fillColor(COLOR_MUTED)
-      .text(`Generado el ${hoy}`, MARGEN, doc.page.height - 55, { width: anchoUtil, align: 'center' });
+      .fontSize(9)
+      .fillColor(COLOR_CREAM)
+      .text(`Generado el ${hoy}`, MARGEN, cardY + cardAlto + 18, { width: anchoUtil, align: 'center' });
+  }
+
+  /** Sello propio (no el logo oficial de la escuela) que representa la credencial de chef egresada. */
+  private dibujarEscudoGastronomia(doc: PDFKit.PDFDocument, cx: number, topY: number, ancho: number, alto: number) {
+    const puntaY = topY + alto;
+    doc.save();
+    doc
+      .moveTo(cx - ancho / 2, topY)
+      .lineTo(cx + ancho / 2, topY)
+      .lineTo(cx + ancho / 2, topY + alto * 0.48)
+      .quadraticCurveTo(cx + ancho / 2, topY + alto * 0.82, cx, puntaY)
+      .quadraticCurveTo(cx - ancho / 2, topY + alto * 0.82, cx - ancho / 2, topY + alto * 0.48)
+      .lineTo(cx - ancho / 2, topY)
+      .closePath()
+      .fillColor(COLOR_CREAM)
+      .fill()
+      .lineWidth(1.6)
+      .strokeColor(COLOR_GOLD)
+      .stroke();
+
+    // Toque de chef simplificado: banda + tres lóbulos.
+    const bandaAncho = ancho * 0.5;
+    const bandaAlto = alto * 0.14;
+    const bandaX = cx - bandaAncho / 2;
+    const bandaY = topY + alto * 0.5;
+    doc.roundedRect(bandaX, bandaY, bandaAncho, bandaAlto, 2).fillColor(COLOR_SAGE_DEEP).fill();
+
+    const loboloR = ancho * 0.15;
+    doc.circle(cx - bandaAncho * 0.28, bandaY - loboloR * 0.55, loboloR).fillColor(COLOR_SAGE_DEEP).fill();
+    doc.circle(cx, bandaY - loboloR * 0.85, loboloR * 1.1).fillColor(COLOR_SAGE_DEEP).fill();
+    doc.circle(cx + bandaAncho * 0.28, bandaY - loboloR * 0.55, loboloR).fillColor(COLOR_SAGE_DEEP).fill();
+
+    doc.restore();
+  }
+
+  private dibujarIconoInstagram(doc: PDFKit.PDFDocument, x: number, y: number, size: number, color: string) {
+    doc.save();
+    doc.roundedRect(x, y, size, size, size * 0.28).lineWidth(1.2).strokeColor(color).stroke();
+    doc.circle(x + size / 2, y + size / 2, size * 0.24).lineWidth(1.2).strokeColor(color).stroke();
+    doc.circle(x + size * 0.76, y + size * 0.24, size * 0.07).fillColor(color).fill();
+    doc.restore();
+  }
+
+  private dibujarIconoTikTok(doc: PDFKit.PDFDocument, x: number, y: number, size: number, color: string) {
+    doc.save();
+    const cx = x + size * 0.42;
+    const cy = y + size * 0.78;
+    const r = size * 0.22;
+    doc.circle(cx, cy, r).fillColor(color).fill();
+    doc
+      .moveTo(cx + r, cy)
+      .lineTo(cx + r, y + size * 0.08)
+      .lineWidth(size * 0.16)
+      .strokeColor(color)
+      .stroke();
+    doc
+      .moveTo(cx + r, y + size * 0.08)
+      .quadraticCurveTo(x + size * 0.95, y + size * 0.08, x + size * 0.95, y + size * 0.38)
+      .lineWidth(size * 0.14)
+      .strokeColor(color)
+      .stroke();
+    doc.restore();
   }
 
   /** Encabezado corrido (logo + nombre + línea) al inicio de cada página de contenido. Devuelve el y donde puede empezar el contenido. */
@@ -365,8 +512,9 @@ export class GenerarCatalogoPdfUseCase {
       // se dibuja en la página.
       const margenInferiorOriginal = doc.page.margins.bottom;
       doc.page.margins.bottom = 0;
+      const anchoUtil = doc.page.width - MARGEN * 2;
 
-      const yPie = doc.page.height - 30;
+      const yPie = doc.page.height - 44;
       doc
         .moveTo(MARGEN, yPie - 8)
         .lineTo(doc.page.width - MARGEN, yPie - 8)
@@ -384,9 +532,17 @@ export class GenerarCatalogoPdfUseCase {
         .fontSize(8)
         .fillColor(COLOR_MUTED)
         .text(`Página ${i + 1} de ${rango.count}`, MARGEN, yPie, {
-          width: doc.page.width - MARGEN * 2,
+          width: anchoUtil,
           align: 'right',
         });
+
+      // Datos de contacto de la chef, presentes en todas las hojas del catálogo.
+      doc
+        .font('Helvetica')
+        .fontSize(7)
+        .fillColor(COLOR_MUTED)
+        .text(LINEA_CONTACTO_PIE, MARGEN, yPie + 12, { width: anchoUtil, align: 'center' });
+
       doc.page.margins.bottom = margenInferiorOriginal;
     }
   }
