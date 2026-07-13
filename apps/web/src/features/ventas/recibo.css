@@ -73,20 +73,3 @@
   color: var(--c-faint);
   font-family: var(--font-body);
 }
-
-@media print {
-  body * {
-    visibility: hidden;
-  }
-  .gg-recibo-imprimible,
-  .gg-recibo-imprimible * {
-    visibility: visible;
-  }
-  .gg-recibo-imprimible {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 80mm;
-    max-width: 80mm;
-  }
-}

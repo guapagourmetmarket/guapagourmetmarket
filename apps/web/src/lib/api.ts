@@ -11,6 +11,7 @@ export { API_URL }
 export class ApiError extends Error {}
 
 const CLAVE_TOKEN = 'guapa_token'
+const CLAVE_USUARIO = 'guapa_usuario'
 
 let authToken: string | null = null
 
@@ -21,11 +22,29 @@ export function setAuthToken(token: string | null) {
     localStorage.setItem(CLAVE_TOKEN, token)
   } else {
     localStorage.removeItem(CLAVE_TOKEN)
+    localStorage.removeItem(CLAVE_USUARIO)
   }
 }
 
-export function obtenerTokenGuardado(): string | null {
-  return localStorage.getItem(CLAVE_TOKEN)
+export function guardarUsuarioSesion(usuario: unknown) {
+  localStorage.setItem(CLAVE_USUARIO, JSON.stringify(usuario))
+}
+
+/**
+ * Restaura la sesión guardada sin depender de una llamada al servidor: si la
+ * API gratis está dormida (Render), esperar esa respuesta para poder mostrar
+ * la app sacaba a la usuaria de la sesión sin necesidad. Un token expirado o
+ * inválido lo detectan igual las pantallas cuando hagan su primera petición.
+ */
+export function obtenerSesionGuardada(): LoginResponse | null {
+  const token = localStorage.getItem(CLAVE_TOKEN)
+  const usuarioJson = localStorage.getItem(CLAVE_USUARIO)
+  if (!token || !usuarioJson) return null
+  try {
+    return { accessToken: token, usuario: JSON.parse(usuarioJson) }
+  } catch {
+    return null
+  }
 }
 
 async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
