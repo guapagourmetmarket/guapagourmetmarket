@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { NavLink } from 'react-router-dom'
-import { LogOut, UserCircle } from 'lucide-react'
+import { LogOut, Menu, UserCircle, X } from 'lucide-react'
 import { Button } from './Button'
 import { MiCuentaModal } from './MiCuentaModal'
 import { brand } from '../theme/theme'
@@ -10,12 +10,25 @@ interface AppHeaderProps {
   onCerrarSesion: () => void
 }
 
+const ENLACES = [
+  { to: '/productos', label: 'Productos' },
+  { to: '/ventas', label: 'Venta manual' },
+  { to: '/compras', label: 'Compras' },
+  { to: '/proveedores', label: 'Proveedores' },
+  { to: '/clientes', label: 'Clientes' },
+  { to: '/alertas', label: 'Alertas' },
+  { to: '/contabilidad', label: 'Contabilidad' },
+  { to: '/reportes', label: 'Reportes' },
+  { to: '/negocio', label: 'Negocio' },
+]
+
 function claseLink({ isActive }: { isActive: boolean }) {
   return 'gg-header-link' + (isActive ? ' gg-header-link--active' : '')
 }
 
 export function AppHeader({ onCerrarSesion }: AppHeaderProps) {
   const [miCuentaAbierta, setMiCuentaAbierta] = useState(false)
+  const [menuAbierto, setMenuAbierto] = useState(false)
 
   return (
     <header className="gg-header">
@@ -23,35 +36,15 @@ export function AppHeader({ onCerrarSesion }: AppHeaderProps) {
         <img src={brand.logo.full} alt={brand.name} width={40} height={40} />
         <span className="font-display gg-header-brand-name">{brand.name}</span>
       </div>
+
       <nav className="gg-header-nav">
-        <NavLink to="/productos" className={claseLink}>
-          Productos
-        </NavLink>
-        <NavLink to="/ventas" className={claseLink}>
-          Venta manual
-        </NavLink>
-        <NavLink to="/compras" className={claseLink}>
-          Compras
-        </NavLink>
-        <NavLink to="/proveedores" className={claseLink}>
-          Proveedores
-        </NavLink>
-        <NavLink to="/clientes" className={claseLink}>
-          Clientes
-        </NavLink>
-        <NavLink to="/alertas" className={claseLink}>
-          Alertas
-        </NavLink>
-        <NavLink to="/contabilidad" className={claseLink}>
-          Contabilidad
-        </NavLink>
-        <NavLink to="/reportes" className={claseLink}>
-          Reportes
-        </NavLink>
-        <NavLink to="/negocio" className={claseLink}>
-          Negocio
-        </NavLink>
+        {ENLACES.map((enlace) => (
+          <NavLink key={enlace.to} to={enlace.to} className={claseLink}>
+            {enlace.label}
+          </NavLink>
+        ))}
       </nav>
+
       <div className="gg-header-acciones">
         <Button variant="ghost" onClick={() => setMiCuentaAbierta(true)}>
           <UserCircle size={18} />
@@ -62,6 +55,62 @@ export function AppHeader({ onCerrarSesion }: AppHeaderProps) {
           Cerrar sesión
         </Button>
       </div>
+
+      <button
+        type="button"
+        className="gg-header-menu-boton"
+        onClick={() => setMenuAbierto((abierto) => !abierto)}
+        aria-label={menuAbierto ? 'Cerrar menú' : 'Abrir menú'}
+        aria-expanded={menuAbierto}
+      >
+        {menuAbierto ? <X size={22} /> : <Menu size={22} />}
+      </button>
+
+      {menuAbierto && (
+        <>
+          <button
+            type="button"
+            className="gg-header-menu-fondo"
+            aria-label="Cerrar menú"
+            onClick={() => setMenuAbierto(false)}
+          />
+          <nav className="gg-header-menu-movil">
+            {ENLACES.map((enlace) => (
+              <NavLink
+                key={enlace.to}
+                to={enlace.to}
+                className={claseLink}
+                onClick={() => setMenuAbierto(false)}
+              >
+                {enlace.label}
+              </NavLink>
+            ))}
+            <div className="gg-header-menu-movil-separador" />
+            <button
+              type="button"
+              className="gg-header-link"
+              onClick={() => {
+                setMenuAbierto(false)
+                setMiCuentaAbierta(true)
+              }}
+            >
+              <UserCircle size={18} />
+              Mi cuenta
+            </button>
+            <button
+              type="button"
+              className="gg-header-link"
+              onClick={() => {
+                setMenuAbierto(false)
+                onCerrarSesion()
+              }}
+            >
+              <LogOut size={18} />
+              Cerrar sesión
+            </button>
+          </nav>
+        </>
+      )}
 
       {miCuentaAbierta && <MiCuentaModal onClose={() => setMiCuentaAbierta(false)} />}
     </header>

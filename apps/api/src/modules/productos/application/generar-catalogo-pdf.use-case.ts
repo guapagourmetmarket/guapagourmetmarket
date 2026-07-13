@@ -16,9 +16,10 @@ const COLOR_MUTED = '#7C8279';
 const COLOR_LINE = '#ECE4D5';
 
 const MARGEN = 40;
-const COLUMNAS = 2;
-const TARJETA_ALTO = 130;
-const IMAGEN_LADO = 90;
+const COLUMNAS = 3;
+const GAP = 14;
+const TARJETA_ALTO = 195;
+const IMAGEN_LADO = 100;
 
 const formatoCOP = new Intl.NumberFormat('es-CO', {
   style: 'currency',
@@ -60,7 +61,7 @@ export class GenerarCatalogoPdfUseCase {
     });
 
     const anchoUtil = doc.page.width - MARGEN * 2;
-    const anchoTarjeta = (anchoUtil - 16) / COLUMNAS;
+    const anchoTarjeta = (anchoUtil - GAP * (COLUMNAS - 1)) / COLUMNAS;
 
     this.dibujarPortada(doc, anchoUtil);
     doc.addPage();
@@ -88,7 +89,7 @@ export class GenerarCatalogoPdfUseCase {
           columna = 0;
         }
 
-        const x = MARGEN + columna * (anchoTarjeta + 16);
+        const x = MARGEN + columna * (anchoTarjeta + GAP);
         this.dibujarTarjetaProducto(doc, producto, x, y, anchoTarjeta);
 
         columna += 1;
@@ -186,7 +187,7 @@ export class GenerarCatalogoPdfUseCase {
       .stroke();
 
     const padding = 10;
-    const imagenX = x + padding;
+    const imagenX = x + (ancho - IMAGEN_LADO) / 2;
     const imagenY = y + padding;
     const rutaImg = rutaImagen(producto.imagenUrl);
 
@@ -207,30 +208,31 @@ export class GenerarCatalogoPdfUseCase {
         .text('Sin foto', imagenX, imagenY + IMAGEN_LADO / 2 - 5, { width: IMAGEN_LADO, align: 'center' });
     }
 
-    const textoX = imagenX + IMAGEN_LADO + 12;
-    const textoAncho = ancho - IMAGEN_LADO - padding * 2 - 12;
+    const textoX = x + padding;
+    const textoAncho = ancho - padding * 2;
+    let cursorY = imagenY + IMAGEN_LADO + 10;
 
     doc
       .font('Helvetica-Bold')
-      .fontSize(11)
+      .fontSize(10.5)
       .fillColor(COLOR_INK)
-      .text(producto.nombre, textoX, y + padding, { width: textoAncho, height: 40 });
+      .text(producto.nombre, textoX, cursorY, { width: textoAncho, height: 26, ellipsis: true });
+    cursorY += 28;
 
     if (producto.marcaNombre) {
       doc
         .font('Helvetica')
-        .fontSize(9)
+        .fontSize(8.5)
         .fillColor(COLOR_MUTED)
-        .text(producto.marcaNombre, textoX, y + padding + 32, { width: textoAncho });
+        .text(producto.marcaNombre, textoX, cursorY, { width: textoAncho, height: 11, ellipsis: true });
     }
+    cursorY += 16;
 
     doc
       .font('Helvetica-Bold')
-      .fontSize(15)
+      .fontSize(13)
       .fillColor(COLOR_SAGE_DEEP)
-      .text(formatoCOP.format(producto.precioVenta), textoX, y + TARJETA_ALTO - padding - 18, {
-        width: textoAncho,
-      });
+      .text(formatoCOP.format(producto.precioVenta), textoX, cursorY, { width: textoAncho });
   }
 
   private numerarPaginas(doc: PDFKit.PDFDocument) {
