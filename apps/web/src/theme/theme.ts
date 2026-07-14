@@ -27,9 +27,8 @@ export const brand = {
     // Enlaces exactos (no una búsqueda por dirección) para que "cómo llegar" lleve al punto preciso.
     mapsHref: "https://maps.app.goo.gl/NTy584eTYFm1vBx7A",
     wazeHref: "https://waze.com/ul/hd2g4yb99e",
-    // Enlace directo al formulario de reseña de Google (vía el CID del negocio),
-    // en vez de una búsqueda con parámetros de sesión que no son estables.
-    resenaHref: "https://search.google.com/local/writereview?placeid=5998409489260800813",
+    // Enlace oficial "Solicita opiniones" del Perfil de Negocio de Google de Paola.
+    resenaHref: "https://g.page/r/CS3ruEimoT5TEBM/review",
     instagram: "@guapa_gourmet",
     instagramHref: "https://instagram.com/guapa_gourmet",
     tiktok: "@guapagourmet",
