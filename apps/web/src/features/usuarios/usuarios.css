@@ -1,0 +1,181 @@
+.gg-usuarios-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.gg-usuarios-main {
+  flex: 1;
+  padding: 24px;
+  max-width: 900px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.gg-usuarios-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 8px;
+}
+
+.gg-usuarios-title {
+  font-size: 24px;
+  font-weight: 600;
+  margin: 0;
+  color: var(--c-ink);
+}
+
+.gg-usuarios-subtitulo {
+  margin: 0 0 20px;
+  font-size: 13px;
+  color: var(--c-muted);
+}
+
+.gg-usuarios-estado {
+  text-align: center;
+  color: var(--c-muted);
+}
+
+.gg-usuarios-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.gg-usuario-card {
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.gg-usuario-card--inactivo {
+  opacity: 0.6;
+}
+
+.gg-usuario-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.gg-usuario-nombre {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--c-ink);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.gg-usuario-email {
+  margin: 2px 0 0;
+  font-size: 12.5px;
+  color: var(--c-muted);
+}
+
+.gg-usuario-chip {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding: 3px 10px;
+  border-radius: var(--radius-pill);
+  background: var(--c-sageSoft);
+  color: var(--c-sageDeep);
+}
+
+.gg-usuario-chip--inactivo {
+  background: var(--c-beige);
+  color: var(--c-muted);
+}
+
+.gg-usuario-acciones {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.gg-usuario-accion {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--c-sand);
+  background: var(--c-surface);
+  color: var(--c-sageDeep);
+  cursor: pointer;
+}
+
+.gg-usuario-accion:hover {
+  background: var(--c-sageSoft);
+}
+
+.gg-usuario-accion:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.gg-usuario-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.gg-usuario-form-nota {
+  margin: 0;
+  font-size: 12.5px;
+  color: var(--c-muted);
+}
+
+.gg-usuario-acciones-form {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.gg-usuario-password-caja {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  background: var(--c-sageSoft);
+  border-radius: var(--radius-md);
+  margin: 8px 0;
+}
+
+.gg-usuario-password-valor {
+  font-family: monospace;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--c-sageDeep);
+  letter-spacing: 0.02em;
+  flex: 1;
+  word-break: break-all;
+}
+
+.gg-usuario-password-copiar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid var(--c-sand);
+  background: var(--c-surface);
+  color: var(--c-sageDeep);
+  padding: 6px 12px;
+  border-radius: var(--radius-pill);
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.gg-usuario-password-copiar:hover {
+  background: var(--c-beige);
+}

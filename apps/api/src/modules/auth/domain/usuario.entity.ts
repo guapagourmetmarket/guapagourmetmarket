@@ -8,3 +8,15 @@ export interface Usuario {
   rol: RolUsuario;
   activo: boolean;
 }
+
+export interface NuevoUsuario {
+  nombre: string;
+  email: string;
+  rol: RolUsuario;
+}
+
+export interface CambiosUsuario {
+  nombre?: string;
+  rol?: RolUsuario;
+  activo?: boolean;
+}

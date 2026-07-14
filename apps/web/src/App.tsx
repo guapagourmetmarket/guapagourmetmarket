@@ -5,6 +5,7 @@ import { ProductosScreen } from './features/productos/ProductosScreen'
 import { ProductoFormScreen } from './features/productos/ProductoFormScreen'
 import { VentaManualScreen } from './features/ventas/VentaManualScreen'
 import { NegocioScreen } from './features/negocio/NegocioScreen'
+import { UsuariosScreen } from './features/usuarios/UsuariosScreen'
 import { ProveedoresScreen } from './features/proveedores/ProveedoresScreen'
 import { ComprasScreen } from './features/compras/ComprasScreen'
 import { AlertasScreen } from './features/alertas/AlertasScreen'
@@ -196,6 +197,16 @@ function App() {
         element={
           autenticado ? (
             <NegocioScreen onCerrarSesion={cerrarSesion} />
+          ) : (
+            <Navigate to="/login" replace />
+          )
+        }
+      />
+      <Route
+        path="/usuarios"
+        element={
+          autenticado ? (
+            <UsuariosScreen onCerrarSesion={cerrarSesion} />
           ) : (
             <Navigate to="/login" replace />
           )

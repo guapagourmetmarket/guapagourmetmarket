@@ -43,6 +43,17 @@ export function guardarUsuarioSesion(usuario: unknown) {
   localStorage.setItem(CLAVE_USUARIO, JSON.stringify(usuario))
 }
 
+/** Lee el usuario de la sesión guardada (para mostrar/ocultar la interfaz según su rol, sin llamar al servidor). */
+export function obtenerUsuarioSesion(): { id: string; nombre: string; email: string; rol: string } | null {
+  const json = localStorage.getItem(CLAVE_USUARIO)
+  if (!json) return null
+  try {
+    return JSON.parse(json)
+  } catch {
+    return null
+  }
+}
+
 /**
  * Restaura la sesión guardada sin depender de una llamada al servidor: si la
  * API gratis está dormida (Render), esperar esa respuesta para poder mostrar
@@ -164,6 +175,42 @@ export interface CambiosPerfil {
 
 export function actualizarPerfil(cambios: CambiosPerfil) {
   return api.patch<Perfil>('/auth/perfil', cambios)
+}
+
+export type Rol = 'administrador' | 'cajero' | 'contador' | 'supervisor'
+
+export interface Usuario {
+  id: string
+  nombre: string
+  email: string
+  rol: Rol
+  activo: boolean
+}
+
+export interface NuevoUsuario {
+  nombre: string
+  email: string
+  rol: Rol
+}
+
+export interface UsuarioCreado extends Usuario {
+  passwordProvisional: string
+}
+
+export function obtenerUsuarios() {
+  return api.get<Usuario[]>('/usuarios')
+}
+
+export function crearUsuario(usuario: NuevoUsuario) {
+  return api.post<UsuarioCreado>('/usuarios', usuario)
+}
+
+export function actualizarUsuario(id: string, cambios: { nombre?: string; rol?: Rol; activo?: boolean }) {
+  return api.patch<Usuario>(`/usuarios/${id}`, cambios)
+}
+
+export function resetearPasswordUsuario(id: string) {
+  return api.post<{ passwordProvisional: string }>(`/usuarios/${id}/resetear-password`, {})
 }
 
 export async function obtenerProductos(incluirInactivos = false) {

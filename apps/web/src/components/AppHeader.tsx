@@ -6,6 +6,7 @@ import { MiCuentaModal } from './MiCuentaModal'
 import { EstadoConexion } from './EstadoConexion'
 import { InstagramIcon, TikTokIcon } from './SocialIcons'
 import { brand } from '../theme/theme'
+import { obtenerUsuarioSesion } from '../lib/api'
 import './app-header.css'
 
 interface AppHeaderProps {
@@ -24,6 +25,7 @@ const ENLACES = [
   { to: '/contabilidad', label: 'Contabilidad' },
   { to: '/reportes', label: 'Reportes' },
   { to: '/negocio', label: 'Negocio' },
+  { to: '/usuarios', label: 'Usuarios', soloAdmin: true },
 ]
 
 function claseLink({ isActive }: { isActive: boolean }) {
@@ -33,6 +35,8 @@ function claseLink({ isActive }: { isActive: boolean }) {
 export function AppHeader({ onCerrarSesion }: AppHeaderProps) {
   const [miCuentaAbierta, setMiCuentaAbierta] = useState(false)
   const [menuAbierto, setMenuAbierto] = useState(false)
+  const esAdministrador = obtenerUsuarioSesion()?.rol === 'administrador'
+  const enlacesVisibles = ENLACES.filter((enlace) => !enlace.soloAdmin || esAdministrador)
 
   return (
     <header className="gg-header">
@@ -74,7 +78,7 @@ export function AppHeader({ onCerrarSesion }: AppHeaderProps) {
 
       <div className="gg-header-fila-nav">
         <nav className="gg-header-nav">
-          {ENLACES.map((enlace) => (
+          {enlacesVisibles.map((enlace) => (
             <NavLink key={enlace.to} to={enlace.to} className={claseLink}>
               {enlace.label}
             </NavLink>
@@ -112,7 +116,7 @@ export function AppHeader({ onCerrarSesion }: AppHeaderProps) {
             onClick={() => setMenuAbierto(false)}
           />
           <nav className="gg-header-menu-movil">
-            {ENLACES.map((enlace) => (
+            {enlacesVisibles.map((enlace) => (
               <NavLink
                 key={enlace.to}
                 to={enlace.to}
