@@ -13,6 +13,7 @@ import { GastosScreen } from './features/contabilidad/GastosScreen'
 import { ClientesScreen } from './features/clientes/ClientesScreen'
 import { EnlacesScreen } from './features/enlaces/EnlacesScreen'
 import { TiendaScreen } from './features/tienda/TiendaScreen'
+import { CajaScreen } from './features/caja/CajaScreen'
 import {
   guardarUsuarioSesion,
   obtenerSesionGuardada,
@@ -89,6 +90,12 @@ function App() {
           ) : (
             <Navigate to="/login" replace />
           )
+        }
+      />
+      <Route
+        path="/caja"
+        element={
+          autenticado ? <CajaScreen onCerrarSesion={cerrarSesion} /> : <Navigate to="/login" replace />
         }
       />
       <Route

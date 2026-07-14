@@ -13,6 +13,7 @@ interface AppHeaderProps {
 
 const ENLACES = [
   { to: '/productos', label: 'Productos' },
+  { to: '/caja', label: 'Caja' },
   { to: '/ventas', label: 'Venta manual' },
   { to: '/compras', label: 'Compras' },
   { to: '/proveedores', label: 'Proveedores' },

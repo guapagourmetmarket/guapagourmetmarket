@@ -299,6 +299,39 @@ export function actualizarNegocio(cambios: CambiosNegocio) {
   return api.patch<Negocio>('/negocio', cambios)
 }
 
+export interface TurnoCaja {
+  id: string
+  usuarioId: string
+  usuarioNombre: string
+  abiertoEn: string
+  cerradoEn: string | null
+  efectivoInicial: number
+  efectivoEsperado: number | null
+  efectivoContado: number | null
+  diferencia: number | null
+  notas: string | null
+  estado: 'abierto' | 'cerrado'
+  totalVentas: number
+  totalEfectivo: number
+  cantidadVentas: number
+}
+
+export function obtenerTurnoActual() {
+  return api.get<TurnoCaja | null>('/caja/actual')
+}
+
+export function abrirCaja(efectivoInicial: number) {
+  return api.post<TurnoCaja>('/caja/abrir', { efectivoInicial })
+}
+
+export function cerrarCaja(id: string, efectivoContado: number, notas?: string) {
+  return api.post<TurnoCaja>(`/caja/${id}/cerrar`, { efectivoContado, notas })
+}
+
+export function obtenerTurnos() {
+  return api.get<TurnoCaja[]>('/caja')
+}
+
 export type MetodoPago = 'efectivo' | 'tarjeta' | 'transferencia' | 'nequi' | 'daviplata' | 'mixto'
 
 export interface VentaItem {

@@ -119,11 +119,19 @@ export class VentasRepositoryPg implements VentasRepository {
 
       const pagado = !venta.fiado;
 
+      // Si hay una caja abierta, la venta queda ligada a ese turno para el
+      // arqueo; si no hay ninguna abierta, se registra igual (turno_id null)
+      // en vez de bloquear la venta.
+      const { rows: turnoRows } = await client.query(
+        `SELECT id FROM turnos_caja WHERE estado = 'abierto' LIMIT 1`,
+      );
+      const turnoId = turnoRows[0]?.id ?? null;
+
       const { rows: ventaRows } = await client.query(
         `INSERT INTO ventas
           (fecha, cliente_id, cliente_nombre, descripcion, valor, metodo_pago, registrado_por,
-           pagado, fecha_vencimiento_pago)
-         VALUES (COALESCE($1, current_date), $2, $3, $4, $5, $6, $7, $8, $9)
+           pagado, fecha_vencimiento_pago, turno_id)
+         VALUES (COALESCE($1, current_date), $2, $3, $4, $5, $6, $7, $8, $9, $10)
          RETURNING id, numero, to_char(fecha, 'YYYY-MM-DD') AS fecha, cliente_id, cliente_nombre,
                    descripcion, valor, metodo_pago, origen, pagado,
                    to_char(fecha_vencimiento_pago, 'YYYY-MM-DD') AS fecha_vencimiento_pago`,
@@ -137,6 +145,7 @@ export class VentasRepositoryPg implements VentasRepository {
           venta.registradoPor,
           pagado,
           venta.fechaVencimientoPago ?? null,
+          turnoId,
         ],
       );
       const ventaRow = ventaRows[0];

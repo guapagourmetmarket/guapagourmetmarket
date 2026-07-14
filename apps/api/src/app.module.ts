@@ -12,6 +12,7 @@ import { InventarioModule } from './modules/inventario/inventario.module';
 import { ContabilidadModule } from './modules/contabilidad/contabilidad.module';
 import { ClientesModule } from './modules/clientes/clientes.module';
 import { ReportesModule } from './modules/reportes/reportes.module';
+import { CajaModule } from './modules/caja/caja.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { ReportesModule } from './modules/reportes/reportes.module';
     ContabilidadModule,
     ClientesModule,
     ReportesModule,
+    CajaModule,
   ],
   controllers: [AppController],
   providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }],
