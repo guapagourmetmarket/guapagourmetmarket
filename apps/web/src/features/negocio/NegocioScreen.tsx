@@ -1,12 +1,16 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Check } from 'lucide-react'
+import QRCode from 'qrcode'
+import { Check, Download, QrCode } from 'lucide-react'
 import { AppHeader } from '../../components/AppHeader'
 import { Card } from '../../components/Card'
 import { Button } from '../../components/Button'
 import { Input } from '../../components/Input'
 import { ApiError, actualizarNegocio, obtenerNegocio } from '../../lib/api'
+import { brand } from '../../theme/theme'
 import './negocio.css'
+
+const ENLACE_PUBLICO = `${brand.publicUrl}/enlaces`
 
 interface NegocioScreenProps {
   onCerrarSesion: () => void
@@ -21,6 +25,17 @@ export function NegocioScreen({ onCerrarSesion }: NegocioScreenProps) {
   const [direccion, setDireccion] = useState('')
   const [telefono, setTelefono] = useState('')
   const [guardado, setGuardado] = useState(false)
+  const [qrDataUrl, setQrDataUrl] = useState('')
+
+  useEffect(() => {
+    QRCode.toDataURL(ENLACE_PUBLICO, {
+      width: 480,
+      margin: 2,
+      color: { dark: '#2E332C', light: '#FFFFFF' },
+    })
+      .then(setQrDataUrl)
+      .catch(() => setQrDataUrl(''))
+  }, [])
 
   useEffect(() => {
     if (!negocio) return
@@ -101,6 +116,29 @@ export function NegocioScreen({ onCerrarSesion }: NegocioScreenProps) {
               </p>
             )}
           </form>
+        </Card>
+
+        <Card className="gg-negocio-card">
+          <h1 className="font-display gg-negocio-title">
+            <QrCode size={20} style={{ verticalAlign: 'middle', marginRight: 8 }} />
+            Código QR de contacto
+          </h1>
+          <p className="gg-negocio-subtitulo">
+            Imprímelo y ponlo en el mostrador: al escanearlo, tus clientes ven un menú con el
+            catálogo, WhatsApp, redes sociales y cómo llegar — sin necesitar clave.
+          </p>
+
+          {qrDataUrl && (
+            <div className="gg-negocio-qr">
+              <img src={qrDataUrl} alt="Código QR hacia la página de contacto" width={220} height={220} />
+              <a href={qrDataUrl} download="codigo-qr-guapa-gourmet.png">
+                <Button type="button" variant="secondary">
+                  <Download size={16} />
+                  Descargar código QR
+                </Button>
+              </a>
+            </div>
+          )}
         </Card>
       </main>
     </div>

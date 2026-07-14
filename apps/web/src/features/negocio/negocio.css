@@ -10,6 +10,9 @@
   max-width: 480px;
   width: 100%;
   margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
 .gg-negocio-title {
@@ -44,4 +47,18 @@
   color: var(--c-success);
   font-size: 13px;
   font-weight: 600;
+}
+
+.gg-negocio-qr {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.gg-negocio-qr img {
+  border-radius: var(--radius-md);
+  border: 1px solid var(--c-line);
+  padding: 12px;
+  background: #fff;
 }

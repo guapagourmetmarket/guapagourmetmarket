@@ -1,0 +1,118 @@
+.gg-enlaces-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 16px;
+  background: linear-gradient(180deg, var(--c-sageDeep), var(--c-sageDark));
+}
+
+.gg-enlaces-tarjeta {
+  width: 100%;
+  max-width: 420px;
+  background: var(--c-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-pop);
+  padding: 32px 24px 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.gg-enlaces-logo {
+  border-radius: 50%;
+  box-shadow: var(--shadow-card);
+  margin-bottom: 14px;
+}
+
+.gg-enlaces-nombre {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--c-sageDeep);
+  margin: 0;
+}
+
+.gg-enlaces-autora {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--c-ink);
+  margin: 4px 0 0;
+}
+
+.gg-enlaces-direccion {
+  font-size: 12.5px;
+  color: var(--c-muted);
+  margin: 8px 0 0;
+  max-width: 300px;
+}
+
+.gg-enlaces-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  margin-top: 24px;
+}
+
+.gg-enlaces-boton {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 13px 18px;
+  border-radius: var(--radius-md);
+  background: var(--c-sageSoft);
+  color: var(--c-ink);
+  font-weight: 700;
+  font-size: 14.5px;
+  text-decoration: none;
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+.gg-enlaces-boton:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-card);
+}
+
+.gg-enlaces-boton svg:first-child {
+  flex-shrink: 0;
+  color: #fff;
+  background: var(--c-sageDeep);
+  border-radius: 50%;
+  padding: 7px;
+  width: 34px;
+  height: 34px;
+  box-sizing: border-box;
+}
+
+.gg-enlaces-descarga {
+  margin-left: auto;
+  color: var(--c-muted) !important;
+  background: none !important;
+  padding: 0 !important;
+  width: 16px !important;
+  height: 16px !important;
+}
+
+.gg-enlaces-boton--whatsapp svg:first-child {
+  background: #25d366;
+}
+
+.gg-enlaces-boton--tel svg:first-child {
+  background: var(--c-sageDark);
+}
+
+.gg-enlaces-boton--ig svg:first-child {
+  background: #e1306c;
+}
+
+.gg-enlaces-boton--tt svg:first-child {
+  background: #000000;
+}
+
+.gg-enlaces-boton--mapa svg:first-child {
+  background: var(--c-roseDeep);
+}

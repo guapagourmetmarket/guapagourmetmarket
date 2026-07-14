@@ -10,6 +10,9 @@ export const brand = {
   name: "Guapa Gourmet Market",
   creator: "Paola Rodríguez", // creadora de la marca — mostrar como "by Paola Rodríguez"
 
+  // Dominio público de la app (para armar enlaces absolutos, ej. el del código QR).
+  publicUrl: "https://guapagourmetmarket-web.vercel.app",
+
   // Logo oficial (círculo con fondo transparente). Reemplazable en /public/brand/.
   logo: {
     full: "/brand/logo-guapa.png",     // 256px
@@ -19,7 +22,11 @@ export const brand = {
   contacto: {
     telefono: "317 404 7796",
     telefonoHref: "tel:+573174047796",
+    whatsappHref: "https://wa.me/573174047796",
     direccion: "Calle 1 # 4-09, Barrio Las Villas, Mosquera, Cundinamarca",
+    mapsHref:
+      "https://www.google.com/maps/search/?api=1&query=" +
+      encodeURIComponent("Calle 1 # 4-09, Barrio Las Villas, Mosquera, Cundinamarca"),
     instagram: "@guapa_gourmet",
     instagramHref: "https://instagram.com/guapa_gourmet",
     tiktok: "@guapagourmet",

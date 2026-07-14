@@ -92,8 +92,9 @@ export class ProductosController {
     res.send(buffer);
   }
 
+  // Sin guard: el catálogo está pensado para compartirse con clientes
+  // (por ejemplo, desde el código QR de la página pública /enlaces).
   @Get('catalogo-pdf')
-  @UseGuards(JwtAuthGuard)
   async catalogoPdf(@Res() res: Response) {
     const buffer = await this.generarCatalogoPdfUseCase.ejecutar();
     res.set({
