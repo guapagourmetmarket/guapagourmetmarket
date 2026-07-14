@@ -18,7 +18,7 @@ const SELECT_CLIENTE = `
 
 const SELECT_VENTA = `
   SELECT id, numero, to_char(fecha, 'YYYY-MM-DD') AS fecha, cliente_id, cliente_nombre, descripcion,
-         valor, metodo_pago, origen, pagado,
+         valor, descuento, metodo_pago, origen, pagado,
          to_char(fecha_vencimiento_pago, 'YYYY-MM-DD') AS fecha_vencimiento_pago
   FROM ventas
 `;
@@ -202,6 +202,7 @@ export class ClientesRepositoryPg implements ClientesRepository {
       clienteNombre: r.cliente_nombre ?? null,
       descripcion: r.descripcion ?? null,
       valor: Number(r.valor),
+      descuento: Number(r.descuento ?? 0),
       metodoPago: r.metodo_pago,
       origen: r.origen,
       pagado: r.pagado,

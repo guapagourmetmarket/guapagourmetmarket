@@ -29,7 +29,8 @@ function formatoFecha(fecha: string) {
 
 export function ReciboVenta({ venta, negocio }: ReciboVentaProps) {
   const totalItems = venta.items.reduce((acc, item) => acc + item.subtotal, 0)
-  const valorLibre = venta.valor - totalItems
+  const subtotal = venta.valor + venta.descuento
+  const valorLibre = subtotal - totalItems
   const ivaIncluido = venta.items.reduce(
     (acc, item) => acc + (item.subtotal - item.subtotal / (1 + item.iva / 100)),
     0,
@@ -82,6 +83,18 @@ export function ReciboVenta({ venta, negocio }: ReciboVentaProps) {
 
       <div className="gg-recibo-linea" />
 
+      {venta.descuento > 0 && (
+        <div className="gg-recibo-fila">
+          <span>Subtotal</span>
+          <span>{formatoCOP.format(subtotal)}</span>
+        </div>
+      )}
+      {venta.descuento > 0 && (
+        <div className="gg-recibo-fila">
+          <span>Descuento</span>
+          <span>−{formatoCOP.format(venta.descuento)}</span>
+        </div>
+      )}
       {ivaIncluido > 0 && (
         <div className="gg-recibo-fila">
           <span>IVA incluido (aprox.)</span>

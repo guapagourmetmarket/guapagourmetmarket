@@ -19,6 +19,7 @@ import {
   type Venta,
 } from '../../lib/api'
 import { ReciboModal } from './ReciboModal'
+import { useDescuento } from './descuento'
 import './ventas.css'
 
 interface VentaManualScreenProps {
@@ -114,7 +115,8 @@ export function VentaManualScreen({ onCerrarSesion }: VentaManualScreenProps) {
 
   const { inputRef, handleKeyDown, enfocar } = useEscaneoCodigoBarras(manejarEscaneo)
 
-  const totalGeneral = carrito.total + (Number(valorLibre) || 0)
+  const subtotal = carrito.total + (Number(valorLibre) || 0)
+  const descuento = useDescuento(subtotal)
 
   const mutacion = useMutation({
     mutationFn: registrarVenta,
@@ -130,6 +132,7 @@ export function VentaManualScreen({ onCerrarSesion }: VentaManualScreenProps) {
       setFiado(false)
       setFechaVencimientoPago('')
       setFecha(hoy())
+      descuento.reiniciar()
       setReciboVenta(ventaCreada)
       enfocar()
     },
@@ -149,7 +152,7 @@ export function VentaManualScreen({ onCerrarSesion }: VentaManualScreenProps) {
     e.preventDefault()
     setError('')
 
-    if (totalGeneral <= 0) {
+    if (subtotal <= 0) {
       setError('Agrega al menos un producto (escaneando o buscando) o ingresa un valor.')
       return
     }
@@ -160,6 +163,7 @@ export function VentaManualScreen({ onCerrarSesion }: VentaManualScreenProps) {
       clienteNombre: cliente.trim() || undefined,
       descripcion: descripcionLibre.trim() || undefined,
       valorLibre: Number(valorLibre) || undefined,
+      descuento: descuento.monto || undefined,
       metodoPago,
       fiado: clienteSeleccionado ? fiado : undefined,
       fechaVencimientoPago: clienteSeleccionado && fiado ? fechaVencimientoPago || undefined : undefined,
@@ -351,9 +355,46 @@ export function VentaManualScreen({ onCerrarSesion }: VentaManualScreenProps) {
                 </select>
               </div>
 
+              <div className="gg-field">
+                <label htmlFor="descuento-venta">Descuento (opcional)</label>
+                <div className="gg-venta-descuento">
+                  <input
+                    id="descuento-venta"
+                    className="gg-input"
+                    type="number"
+                    min="0"
+                    value={descuento.entrada}
+                    onChange={(e) => descuento.setEntrada(e.target.value)}
+                    placeholder="0"
+                  />
+                  <select
+                    className="gg-input"
+                    value={descuento.tipo}
+                    onChange={(e) => descuento.setTipo(e.target.value as 'porcentaje' | 'valor')}
+                    aria-label="Tipo de descuento"
+                  >
+                    <option value="porcentaje">%</option>
+                    <option value="valor">$</option>
+                  </select>
+                </div>
+              </div>
+
+              {descuento.monto > 0 && (
+                <div className="gg-venta-subtotal">
+                  <span>Subtotal</span>
+                  <span>{formatoCOP.format(subtotal)}</span>
+                </div>
+              )}
+              {descuento.monto > 0 && (
+                <div className="gg-venta-subtotal">
+                  <span>Descuento</span>
+                  <span>−{formatoCOP.format(descuento.monto)}</span>
+                </div>
+              )}
+
               <div className="gg-venta-total">
                 <span>Total</span>
-                <span>{formatoCOP.format(totalGeneral)}</span>
+                <span>{formatoCOP.format(descuento.total)}</span>
               </div>
 
               <Button type="submit" size="lg" disabled={mutacion.isPending}>

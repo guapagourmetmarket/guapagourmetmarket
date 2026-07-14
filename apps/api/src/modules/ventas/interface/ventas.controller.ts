@@ -43,6 +43,7 @@ export class VentasController {
       clienteNombre: dto.clienteNombre,
       descripcion: dto.descripcion,
       valorLibre: dto.valorLibre,
+      descuento: dto.descuento,
       metodoPago: dto.metodoPago,
       fiado: dto.fiado,
       fechaVencimientoPago: dto.fechaVencimientoPago,

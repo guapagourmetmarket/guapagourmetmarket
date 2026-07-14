@@ -6,6 +6,7 @@ import { Button } from '../../components/Button'
 import { Input } from '../../components/Input'
 import { useCarrito } from '../../lib/carrito'
 import { ApiError, obtenerClientes, registrarVenta, type MetodoPago, type Venta } from '../../lib/api'
+import { useDescuento } from './descuento'
 import './ventas.css'
 
 interface CobrarModalProps {
@@ -35,6 +36,7 @@ export function CobrarModal({ onClose, onVentaRegistrada }: CobrarModalProps) {
   const [metodoPago, setMetodoPago] = useState<MetodoPago>('efectivo')
   const [fiado, setFiado] = useState(false)
   const [fechaVencimientoPago, setFechaVencimientoPago] = useState('')
+  const descuento = useDescuento(carrito.total)
 
   const { data: clientes } = useQuery({ queryKey: ['clientes', false], queryFn: () => obtenerClientes(false) })
 
@@ -50,6 +52,7 @@ export function CobrarModal({ onClose, onVentaRegistrada }: CobrarModalProps) {
       queryClient.invalidateQueries({ queryKey: ['productos'] })
       queryClient.invalidateQueries({ queryKey: ['clientes'] })
       carrito.vaciar()
+      descuento.reiniciar()
       onVentaRegistrada(venta)
     },
   })
@@ -60,6 +63,7 @@ export function CobrarModal({ onClose, onVentaRegistrada }: CobrarModalProps) {
     mutacion.mutate({
       clienteId: clienteSeleccionado?.id,
       clienteNombre: cliente.trim() || undefined,
+      descuento: descuento.monto || undefined,
       metodoPago,
       fiado: clienteSeleccionado ? fiado : undefined,
       fechaVencimientoPago: clienteSeleccionado && fiado ? fechaVencimientoPago || undefined : undefined,
@@ -164,9 +168,46 @@ export function CobrarModal({ onClose, onVentaRegistrada }: CobrarModalProps) {
           </select>
         </div>
 
+        <div className="gg-field">
+          <label htmlFor="descuento-cobrar">Descuento (opcional)</label>
+          <div className="gg-venta-descuento">
+            <input
+              id="descuento-cobrar"
+              className="gg-input"
+              type="number"
+              min="0"
+              value={descuento.entrada}
+              onChange={(e) => descuento.setEntrada(e.target.value)}
+              placeholder="0"
+            />
+            <select
+              className="gg-input"
+              value={descuento.tipo}
+              onChange={(e) => descuento.setTipo(e.target.value as 'porcentaje' | 'valor')}
+              aria-label="Tipo de descuento"
+            >
+              <option value="porcentaje">%</option>
+              <option value="valor">$</option>
+            </select>
+          </div>
+        </div>
+
+        {descuento.monto > 0 && (
+          <div className="gg-venta-subtotal">
+            <span>Subtotal</span>
+            <span>{formatoCOP.format(carrito.total)}</span>
+          </div>
+        )}
+        {descuento.monto > 0 && (
+          <div className="gg-venta-subtotal">
+            <span>Descuento</span>
+            <span>−{formatoCOP.format(descuento.monto)}</span>
+          </div>
+        )}
+
         <div className="gg-venta-total">
           <span>Total</span>
-          <span>{formatoCOP.format(carrito.total)}</span>
+          <span>{formatoCOP.format(descuento.total)}</span>
         </div>
 
         <Button type="submit" size="lg" disabled={mutacion.isPending || carrito.lineas.length === 0}>

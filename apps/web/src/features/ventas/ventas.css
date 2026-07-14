@@ -250,6 +250,20 @@
   padding: 4px;
 }
 
+.gg-venta-descuento {
+  display: grid;
+  grid-template-columns: 1fr 72px;
+  gap: 8px;
+}
+
+.gg-venta-subtotal {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 13px;
+  color: var(--c-muted);
+}
+
 .gg-venta-total {
   display: flex;
   justify-content: space-between;

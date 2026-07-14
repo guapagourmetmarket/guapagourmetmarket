@@ -57,6 +57,11 @@ export class RegistrarVentaDto {
   @Min(0)
   valorLibre?: number;
 
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  descuento?: number;
+
   @IsIn(METODOS_PAGO)
   metodoPago!: MetodoPago;
 

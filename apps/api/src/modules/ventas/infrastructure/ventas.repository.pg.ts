@@ -8,7 +8,7 @@ const PUNTOS_POR_PESO = 1000;
 
 const SELECT_VENTA = `
   SELECT id, numero, to_char(fecha, 'YYYY-MM-DD') AS fecha, cliente_id, cliente_nombre, descripcion,
-         valor, metodo_pago, origen, pagado,
+         valor, descuento, metodo_pago, origen, pagado,
          to_char(fecha_vencimiento_pago, 'YYYY-MM-DD') AS fecha_vencimiento_pago
   FROM ventas
 `;
@@ -111,11 +111,17 @@ export class VentasRepositoryPg implements VentasRepository {
       }
 
       const totalItems = itemsConDatos.reduce((acc, i) => acc + i.subtotal, 0);
-      const valorTotal = totalItems + (venta.valorLibre ?? 0);
+      const subtotal = totalItems + (venta.valorLibre ?? 0);
 
-      if (valorTotal <= 0) {
+      if (subtotal <= 0) {
         throw new BadRequestException('La venta debe tener al menos un producto o un valor.');
       }
+
+      const descuento = venta.descuento ?? 0;
+      if (descuento > subtotal) {
+        throw new BadRequestException('El descuento no puede ser mayor que el total de la venta.');
+      }
+      const valorTotal = subtotal - descuento;
 
       const pagado = !venta.fiado;
 
@@ -129,11 +135,11 @@ export class VentasRepositoryPg implements VentasRepository {
 
       const { rows: ventaRows } = await client.query(
         `INSERT INTO ventas
-          (fecha, cliente_id, cliente_nombre, descripcion, valor, metodo_pago, registrado_por,
+          (fecha, cliente_id, cliente_nombre, descripcion, valor, descuento, metodo_pago, registrado_por,
            pagado, fecha_vencimiento_pago, turno_id)
-         VALUES (COALESCE($1, current_date), $2, $3, $4, $5, $6, $7, $8, $9, $10)
+         VALUES (COALESCE($1, current_date), $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
          RETURNING id, numero, to_char(fecha, 'YYYY-MM-DD') AS fecha, cliente_id, cliente_nombre,
-                   descripcion, valor, metodo_pago, origen, pagado,
+                   descripcion, valor, descuento, metodo_pago, origen, pagado,
                    to_char(fecha_vencimiento_pago, 'YYYY-MM-DD') AS fecha_vencimiento_pago`,
         [
           venta.fecha ?? null,
@@ -141,6 +147,7 @@ export class VentasRepositoryPg implements VentasRepository {
           clienteNombre,
           venta.descripcion ?? null,
           valorTotal,
+          descuento,
           venta.metodoPago,
           venta.registradoPor,
           pagado,
@@ -341,6 +348,7 @@ export class VentasRepositoryPg implements VentasRepository {
       clienteNombre: (row.cliente_nombre as string) ?? null,
       descripcion: (row.descripcion as string) ?? null,
       valor: Number(row.valor),
+      descuento: Number(row.descuento ?? 0),
       metodoPago: row.metodo_pago as Venta['metodoPago'],
       origen: row.origen as Venta['origen'],
       pagado: row.pagado as boolean,

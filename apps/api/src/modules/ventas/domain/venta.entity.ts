@@ -18,6 +18,7 @@ export interface Venta {
   clienteNombre: string | null;
   descripcion: string | null;
   valor: number;
+  descuento: number;
   metodoPago: MetodoPago;
   origen: 'manual' | 'pos';
   pagado: boolean;
@@ -36,6 +37,7 @@ export interface NuevaVenta {
   clienteNombre?: string;
   descripcion?: string;
   valorLibre?: number;
+  descuento?: number;
   metodoPago: MetodoPago;
   fiado?: boolean;
   fechaVencimientoPago?: string;
