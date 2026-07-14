@@ -47,6 +47,58 @@
   white-space: nowrap;
 }
 
+/* Datos de contacto, debajo de "by Paola Rodríguez". */
+.gg-header-contacto {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px 14px;
+  margin-top: 6px;
+}
+
+.gg-header-contacto-direccion {
+  font-size: 10.5px;
+  color: var(--c-muted);
+}
+
+.gg-header-contacto-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--c-ink);
+  text-decoration: none;
+}
+
+.gg-header-contacto-item:hover {
+  color: var(--c-sageDeep);
+}
+
+.gg-header-insignia {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.gg-header-insignia--tel {
+  background: var(--c-sageDark);
+}
+
+.gg-header-insignia--ig {
+  background: #e1306c;
+}
+
+.gg-header-insignia--tt {
+  background: #000000;
+}
+
 /* Fila inferior: navegación, más discreta que la marca. */
 .gg-header-fila-nav {
   display: flex;

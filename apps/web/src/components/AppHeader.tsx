@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { NavLink } from 'react-router-dom'
-import { LogOut, Menu, UserCircle, X } from 'lucide-react'
+import { LogOut, Menu, Phone, UserCircle, X } from 'lucide-react'
 import { Button } from './Button'
 import { MiCuentaModal } from './MiCuentaModal'
+import { InstagramIcon, TikTokIcon } from './SocialIcons'
 import { brand } from '../theme/theme'
 import './app-header.css'
 
@@ -38,6 +39,33 @@ export function AppHeader({ onCerrarSesion }: AppHeaderProps) {
           <span className="font-display gg-header-marca-nombre">{brand.name}</span>
         </div>
         <span className="gg-header-marca-autora">by {brand.creator}</span>
+
+        <div className="gg-header-contacto">
+          <span className="gg-header-contacto-direccion">{brand.contacto.direccion}</span>
+          <a className="gg-header-contacto-item" href={brand.contacto.telefonoHref}>
+            <span className="gg-header-insignia gg-header-insignia--tel">
+              <Phone size={10} />
+            </span>
+            {brand.contacto.telefono}
+          </a>
+          <a
+            className="gg-header-contacto-item"
+            href={brand.contacto.instagramHref}
+            target="_blank"
+            rel="noreferrer"
+          >
+            <span className="gg-header-insignia gg-header-insignia--ig">
+              <InstagramIcon size={10} />
+            </span>
+            {brand.contacto.instagram}
+          </a>
+          <a className="gg-header-contacto-item" href={brand.contacto.tiktokHref} target="_blank" rel="noreferrer">
+            <span className="gg-header-insignia gg-header-insignia--tt">
+              <TikTokIcon size={10} />
+            </span>
+            {brand.contacto.tiktok}
+          </a>
+        </div>
       </div>
 
       <div className="gg-header-fila-nav">

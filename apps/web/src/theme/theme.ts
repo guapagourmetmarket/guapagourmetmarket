@@ -16,6 +16,16 @@ export const brand = {
     hi:   "/brand/logo-guapa@2x.png",  // 512px (retina / impresión)
   },
 
+  contacto: {
+    telefono: "317 404 7796",
+    telefonoHref: "tel:+573174047796",
+    direccion: "Calle 1 # 4-09, Barrio Las Villas, Mosquera, Cundinamarca",
+    instagram: "@guapa_gourmet",
+    instagramHref: "https://instagram.com/guapa_gourmet",
+    tiktok: "@guapagourmet",
+    tiktokHref: "https://www.tiktok.com/@guapagourmet",
+  },
+
   colors: {
     // Marca (del logo) — un punto más vivos que el pastel original, a pedido
     // de Paola ("se veía muy pálido"), sin llegar a colores saturados.
