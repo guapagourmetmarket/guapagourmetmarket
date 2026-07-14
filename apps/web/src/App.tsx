@@ -14,6 +14,7 @@ import { ClientesScreen } from './features/clientes/ClientesScreen'
 import { EnlacesScreen } from './features/enlaces/EnlacesScreen'
 import { TiendaScreen } from './features/tienda/TiendaScreen'
 import { CajaScreen } from './features/caja/CajaScreen'
+import { PosTactilScreen } from './features/pos-tactil/PosTactilScreen'
 import {
   guardarUsuarioSesion,
   obtenerSesionGuardada,
@@ -96,6 +97,16 @@ function App() {
         path="/caja"
         element={
           autenticado ? <CajaScreen onCerrarSesion={cerrarSesion} /> : <Navigate to="/login" replace />
+        }
+      />
+      <Route
+        path="/pos-tactil"
+        element={
+          autenticado ? (
+            <PosTactilScreen onCerrarSesion={cerrarSesion} />
+          ) : (
+            <Navigate to="/login" replace />
+          )
         }
       />
       <Route

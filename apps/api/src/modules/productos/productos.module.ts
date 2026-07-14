@@ -9,6 +9,7 @@ import { CrearProductoUseCase } from './application/crear-producto.use-case';
 import { ObtenerProductoUseCase } from './application/obtener-producto.use-case';
 import { ActualizarProductoUseCase } from './application/actualizar-producto.use-case';
 import { CambiarEstadoProductoUseCase } from './application/cambiar-estado-producto.use-case';
+import { CambiarFavoritoProductoUseCase } from './application/cambiar-favorito-producto.use-case';
 import { AgregarImagenProductoUseCase } from './application/agregar-imagen-producto.use-case';
 import { MarcarImagenPrincipalUseCase } from './application/marcar-imagen-principal.use-case';
 import { EliminarImagenProductoUseCase } from './application/eliminar-imagen-producto.use-case';
@@ -43,6 +44,7 @@ import { MARCAS_REPOSITORY } from './domain/marcas.repository';
     ObtenerProductoUseCase,
     ActualizarProductoUseCase,
     CambiarEstadoProductoUseCase,
+    CambiarFavoritoProductoUseCase,
     AgregarImagenProductoUseCase,
     MarcarImagenPrincipalUseCase,
     EliminarImagenProductoUseCase,

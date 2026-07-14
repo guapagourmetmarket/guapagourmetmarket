@@ -174,6 +174,17 @@ export class ProductosRepositoryPg implements ProductosRepository {
     return this.obtenerPorId(id);
   }
 
+  async cambiarFavorito(id: string, favoritoPos: boolean): Promise<Producto> {
+    const { rows } = await this.pool.query(
+      `UPDATE productos SET favorito_pos = $2, updated_at = now() WHERE id = $1 RETURNING id`,
+      [id, favoritoPos],
+    );
+    if (rows.length === 0) {
+      throw new NotFoundException('Producto no encontrado.');
+    }
+    return this.obtenerPorId(id);
+  }
+
   async agregarImagen(id: string, url: string): Promise<Producto> {
     const { rows: existentes } = await this.pool.query(
       `SELECT count(*)::int AS n, coalesce(max(orden), -1) AS max_orden

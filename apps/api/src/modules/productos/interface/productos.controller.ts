@@ -25,6 +25,7 @@ import { CrearProductoUseCase } from '../application/crear-producto.use-case';
 import { ObtenerProductoUseCase } from '../application/obtener-producto.use-case';
 import { ActualizarProductoUseCase } from '../application/actualizar-producto.use-case';
 import { CambiarEstadoProductoUseCase } from '../application/cambiar-estado-producto.use-case';
+import { CambiarFavoritoProductoUseCase } from '../application/cambiar-favorito-producto.use-case';
 import { AgregarImagenProductoUseCase } from '../application/agregar-imagen-producto.use-case';
 import { MarcarImagenPrincipalUseCase } from '../application/marcar-imagen-principal.use-case';
 import { EliminarImagenProductoUseCase } from '../application/eliminar-imagen-producto.use-case';
@@ -37,6 +38,7 @@ import { ImportarProductosUseCase } from '../application/importar-productos.use-
 import { CrearProductoDto } from './dto/crear-producto.dto';
 import { ActualizarProductoDto } from './dto/actualizar-producto.dto';
 import { CambiarEstadoDto } from './dto/cambiar-estado.dto';
+import { CambiarFavoritoDto } from './dto/cambiar-favorito.dto';
 
 const XLSX_MIME = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
 
@@ -49,6 +51,7 @@ export class ProductosController {
     private readonly obtenerProductoUseCase: ObtenerProductoUseCase,
     private readonly actualizarProductoUseCase: ActualizarProductoUseCase,
     private readonly cambiarEstadoProductoUseCase: CambiarEstadoProductoUseCase,
+    private readonly cambiarFavoritoProductoUseCase: CambiarFavoritoProductoUseCase,
     private readonly agregarImagenProductoUseCase: AgregarImagenProductoUseCase,
     private readonly marcarImagenPrincipalUseCase: MarcarImagenPrincipalUseCase,
     private readonly eliminarImagenProductoUseCase: EliminarImagenProductoUseCase,
@@ -173,6 +176,12 @@ export class ProductosController {
   @UseGuards(JwtAuthGuard)
   cambiarEstado(@Param('id') id: string, @Body() dto: CambiarEstadoDto) {
     return this.cambiarEstadoProductoUseCase.ejecutar(id, dto.activo);
+  }
+
+  @Patch(':id/favorito')
+  @UseGuards(JwtAuthGuard)
+  cambiarFavorito(@Param('id') id: string, @Body() dto: CambiarFavoritoDto) {
+    return this.cambiarFavoritoProductoUseCase.ejecutar(id, dto.favoritoPos);
   }
 
   @Post(':id/duplicar')

@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
-import { Copy, Download, FileText, Leaf, Pencil, Plus, Power, Settings, ShoppingCart, Search, Trash2, Upload } from 'lucide-react'
+import { Copy, Download, FileText, Leaf, Pencil, Plus, Power, Settings, ShoppingCart, Search, Star, Trash2, Upload } from 'lucide-react'
 import { Card } from '../../components/Card'
 import { Button } from '../../components/Button'
 import { AppHeader } from '../../components/AppHeader'
@@ -9,6 +9,7 @@ import { useCarrito } from '../../lib/carrito'
 import {
   ApiError,
   cambiarEstadoProducto,
+  cambiarFavoritoProducto,
   descargarCatalogoPdf,
   duplicarProducto,
   eliminarProducto,
@@ -69,6 +70,12 @@ export function ProductosScreen({ onCerrarSesion }: ProductosScreenProps) {
       // dónde volver a activarlo.
       if (variables.activo === false) setMostrarDesactivados(true)
     },
+  })
+
+  const mutacionFavorito = useMutation({
+    mutationFn: ({ id, favoritoPos }: { id: string; favoritoPos: boolean }) =>
+      cambiarFavoritoProducto(id, favoritoPos),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['productos'] }),
   })
 
   const mutacionDuplicar = useMutation({
@@ -311,6 +318,24 @@ export function ProductosScreen({ onCerrarSesion }: ProductosScreenProps) {
                     onClick={() => mutacionDuplicar.mutate(producto.id)}
                   >
                     <Copy size={16} />
+                  </button>
+                  <button
+                    type="button"
+                    className={
+                      'gg-producto-accion' +
+                      (producto.favoritoPos ? ' gg-producto-accion--favorito' : '')
+                    }
+                    title={
+                      producto.favoritoPos
+                        ? 'Quitar de favoritos del modo táctil'
+                        : 'Marcar como favorito del modo táctil (aparece grande, con foto, para vender tocando)'
+                    }
+                    disabled={mutacionFavorito.isPending}
+                    onClick={() =>
+                      mutacionFavorito.mutate({ id: producto.id, favoritoPos: !producto.favoritoPos })
+                    }
+                  >
+                    <Star size={16} fill={producto.favoritoPos ? 'currentColor' : 'none'} />
                   </button>
                   <button
                     type="button"

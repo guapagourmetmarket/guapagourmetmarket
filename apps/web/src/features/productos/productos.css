@@ -280,6 +280,10 @@
   color: var(--c-surface);
 }
 
+.gg-producto-accion--favorito {
+  color: var(--c-warning);
+}
+
 .gg-carrito-flotante {
   position: fixed;
   bottom: 20px;

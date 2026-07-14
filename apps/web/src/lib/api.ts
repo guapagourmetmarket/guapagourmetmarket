@@ -202,6 +202,10 @@ export function cambiarEstadoProducto(id: string, activo: boolean) {
   return api.patch<Producto>(`/productos/${id}/estado`, { activo })
 }
 
+export function cambiarFavoritoProducto(id: string, favoritoPos: boolean) {
+  return api.patch<Producto>(`/productos/${id}/favorito`, { favoritoPos })
+}
+
 export function duplicarProducto(id: string) {
   return api.post<Producto>(`/productos/${id}/duplicar`, {})
 }
