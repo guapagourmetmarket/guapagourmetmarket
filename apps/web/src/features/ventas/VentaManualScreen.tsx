@@ -1,5 +1,6 @@
 import { useMemo, useState, type FormEvent } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useLiveQuery } from 'dexie-react-hooks'
 import { Ban, Loader2, Minus, Plus, ReceiptText, Search, Sparkles, Trash2 } from 'lucide-react'
 import { AppHeader } from '../../components/AppHeader'
 import { Card } from '../../components/Card'
@@ -7,6 +8,7 @@ import { Button } from '../../components/Button'
 import { Input } from '../../components/Input'
 import { useEscaneoCodigoBarras } from '../../lib/useEscaneoCodigoBarras'
 import { useCarrito } from '../../lib/carrito'
+import { db } from '../../lib/db'
 import {
   ApiError,
   anularVenta,
@@ -14,10 +16,10 @@ import {
   obtenerClientes,
   obtenerNegocio,
   obtenerVentas,
-  registrarVenta,
   type MetodoPago,
   type Venta,
 } from '../../lib/api'
+import { registrarVentaConSync, sincronizarOutbox } from '../../lib/sync'
 import { ReciboModal } from './ReciboModal'
 import { useDescuento } from './descuento'
 import './ventas.css'
@@ -66,6 +68,7 @@ export function VentaManualScreen({ onCerrarSesion }: VentaManualScreenProps) {
     isError: errorVentas,
   } = useQuery({ queryKey: ['ventas'], queryFn: obtenerVentas })
   const { data: clientes } = useQuery({ queryKey: ['clientes', false], queryFn: () => obtenerClientes(false) })
+  const pendientesOutbox = useLiveQuery(() => db.outboxVentas.orderBy('creadoEn').reverse().toArray(), [], [])
 
   const [termino, setTermino] = useState('')
   const [fecha, setFecha] = useState(hoy())
@@ -119,7 +122,7 @@ export function VentaManualScreen({ onCerrarSesion }: VentaManualScreenProps) {
   const descuento = useDescuento(subtotal)
 
   const mutacion = useMutation({
-    mutationFn: registrarVenta,
+    mutationFn: registrarVentaConSync,
     onSuccess: (ventaCreada) => {
       queryClient.invalidateQueries({ queryKey: ['ventas'] })
       queryClient.invalidateQueries({ queryKey: ['productos'] })
@@ -420,6 +423,39 @@ export function VentaManualScreen({ onCerrarSesion }: VentaManualScreenProps) {
           </Card>
 
           <Card className="gg-venta-historial-card">
+            {pendientesOutbox && pendientesOutbox.length > 0 && (
+              <div className="gg-venta-pendientes">
+                <div className="gg-venta-pendientes-header">
+                  <span>
+                    {pendientesOutbox.length} venta{pendientesOutbox.length === 1 ? '' : 's'} sin
+                    sincronizar
+                  </span>
+                  <button type="button" onClick={() => sincronizarOutbox()}>
+                    Reintentar ahora
+                  </button>
+                </div>
+                <ul className="gg-venta-lista">
+                  {pendientesOutbox.map((p) => (
+                    <li key={p.id} className="gg-venta-item">
+                      <ReceiptText size={18} className="gg-venta-item-icono" />
+                      <div className="gg-venta-item-info">
+                        <div className="gg-venta-item-linea1">
+                          <span className="gg-venta-item-descripcion">
+                            {p.payload.items.length} producto{p.payload.items.length === 1 ? '' : 's'}
+                            {p.payload.descripcion ? ` · ${p.payload.descripcion}` : ''}
+                          </span>
+                        </div>
+                        <div className="gg-venta-item-linea2">
+                          <span>{new Date(p.creadoEn).toLocaleString('es-CO')}</span>
+                          {p.error && <span className="gg-cliente-badge-fiado">{p.error}</span>}
+                        </div>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
             <h2 className="gg-ventas-subtitulo-h2">Historial de ventas</h2>
 
             {cargandoVentas && <p className="gg-ventas-estado">Cargando historial…</p>}

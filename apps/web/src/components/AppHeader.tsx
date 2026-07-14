@@ -3,6 +3,7 @@ import { NavLink } from 'react-router-dom'
 import { LogOut, Menu, Phone, UserCircle, X } from 'lucide-react'
 import { Button } from './Button'
 import { MiCuentaModal } from './MiCuentaModal'
+import { EstadoConexion } from './EstadoConexion'
 import { InstagramIcon, TikTokIcon } from './SocialIcons'
 import { brand } from '../theme/theme'
 import './app-header.css'
@@ -35,6 +36,7 @@ export function AppHeader({ onCerrarSesion }: AppHeaderProps) {
 
   return (
     <header className="gg-header">
+      <EstadoConexion />
       <div className="gg-header-marca">
         <div className="gg-header-marca-fila">
           <img src={brand.logo.hi} alt={brand.name} width={96} height={96} />

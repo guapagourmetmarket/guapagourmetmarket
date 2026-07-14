@@ -63,7 +63,10 @@ export function ReciboModal({ venta, negocio, onClose }: ReciboModalProps) {
   const contenidoRef = useRef<HTMLDivElement>(null)
 
   return (
-    <Modal title={`Recibo No. ${venta.numero}`} onClose={onClose}>
+    <Modal
+      title={venta.pendienteSync ? 'Recibo (pendiente de sincronizar)' : `Recibo No. ${venta.numero}`}
+      onClose={onClose}
+    >
       <div ref={contenidoRef}>
         <ReciboVenta venta={venta} negocio={negocio} />
       </div>

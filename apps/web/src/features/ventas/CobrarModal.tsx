@@ -5,7 +5,8 @@ import { Modal } from '../../components/Modal'
 import { Button } from '../../components/Button'
 import { Input } from '../../components/Input'
 import { useCarrito } from '../../lib/carrito'
-import { ApiError, obtenerClientes, registrarVenta, type MetodoPago, type Venta } from '../../lib/api'
+import { ApiError, obtenerClientes, type MetodoPago, type Venta } from '../../lib/api'
+import { registrarVentaConSync } from '../../lib/sync'
 import { useDescuento } from './descuento'
 import './ventas.css'
 
@@ -46,7 +47,7 @@ export function CobrarModal({ onClose, onVentaRegistrada }: CobrarModalProps) {
   )
 
   const mutacion = useMutation({
-    mutationFn: registrarVenta,
+    mutationFn: registrarVentaConSync,
     onSuccess: (venta) => {
       queryClient.invalidateQueries({ queryKey: ['ventas'] })
       queryClient.invalidateQueries({ queryKey: ['productos'] })

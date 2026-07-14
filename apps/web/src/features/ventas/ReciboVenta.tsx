@@ -48,7 +48,7 @@ export function ReciboVenta({ venta, negocio }: ReciboVentaProps) {
       <div className="gg-recibo-linea" />
 
       <div className="gg-recibo-meta">
-        <p>Recibo de venta No. {venta.numero}</p>
+        <p>{venta.pendienteSync ? 'Recibo de venta (pendiente de sincronizar)' : `Recibo de venta No. ${venta.numero}`}</p>
         <p>{formatoFecha(venta.fecha)}</p>
         {venta.clienteNombre && <p>Cliente: {venta.clienteNombre}</p>}
       </div>

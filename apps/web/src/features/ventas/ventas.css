@@ -325,6 +325,36 @@
   font-size: 14px;
 }
 
+.gg-venta-pendientes {
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--c-line);
+}
+
+.gg-venta-pendientes-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--c-danger);
+}
+
+.gg-venta-pendientes-header button {
+  border: none;
+  background: transparent;
+  color: var(--c-sageDeep);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.gg-venta-pendientes-header button:hover {
+  text-decoration: underline;
+}
+
 .gg-venta-lista {
   list-style: none;
   margin: 0;

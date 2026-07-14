@@ -1,4 +1,5 @@
 import type { Categoria, Marca, Producto } from '@guapa/shared'
+import { buscarProductosCache, cachearProductos, obtenerProductosCache } from './db'
 
 // Si no se fija VITE_API_URL, se asume que la API vive en el mismo host desde
 // el que se cargó la página (solo cambia el puerto). Así, entrar por
@@ -9,6 +10,18 @@ const API_URL = import.meta.env.VITE_API_URL ?? `http://${window.location.hostna
 export { API_URL }
 
 export class ApiError extends Error {}
+
+/** Lanzado cuando el `fetch` ni siquiera pudo llegar al servidor (sin internet). */
+export class ApiOfflineError extends Error {
+  constructor() {
+    super('Sin conexión a internet.')
+    this.name = 'ApiOfflineError'
+  }
+}
+
+export function esErrorDeRed(err: unknown): boolean {
+  return err instanceof ApiOfflineError
+}
 
 const CLAVE_TOKEN = 'guapa_token'
 const CLAVE_USUARIO = 'guapa_usuario'
@@ -48,14 +61,19 @@ export function obtenerSesionGuardada(): LoginResponse | null {
 }
 
 async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
-  const response = await fetch(`${API_URL}${path}`, {
-    ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}),
-      ...options.headers,
-    },
-  })
+  let response: Response
+  try {
+    response = await fetch(`${API_URL}${path}`, {
+      ...options,
+      headers: {
+        'Content-Type': 'application/json',
+        ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}),
+        ...options.headers,
+      },
+    })
+  } catch {
+    throw new ApiOfflineError()
+  }
 
   if (!response.ok) {
     const body = await response.json().catch(() => null)
@@ -148,8 +166,17 @@ export function actualizarPerfil(cambios: CambiosPerfil) {
   return api.patch<Perfil>('/auth/perfil', cambios)
 }
 
-export function obtenerProductos(incluirInactivos = false) {
-  return api.get<Producto[]>(`/productos${incluirInactivos ? '?incluirInactivos=true' : ''}`)
+export async function obtenerProductos(incluirInactivos = false) {
+  try {
+    const productos = await api.get<Producto[]>(
+      `/productos${incluirInactivos ? '?incluirInactivos=true' : ''}`,
+    )
+    await cachearProductos(productos)
+    return productos
+  } catch (err) {
+    if (esErrorDeRed(err)) return obtenerProductosCache(incluirInactivos)
+    throw err
+  }
 }
 
 /** Solo los campos seguros para mostrar en la tienda pública (sin login). */
@@ -169,8 +196,13 @@ export function obtenerProductosPublico() {
   return api.get<ProductoPublico[]>('/productos/publico')
 }
 
-export function buscarProductos(q: string) {
-  return api.get<Producto[]>(`/productos/buscar?q=${encodeURIComponent(q)}`)
+export async function buscarProductos(q: string) {
+  try {
+    return await api.get<Producto[]>(`/productos/buscar?q=${encodeURIComponent(q)}`)
+  } catch (err) {
+    if (esErrorDeRed(err)) return buscarProductosCache(q)
+    throw err
+  }
 }
 
 export type NuevoProducto = Omit<
@@ -365,6 +397,8 @@ export interface Venta {
   pagado: boolean
   fechaVencimientoPago: string | null
   items: VentaItem[]
+  /** true solo en ventas armadas localmente mientras no hay internet; el servidor nunca manda este campo. */
+  pendienteSync?: boolean
 }
 
 export interface NuevoVentaItem {
