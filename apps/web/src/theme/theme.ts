@@ -24,9 +24,9 @@ export const brand = {
     telefonoHref: "tel:+573174047796",
     whatsappHref: "https://wa.me/573174047796",
     direccion: "Calle 1 # 4-09, Barrio Las Villas, Mosquera, Cundinamarca",
-    mapsHref:
-      "https://www.google.com/maps/search/?api=1&query=" +
-      encodeURIComponent("Calle 1 # 4-09, Barrio Las Villas, Mosquera, Cundinamarca"),
+    // Enlaces exactos (no una búsqueda por dirección) para que "cómo llegar" lleve al punto preciso.
+    mapsHref: "https://maps.app.goo.gl/NTy584eTYFm1vBx7A",
+    wazeHref: "https://waze.com/ul/hd2g4yb99e",
     instagram: "@guapa_gourmet",
     instagramHref: "https://instagram.com/guapa_gourmet",
     tiktok: "@guapagourmet",

@@ -1,5 +1,5 @@
 import { Download, FileText, MapPin, Phone } from 'lucide-react'
-import { InstagramIcon, TikTokIcon, WhatsAppIcon } from '../../components/SocialIcons'
+import { InstagramIcon, TikTokIcon, WazeIcon, WhatsAppIcon } from '../../components/SocialIcons'
 import { brand } from '../../theme/theme'
 import { API_URL } from '../../lib/api'
 import './enlaces.css'
@@ -38,8 +38,14 @@ const ENLACES = [
   {
     href: brand.contacto.mapsHref,
     icono: <MapPin size={20} />,
-    etiqueta: 'Cómo llegar',
+    etiqueta: 'Cómo llegar (Google Maps)',
     clase: 'gg-enlaces-boton--mapa',
+  },
+  {
+    href: brand.contacto.wazeHref,
+    icono: <WazeIcon size={20} />,
+    etiqueta: 'Cómo llegar (Waze)',
+    clase: 'gg-enlaces-boton--waze',
   },
 ]
 

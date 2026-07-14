@@ -116,3 +116,7 @@
 .gg-enlaces-boton--mapa svg:first-child {
   background: var(--c-roseDeep);
 }
+
+.gg-enlaces-boton--waze svg:first-child {
+  background: #33ccff;
+}
