@@ -1,15 +1,25 @@
-import { Download, FileText, MapPin, Phone } from 'lucide-react'
+import { Download, FileText, MapPin, Phone, Star } from 'lucide-react'
 import { InstagramIcon, TikTokIcon, WazeIcon, WhatsAppIcon } from '../../components/SocialIcons'
 import { brand } from '../../theme/theme'
 import { API_URL } from '../../lib/api'
 import './enlaces.css'
 
+function CincoEstrellas() {
+  return (
+    <span className="gg-enlaces-estrellas">
+      {Array.from({ length: 5 }).map((_, i) => (
+        <Star key={i} size={9} fill="currentColor" strokeWidth={0} />
+      ))}
+    </span>
+  )
+}
+
 const ENLACES = [
   {
-    href: `${API_URL}/productos/catalogo-pdf`,
-    icono: <FileText size={20} />,
-    etiqueta: 'Ver catálogo de productos',
-    clase: 'gg-enlaces-boton--catalogo',
+    href: brand.contacto.resenaHref,
+    icono: <CincoEstrellas />,
+    etiqueta: 'Déjanos una reseña',
+    clase: 'gg-enlaces-boton--resena',
   },
   {
     href: brand.contacto.whatsappHref,
@@ -46,6 +56,12 @@ const ENLACES = [
     icono: <WazeIcon size={20} />,
     etiqueta: 'Cómo llegar (Waze)',
     clase: 'gg-enlaces-boton--waze',
+  },
+  {
+    href: `${API_URL}/productos/catalogo-pdf`,
+    icono: <FileText size={20} />,
+    etiqueta: 'Ver catálogo de productos',
+    clase: 'gg-enlaces-boton--catalogo',
   },
 ]
 

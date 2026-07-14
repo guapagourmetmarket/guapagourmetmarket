@@ -77,7 +77,7 @@
   box-shadow: var(--shadow-card);
 }
 
-.gg-enlaces-boton svg:first-child {
+.gg-enlaces-boton > svg:first-child {
   flex-shrink: 0;
   color: #fff;
   background: var(--c-sageDeep);
@@ -119,4 +119,22 @@
 
 .gg-enlaces-boton--waze svg:first-child {
   background: #33ccff;
+}
+
+.gg-enlaces-boton--resena {
+  background: #fbf1da;
+}
+
+.gg-enlaces-estrellas {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5px;
+  color: #fff;
+  background: var(--c-warning);
+  border-radius: 10px;
+  width: 58px;
+  height: 34px;
+  box-sizing: border-box;
 }
