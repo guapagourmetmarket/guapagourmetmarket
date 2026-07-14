@@ -12,6 +12,7 @@ import { ContabilidadScreen } from './features/contabilidad/ContabilidadScreen'
 import { GastosScreen } from './features/contabilidad/GastosScreen'
 import { ClientesScreen } from './features/clientes/ClientesScreen'
 import { EnlacesScreen } from './features/enlaces/EnlacesScreen'
+import { TiendaScreen } from './features/tienda/TiendaScreen'
 import {
   guardarUsuarioSesion,
   obtenerSesionGuardada,
@@ -49,6 +50,7 @@ function App() {
   return (
     <Routes>
       <Route path="/enlaces" element={<EnlacesScreen />} />
+      <Route path="/tienda" element={<TiendaScreen />} />
       <Route
         path="/login"
         element={

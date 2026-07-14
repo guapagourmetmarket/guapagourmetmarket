@@ -149,6 +149,23 @@ export function obtenerProductos(incluirInactivos = false) {
   return api.get<Producto[]>(`/productos${incluirInactivos ? '?incluirInactivos=true' : ''}`)
 }
 
+/** Solo los campos seguros para mostrar en la tienda pública (sin login). */
+export interface ProductoPublico {
+  id: string
+  nombre: string
+  descripcion: string | null
+  precioVenta: number
+  categoriaNombre: string
+  marcaNombre: string | null
+  unidadMedida: string
+  imagenUrl: string | null
+  disponible: boolean
+}
+
+export function obtenerProductosPublico() {
+  return api.get<ProductoPublico[]>('/productos/publico')
+}
+
 export function buscarProductos(q: string) {
   return api.get<Producto[]>(`/productos/buscar?q=${encodeURIComponent(q)}`)
 }

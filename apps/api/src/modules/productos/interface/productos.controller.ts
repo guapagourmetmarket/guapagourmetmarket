@@ -61,13 +61,34 @@ export class ProductosController {
   ) {}
 
   @Get()
+  @UseGuards(JwtAuthGuard)
   listar(@Query('incluirInactivos') incluirInactivos?: string) {
     return this.listarProductosUseCase.ejecutar(incluirInactivos === 'true');
   }
 
   @Get('buscar')
+  @UseGuards(JwtAuthGuard)
   buscar(@Query('q') q?: string) {
     return this.buscarProductosUseCase.ejecutar(q ?? '');
+  }
+
+  // Sin guard, a propósito: alimenta la tienda pública (/tienda). Solo
+  // expone los campos que un cliente puede ver — nunca precioCompra,
+  // costoPromedio, existencias exactas, stockMinimo ni códigos internos.
+  @Get('publico')
+  async publico() {
+    const productos = await this.listarProductosUseCase.ejecutar(false);
+    return productos.map((p) => ({
+      id: p.id,
+      nombre: p.nombre,
+      descripcion: p.descripcion,
+      precioVenta: p.precioVenta,
+      categoriaNombre: p.categoriaNombre,
+      marcaNombre: p.marcaNombre,
+      unidadMedida: p.unidadMedida,
+      imagenUrl: p.imagenUrl,
+      disponible: p.existencias > 0,
+    }));
   }
 
   @Get('exportar')
