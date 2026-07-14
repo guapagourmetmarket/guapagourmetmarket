@@ -7,13 +7,15 @@ import type { ProductosRepository } from '../domain/productos.repository';
 import type { Producto } from '../domain/producto.entity';
 
 const LOGO_PATH = join(__dirname, '..', '..', '..', '..', 'assets', 'brand', 'logo-guapa.png');
+const ESCUDO_PATH = join(__dirname, '..', '..', '..', '..', 'assets', 'brand', 'escudo-mariano-moreno.png');
+// Proporción real del recorte del escudo (ancho / alto), para dibujarlo sin deformarlo.
+const ESCUDO_RATIO = 211 / 435;
 
 const COLOR_SAGE_DEEP = '#5F7A64';
 const COLOR_SAGE_DARK = '#3C6946';
 const COLOR_SAGE_SOFT = '#EAF0E8';
 const COLOR_ROSE = '#E2C1BC';
 const COLOR_ROSE_DEEP = '#C4948C';
-const COLOR_GOLD = '#D9A13A';
 const COLOR_INK = '#2E332C';
 const COLOR_MUTED = '#8A8F84';
 const COLOR_LINE = '#ECE4D5';
@@ -184,16 +186,15 @@ export class GenerarCatalogoPdfUseCase {
       .fillColor(COLOR_CREAM)
       .text('Chef Paola Rodríguez', MARGEN, 288, { width: anchoUtil, align: 'center' });
 
-    // Escudo diseñado a mano (no es el logo oficial de la escuela, que no
-    // tenemos autorización para reproducir): un sello propio que representa
-    // la credencial sin usar una marca ajena.
-    this.dibujarEscudoGastronomia(doc, centroX, 326, 52, 58);
+    const escudoTopY = 318;
+    const alturaEscudo = this.dibujarEscudoGastronomia(doc, centroX, escudoTopY, 58);
+    const yCaption = escudoTopY + alturaEscudo + 14;
 
     doc
       .font('Helvetica-Oblique')
       .fontSize(10)
       .fillColor(COLOR_CREAM)
-      .text('Egresada de la Escuela de Gastronomía Mariana Moreno', MARGEN, 396, {
+      .text('Egresada de la Escuela de Gastronomía Mariano Moreno', MARGEN, yCaption, {
         width: anchoUtil,
         align: 'center',
       });
@@ -202,19 +203,29 @@ export class GenerarCatalogoPdfUseCase {
       totalProductos === 0
         ? 'Aún no hay productos activos'
         : `${totalProductos} producto${totalProductos === 1 ? '' : 's'} · ${totalCategorias} categoría${totalCategorias === 1 ? '' : 's'}`;
+    const yResumen = yCaption + 22;
     doc
       .font('Helvetica')
       .fontSize(11)
       .fillColor(COLOR_CREAM)
-      .text(resumen, MARGEN, 412, { width: anchoUtil, align: 'center' });
+      .text(resumen, MARGEN, yResumen, { width: anchoUtil, align: 'center' });
 
-    doc.moveTo(centroX - 26, 460).lineTo(centroX + 26, 460).strokeColor(COLOR_ROSE).lineWidth(1.4).stroke();
+    const yDivisor2 = yResumen + 48;
+    doc
+      .moveTo(centroX - 26, yDivisor2)
+      .lineTo(centroX + 26, yDivisor2)
+      .strokeColor(COLOR_ROSE)
+      .lineWidth(1.4)
+      .stroke();
 
     doc
       .font('Helvetica-Oblique')
       .fontSize(13)
       .fillColor(COLOR_CREAM)
-      .text('“Alimentación consciente, sabor auténtico”', MARGEN, 478, { width: anchoUtil, align: 'center' });
+      .text('“Alimentación consciente, sabor auténtico”', MARGEN, yDivisor2 + 18, {
+        width: anchoUtil,
+        align: 'center',
+      });
 
     // Tarjeta de contacto: dirección, teléfono y redes sociales con su ícono.
     const cardY = 570;
@@ -289,37 +300,20 @@ export class GenerarCatalogoPdfUseCase {
       .text(`Generado el ${hoy}`, MARGEN, cardY + cardAlto + 18, { width: anchoUtil, align: 'center' });
   }
 
-  /** Sello propio (no el logo oficial de la escuela) que representa la credencial de chef egresada. */
-  private dibujarEscudoGastronomia(doc: PDFKit.PDFDocument, cx: number, topY: number, ancho: number, alto: number) {
-    const puntaY = topY + alto;
-    doc.save();
-    doc
-      .moveTo(cx - ancho / 2, topY)
-      .lineTo(cx + ancho / 2, topY)
-      .lineTo(cx + ancho / 2, topY + alto * 0.48)
-      .quadraticCurveTo(cx + ancho / 2, topY + alto * 0.82, cx, puntaY)
-      .quadraticCurveTo(cx - ancho / 2, topY + alto * 0.82, cx - ancho / 2, topY + alto * 0.48)
-      .lineTo(cx - ancho / 2, topY)
-      .closePath()
-      .fillColor(COLOR_CREAM)
-      .fill()
-      .lineWidth(1.6)
-      .strokeColor(COLOR_GOLD)
-      .stroke();
+  /** Escudo oficial de la Escuela de Gastronomía Mariano Moreno, en una placa blanca para que resalte sobre el fondo verde. Devuelve el alto total dibujado. */
+  private dibujarEscudoGastronomia(doc: PDFKit.PDFDocument, cx: number, topY: number, alto: number): number {
+    const ancho = alto * ESCUDO_RATIO;
+    const padX = 16;
+    const padY = 12;
+    const cardAncho = ancho + padX * 2;
+    const cardAlto = alto + padY * 2;
+    const cardX = cx - cardAncho / 2;
 
-    // Toque de chef simplificado: banda + tres lóbulos.
-    const bandaAncho = ancho * 0.5;
-    const bandaAlto = alto * 0.14;
-    const bandaX = cx - bandaAncho / 2;
-    const bandaY = topY + alto * 0.5;
-    doc.roundedRect(bandaX, bandaY, bandaAncho, bandaAlto, 2).fillColor(COLOR_SAGE_DEEP).fill();
-
-    const loboloR = ancho * 0.15;
-    doc.circle(cx - bandaAncho * 0.28, bandaY - loboloR * 0.55, loboloR).fillColor(COLOR_SAGE_DEEP).fill();
-    doc.circle(cx, bandaY - loboloR * 0.85, loboloR * 1.1).fillColor(COLOR_SAGE_DEEP).fill();
-    doc.circle(cx + bandaAncho * 0.28, bandaY - loboloR * 0.55, loboloR).fillColor(COLOR_SAGE_DEEP).fill();
-
-    doc.restore();
+    doc.roundedRect(cardX, topY, cardAncho, cardAlto, 10).fillColor('#FFFFFF').fill();
+    if (existsSync(ESCUDO_PATH)) {
+      doc.image(ESCUDO_PATH, cx - ancho / 2, topY + padY, { width: ancho, height: alto });
+    }
+    return cardAlto;
   }
 
   private dibujarIconoInstagram(doc: PDFKit.PDFDocument, x: number, y: number, size: number, color: string) {
