@@ -218,14 +218,23 @@ export class GenerarCatalogoPdfUseCase {
       .lineWidth(1.4)
       .stroke();
 
+    // Lema destacado en una píldora de color, para que resalte sobre el fondo verde.
+    const textoLema = 'TU NUEVO HÁBITO SALUDABLE';
+    doc.font('Helvetica-Bold').fontSize(15);
+    const anchoLema = doc.widthOfString(textoLema);
+    const lemaPaddingX = 22;
+    const lemaAncho = anchoLema + lemaPaddingX * 2;
+    const lemaAlto = 34;
+    const lemaY = yDivisor2 + 18;
     doc
-      .font('Helvetica-Oblique')
-      .fontSize(13)
-      .fillColor(COLOR_CREAM)
-      .text('“Alimentación consciente, sabor auténtico”', MARGEN, yDivisor2 + 18, {
-        width: anchoUtil,
-        align: 'center',
-      });
+      .roundedRect(centroX - lemaAncho / 2, lemaY, lemaAncho, lemaAlto, lemaAlto / 2)
+      .fillColor(COLOR_ROSE_DEEP)
+      .fill();
+    doc
+      .font('Helvetica-Bold')
+      .fontSize(15)
+      .fillColor('#FFFFFF')
+      .text(textoLema, centroX - lemaAncho / 2, lemaY + 10, { width: lemaAncho, align: 'center' });
 
     // Tarjeta de contacto: dirección, teléfono y redes sociales con su ícono.
     const cardY = 570;
