@@ -64,7 +64,10 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   }
 
   if (response.status === 204) return undefined as T
-  return response.json() as Promise<T>
+  // Nest manda cuerpo vacío (no la palabra "null") cuando un controlador
+  // devuelve null, así que response.json() fallaría al intentar parsear "".
+  const texto = await response.text()
+  return (texto ? JSON.parse(texto) : null) as T
 }
 
 export const api = {
