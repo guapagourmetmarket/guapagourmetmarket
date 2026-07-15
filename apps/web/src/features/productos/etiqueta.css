@@ -19,3 +19,23 @@
   gap: 12px;
   margin-top: 16px;
 }
+
+.gg-etiqueta-asignar {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+  margin-bottom: 16px;
+  background: var(--c-sageSoft);
+  border-radius: var(--radius-md);
+}
+
+.gg-etiqueta-asignar .gg-etiqueta-nota {
+  margin: 0;
+}
+
+.gg-etiqueta-asignar-acciones {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}

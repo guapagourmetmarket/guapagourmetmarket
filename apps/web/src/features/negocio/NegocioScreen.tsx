@@ -1,7 +1,7 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import QRCode from 'qrcode'
-import { Check, Download, QrCode } from 'lucide-react'
+import { Check, Download, ExternalLink, FileText, QrCode } from 'lucide-react'
 import { AppHeader } from '../../components/AppHeader'
 import { Card } from '../../components/Card'
 import { Button } from '../../components/Button'
@@ -139,6 +139,27 @@ export function NegocioScreen({ onCerrarSesion }: NegocioScreenProps) {
               </a>
             </div>
           )}
+        </Card>
+
+        <Card className="gg-negocio-card">
+          <h1 className="font-display gg-negocio-title">
+            <FileText size={20} style={{ verticalAlign: 'middle', marginRight: 8 }} />
+            Facturación electrónica DIAN
+          </h1>
+          <p className="gg-negocio-subtitulo">
+            Este sistema no está conectado con la DIAN. Cuando un cliente necesite factura
+            electrónica, genérala por fuera de aquí con tu cuenta gratuita de la DIAN.
+          </p>
+          <a
+            href="https://www.dian.gov.co/impuestos/factura-electronica/facturacion-gratuita/Paginas/default.aspx"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <Button type="button" variant="secondary">
+              <ExternalLink size={16} />
+              Abrir facturación gratuita DIAN
+            </Button>
+          </a>
         </Card>
       </main>
     </div>

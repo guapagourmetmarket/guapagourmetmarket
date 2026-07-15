@@ -1,9 +1,11 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, type FormEvent } from 'react'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import JsBarcode from 'jsbarcode'
 import type { Producto } from '@guapa/shared'
 import { Modal } from '../../components/Modal'
 import { Button } from '../../components/Button'
 import { Input } from '../../components/Input'
+import { ApiError, actualizarProducto } from '../../lib/api'
 import './etiqueta.css'
 
 interface EtiquetaModalProps {
@@ -62,10 +64,39 @@ function imprimirEtiquetas(svgHtml: string, nombre: string, precio: string, cant
   }
 }
 
+/** Dígito de control real de EAN-13, para que el código generado sea válido. */
+function digitoControlEAN13(cuerpo12: string): string {
+  const suma = cuerpo12
+    .split('')
+    .reduce((acc, d, i) => acc + Number(d) * (i % 2 === 0 ? 1 : 3), 0)
+  const resto = suma % 10
+  return String(resto === 0 ? 0 : 10 - resto)
+}
+
+/** Genera un EAN-13 en el rango 20-29, reservado por GS1 para uso interno/circulación restringida. */
+function generarCodigoInterno(): string {
+  const cuerpo = '20' + Array.from({ length: 10 }, () => Math.floor(Math.random() * 10)).join('')
+  return cuerpo + digitoControlEAN13(cuerpo)
+}
+
 export function EtiquetaModal({ producto, onClose }: EtiquetaModalProps) {
+  const queryClient = useQueryClient()
   const svgRef = useRef<SVGSVGElement>(null)
   const [cantidad, setCantidad] = useState('12')
-  const valor = producto.codigoBarras || producto.codigoInterno
+  const [codigoNuevo, setCodigoNuevo] = useState('')
+  const [codigoGuardado, setCodigoGuardado] = useState<string | null>(null)
+
+  const codigoBarras = codigoGuardado ?? producto.codigoBarras
+  const valor = codigoBarras || producto.codigoInterno
+
+  const mutacionAsignar = useMutation({
+    mutationFn: (codigo: string) => actualizarProducto(producto.id, { codigoBarras: codigo }),
+    onSuccess: (_actualizado, codigo) => {
+      queryClient.invalidateQueries({ queryKey: ['productos'] })
+      setCodigoGuardado(codigo)
+      setCodigoNuevo('')
+    },
+  })
 
   useEffect(() => {
     if (!svgRef.current) return
@@ -85,16 +116,53 @@ export function EtiquetaModal({ producto, onClose }: EtiquetaModalProps) {
     imprimirEtiquetas(svgRef.current.outerHTML, producto.nombre, formatoCOP.format(producto.precioVenta), n)
   }
 
+  function handleAsignar(e: FormEvent) {
+    e.preventDefault()
+    if (codigoNuevo.trim()) mutacionAsignar.mutate(codigoNuevo.trim())
+  }
+
   return (
     <Modal title="Imprimir etiqueta" onClose={onClose}>
       <p className="gg-etiqueta-nota">
         Código: <strong>{valor}</strong>
-        {!producto.codigoBarras && ' — código interno (este producto no tiene código de fábrica)'}
+        {!codigoBarras && ' — código interno (este producto todavía no tiene código de barras propio)'}
       </p>
 
       <div className="gg-etiqueta-preview">
         <svg ref={svgRef} />
       </div>
+
+      {!codigoBarras && (
+        <form onSubmit={handleAsignar} noValidate className="gg-etiqueta-asignar">
+          <p className="gg-etiqueta-nota">
+            Para un producto de marca propia (sin código de fábrica): escanéalo con tu lector si
+            ya le pegaste una etiqueta de otra fuente, o genera uno nuevo para asignárselo.
+          </p>
+          <Input
+            label="Código de barras nuevo"
+            type="text"
+            value={codigoNuevo}
+            onChange={(e) => setCodigoNuevo(e.target.value)}
+            placeholder="Escanea aquí o escribe el código"
+            autoFocus
+          />
+          <div className="gg-etiqueta-asignar-acciones">
+            <Button type="button" variant="secondary" onClick={() => setCodigoNuevo(generarCodigoInterno())}>
+              Generar código
+            </Button>
+            <Button type="submit" disabled={!codigoNuevo.trim() || mutacionAsignar.isPending}>
+              {mutacionAsignar.isPending ? 'Guardando…' : 'Asignar código'}
+            </Button>
+          </div>
+          {mutacionAsignar.isError && (
+            <p className="gg-field-error">
+              {mutacionAsignar.error instanceof ApiError
+                ? mutacionAsignar.error.message
+                : 'No pudimos asignar el código. Intenta de nuevo.'}
+            </p>
+          )}
+        </form>
+      )}
 
       <Input
         label="Cuántas etiquetas imprimir"
