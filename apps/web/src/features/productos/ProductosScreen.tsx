@@ -1,7 +1,8 @@
 import { useMemo, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
-import { Copy, Download, FileText, Leaf, Pencil, Plus, Power, Settings, ShoppingCart, Search, Star, Trash2, Upload } from 'lucide-react'
+import { Barcode, Copy, Download, FileText, Leaf, Pencil, Plus, Power, Settings, ShoppingCart, Search, Star, Trash2, Upload } from 'lucide-react'
+import type { Producto } from '@guapa/shared'
 import { Card } from '../../components/Card'
 import { Button } from '../../components/Button'
 import { AppHeader } from '../../components/AppHeader'
@@ -22,6 +23,7 @@ import { CobrarModal } from '../ventas/CobrarModal'
 import { ReciboModal } from '../ventas/ReciboModal'
 import { ImportarModal } from './ImportarModal'
 import { GestionCategoriasModal } from './GestionCategoriasModal'
+import { EtiquetaModal } from './EtiquetaModal'
 import './productos.css'
 
 interface ProductosScreenProps {
@@ -47,6 +49,7 @@ export function ProductosScreen({ onCerrarSesion }: ProductosScreenProps) {
   const [exportando, setExportando] = useState(false)
   const [generandoCatalogo, setGenerandoCatalogo] = useState(false)
   const [gestionandoCategorias, setGestionandoCategorias] = useState(false)
+  const [etiquetaProducto, setEtiquetaProducto] = useState<Producto | null>(null)
 
   const { data: negocio } = useQuery({ queryKey: ['negocio'], queryFn: obtenerNegocio })
 
@@ -307,6 +310,14 @@ export function ProductosScreen({ onCerrarSesion }: ProductosScreenProps) {
                   >
                     <ShoppingCart size={16} />
                   </button>
+                  <button
+                    type="button"
+                    className="gg-producto-accion"
+                    title="Imprimir etiqueta con código de barras"
+                    onClick={() => setEtiquetaProducto(producto)}
+                  >
+                    <Barcode size={16} />
+                  </button>
                   <Link
                     to={`/productos/${producto.id}/editar`}
                     className="gg-producto-accion"
@@ -401,6 +412,9 @@ export function ProductosScreen({ onCerrarSesion }: ProductosScreenProps) {
       {importando && <ImportarModal onClose={() => setImportando(false)} />}
       {gestionandoCategorias && (
         <GestionCategoriasModal onClose={() => setGestionandoCategorias(false)} />
+      )}
+      {etiquetaProducto && (
+        <EtiquetaModal producto={etiquetaProducto} onClose={() => setEtiquetaProducto(null)} />
       )}
     </div>
   )

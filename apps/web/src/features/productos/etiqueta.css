@@ -1,0 +1,21 @@
+.gg-etiqueta-nota {
+  margin: 0 0 12px;
+  font-size: 13px;
+  color: var(--c-muted);
+}
+
+.gg-etiqueta-preview {
+  display: flex;
+  justify-content: center;
+  padding: 16px;
+  background: var(--c-beige);
+  border-radius: var(--radius-md);
+  margin-bottom: 16px;
+}
+
+.gg-etiqueta-acciones {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 16px;
+}
