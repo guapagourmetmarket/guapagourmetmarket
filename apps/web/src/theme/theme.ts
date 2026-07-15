@@ -33,6 +33,9 @@ export const brand = {
     instagramHref: "https://instagram.com/guapa_gourmet",
     tiktok: "@guapagourmet",
     tiktokHref: "https://www.tiktok.com/@guapagourmet",
+    // Portal donde Paola emite la factura electrónica gratuita de la DIAN
+    // (el sistema no está integrado con la DIAN, esto solo abre un acceso directo).
+    dianHref: "https://catalogo-vpfe-hab.dian.gov.co/User/PersonLogin",
   },
 
   colors: {

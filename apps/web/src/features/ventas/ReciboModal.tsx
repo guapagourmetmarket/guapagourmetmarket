@@ -1,8 +1,9 @@
 import { useRef } from 'react'
-import { Printer } from 'lucide-react'
+import { ExternalLink, Printer } from 'lucide-react'
 import { Modal } from '../../components/Modal'
 import { Button } from '../../components/Button'
 import { ReciboVenta } from './ReciboVenta'
+import { brand } from '../../theme/theme'
 import type { Negocio, Venta } from '../../lib/api'
 
 interface ReciboModalProps {
@@ -81,6 +82,12 @@ export function ReciboModal({ venta, negocio, onClose }: ReciboModalProps) {
         <Printer size={18} />
         Imprimir recibo
       </Button>
+      <a href={brand.contacto.dianHref} target="_blank" rel="noreferrer" style={{ display: 'block', marginTop: 10 }}>
+        <Button type="button" variant="secondary" style={{ width: '100%' }}>
+          <ExternalLink size={18} />
+          Emitir factura electrónica DIAN
+        </Button>
+      </a>
     </Modal>
   )
 }

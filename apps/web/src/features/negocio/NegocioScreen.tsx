@@ -148,16 +148,12 @@ export function NegocioScreen({ onCerrarSesion }: NegocioScreenProps) {
           </h1>
           <p className="gg-negocio-subtitulo">
             Este sistema no está conectado con la DIAN. Cuando un cliente necesite factura
-            electrónica, genérala por fuera de aquí con tu cuenta gratuita de la DIAN.
+            electrónica, emítela por fuera de aquí con tu cuenta gratuita de la DIAN.
           </p>
-          <a
-            href="https://www.dian.gov.co/impuestos/factura-electronica/facturacion-gratuita/Paginas/default.aspx"
-            target="_blank"
-            rel="noreferrer"
-          >
+          <a href={brand.contacto.dianHref} target="_blank" rel="noreferrer">
             <Button type="button" variant="secondary">
               <ExternalLink size={16} />
-              Abrir facturación gratuita DIAN
+              Emitir factura electrónica DIAN
             </Button>
           </a>
         </Card>
