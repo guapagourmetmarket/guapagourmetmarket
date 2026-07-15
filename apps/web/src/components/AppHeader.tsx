@@ -6,26 +6,31 @@ import { MiCuentaModal } from './MiCuentaModal'
 import { EstadoConexion } from './EstadoConexion'
 import { InstagramIcon, TikTokIcon } from './SocialIcons'
 import { brand } from '../theme/theme'
-import { obtenerUsuarioSesion } from '../lib/api'
+import { obtenerUsuarioSesion, type Rol } from '../lib/api'
 import './app-header.css'
 
 interface AppHeaderProps {
   onCerrarSesion: () => void
 }
 
-const ENLACES = [
+const GERENCIAL: Rol[] = ['administrador', 'contador', 'supervisor']
+
+// Sin "roles" = visible para cualquiera con sesión (incluido cajero). El
+// backend ya rechaza estas rutas para quien no tenga el rol permitido; esto
+// solo evita ofrecerle a un cajero un enlace que le va a dar error 403.
+const ENLACES: { to: string; label: string; roles?: Rol[] }[] = [
   { to: '/productos', label: 'Productos' },
   { to: '/caja', label: 'Caja' },
   { to: '/pos-tactil', label: 'Táctil' },
   { to: '/ventas', label: 'Venta manual' },
-  { to: '/compras', label: 'Compras' },
-  { to: '/proveedores', label: 'Proveedores' },
+  { to: '/compras', label: 'Compras', roles: GERENCIAL },
+  { to: '/proveedores', label: 'Proveedores', roles: GERENCIAL },
   { to: '/clientes', label: 'Clientes' },
   { to: '/alertas', label: 'Alertas' },
-  { to: '/contabilidad', label: 'Contabilidad' },
-  { to: '/reportes', label: 'Reportes' },
-  { to: '/negocio', label: 'Negocio' },
-  { to: '/usuarios', label: 'Usuarios', soloAdmin: true },
+  { to: '/contabilidad', label: 'Contabilidad', roles: GERENCIAL },
+  { to: '/reportes', label: 'Reportes', roles: GERENCIAL },
+  { to: '/negocio', label: 'Negocio', roles: ['administrador'] },
+  { to: '/usuarios', label: 'Usuarios', roles: ['administrador'] },
 ]
 
 function claseLink({ isActive }: { isActive: boolean }) {
@@ -35,8 +40,10 @@ function claseLink({ isActive }: { isActive: boolean }) {
 export function AppHeader({ onCerrarSesion }: AppHeaderProps) {
   const [miCuentaAbierta, setMiCuentaAbierta] = useState(false)
   const [menuAbierto, setMenuAbierto] = useState(false)
-  const esAdministrador = obtenerUsuarioSesion()?.rol === 'administrador'
-  const enlacesVisibles = ENLACES.filter((enlace) => !enlace.soloAdmin || esAdministrador)
+  const rolActual = obtenerUsuarioSesion()?.rol as Rol | undefined
+  const enlacesVisibles = ENLACES.filter(
+    (enlace) => !enlace.roles || (rolActual && enlace.roles.includes(rolActual)),
+  )
 
   return (
     <header className="gg-header">

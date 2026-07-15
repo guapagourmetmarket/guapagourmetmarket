@@ -1,5 +1,7 @@
 import { Controller, Get, Query, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../../auth/interface/jwt-auth.guard';
+import { Roles } from '../../auth/interface/roles.decorator';
+import { RolesGuard } from '../../auth/interface/roles.guard';
 import { ObtenerResumenUseCase } from '../application/obtener-resumen.use-case';
 import { VentasPorDiaUseCase } from '../application/ventas-por-dia.use-case';
 import { TopProductosUseCase } from '../application/top-productos.use-case';
@@ -16,8 +18,11 @@ function hoyIso(): string {
   return new Date().toISOString().slice(0, 10);
 }
 
+// Ventas por empleado, márgenes y resumen del negocio: información
+// gerencial, no algo que el cajero necesite ver.
 @Controller('reportes')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles('administrador', 'contador', 'supervisor')
 export class ReportesController {
   constructor(
     private readonly obtenerResumenUseCase: ObtenerResumenUseCase,

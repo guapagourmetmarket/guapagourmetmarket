@@ -14,8 +14,11 @@ interface RequestConUsuario extends Request {
   user: { id: string; email: string; rol: string };
 }
 
+// Compras revela costos de proveedor y cuentas por pagar: se reserva a
+// quienes manejan la parte financiera del negocio, no al cajero.
 @Controller('compras')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles('administrador', 'contador', 'supervisor')
 export class ComprasController {
   constructor(
     private readonly listarComprasUseCase: ListarComprasUseCase,
@@ -50,16 +53,12 @@ export class ComprasController {
   }
 
   @Patch(':id/pagar')
-  @UseGuards(RolesGuard)
-  @Roles('administrador', 'contador', 'supervisor')
   marcarPagada(@Param('id') id: string) {
     return this.marcarCompraPagadaUseCase.ejecutar(id);
   }
 
   @Delete(':id')
   @HttpCode(204)
-  @UseGuards(RolesGuard)
-  @Roles('administrador', 'contador', 'supervisor')
   anular(@Param('id') id: string) {
     return this.anularCompraUseCase.ejecutar(id);
   }

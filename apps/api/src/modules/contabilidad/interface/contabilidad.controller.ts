@@ -23,8 +23,11 @@ function hoyIso(): string {
   return new Date().toISOString().slice(0, 10);
 }
 
+// Gastos, flujo de caja y estado de resultados: información financiera,
+// reservada al mismo grupo que ya maneja compras y reportes.
 @Controller()
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles('administrador', 'contador', 'supervisor')
 export class ContabilidadController {
   constructor(
     private readonly listarGastosUseCase: ListarGastosUseCase,
@@ -46,8 +49,6 @@ export class ContabilidadController {
 
   @Delete('gastos/:id')
   @HttpCode(204)
-  @UseGuards(RolesGuard)
-  @Roles('administrador', 'contador', 'supervisor')
   eliminarGasto(@Param('id') id: string) {
     return this.eliminarGastoUseCase.ejecutar(id);
   }

@@ -1,5 +1,7 @@
 import { Body, Controller, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../../auth/interface/jwt-auth.guard';
+import { Roles } from '../../auth/interface/roles.decorator';
+import { RolesGuard } from '../../auth/interface/roles.guard';
 import { ListarProveedoresUseCase } from '../application/listar-proveedores.use-case';
 import { ObtenerProveedorUseCase } from '../application/obtener-proveedor.use-case';
 import { CrearProveedorUseCase } from '../application/crear-proveedor.use-case';
@@ -9,8 +11,11 @@ import { CrearProveedorDto } from './dto/crear-proveedor.dto';
 import { ActualizarProveedorDto } from './dto/actualizar-proveedor.dto';
 import { CambiarEstadoDto } from './dto/cambiar-estado.dto';
 
+// Mismo criterio que Compras: datos de proveedor y condiciones de pago no
+// son del día a día del cajero.
 @Controller('proveedores')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles('administrador', 'contador', 'supervisor')
 export class ProveedoresController {
   constructor(
     private readonly listarProveedoresUseCase: ListarProveedoresUseCase,
