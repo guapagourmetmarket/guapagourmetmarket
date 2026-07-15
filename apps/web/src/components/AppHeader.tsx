@@ -119,7 +119,7 @@ export function AppHeader({ onCerrarSesion }: AppHeaderProps) {
     esGerencial && proveedoresVencidos > 0
       ? `🧾 ${proveedoresVencidos} cuenta${proveedoresVencidos === 1 ? '' : 's'} por pagar vencida${proveedoresVencidos === 1 ? '' : 's'}`
       : null,
-    '🌿 Gracias por elegir productos saludables',
+    '🌿 Tu nuevo hábito saludable',
   ].filter((m): m is string => Boolean(m))
 
   return (

@@ -217,14 +217,19 @@
   }
 }
 
-/* Variante interna (POS): franja discreta color salvia con datos operativos. */
+/* Variante interna (POS): mismo verde protagonista que la tienda pública,
+   a pedido de Paola, para que se vea igual de llamativo en ambos lados. */
 .gg-marquee--interna {
-  background: var(--c-sageSoft);
+  background: var(--c-sageDeep);
   border-bottom: 1px solid var(--c-line);
 }
 
 .gg-marquee--interna .gg-marquee-item {
-  color: var(--c-sageDeep);
+  color: var(--c-surface);
+}
+
+.gg-marquee--interna .gg-marquee-item:not(:last-child)::after {
+  opacity: 0.6;
 }
 
 /* Variante pública (tienda): franja cálida, más protagonista. */
