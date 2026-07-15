@@ -46,7 +46,7 @@ export function TiendaScreen() {
         ofertas.length > 0
           ? `🔥 ${ofertas.length} producto${ofertas.length === 1 ? '' : 's'} en oferta ahora mismo`
           : null,
-        '🌿 Productos saludables y naturales, elegidos con cariño',
+        '🌿 Tu nuevo hábito saludable',
       ].filter((m): m is string => Boolean(m)),
     [ofertas.length],
   )
