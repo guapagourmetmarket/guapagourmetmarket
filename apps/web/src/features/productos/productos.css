@@ -99,6 +99,28 @@
   color: var(--c-surface);
 }
 
+/* Pestaña de descuentos: se distingue a propósito del resto de chips
+   (rosa en vez de salvia) para que resalte como pidió la dueña. */
+.gg-chip--descuento {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--c-roseSoft);
+  border-color: var(--c-roseDeep);
+  color: var(--c-roseDeep);
+  font-weight: 700;
+}
+
+.gg-chip--descuento:hover {
+  background: var(--c-rose);
+}
+
+.gg-chip--descuento.gg-chip--activo {
+  background: var(--c-roseDeep);
+  border-color: var(--c-roseDeep);
+  color: var(--c-surface);
+}
+
 .gg-toggle-desactivados {
   display: flex;
   align-items: center;

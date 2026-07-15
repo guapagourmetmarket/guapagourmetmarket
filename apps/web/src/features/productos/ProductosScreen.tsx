@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
-import { Barcode, Copy, Download, FileText, Leaf, Pencil, Plus, Power, Settings, ShoppingCart, Search, Star, Trash2, Upload } from 'lucide-react'
+import { Barcode, Copy, Download, FileText, Flame, Leaf, Pencil, Plus, Power, Settings, ShoppingCart, Search, Star, Trash2, Upload } from 'lucide-react'
 import type { Producto } from '@guapa/shared'
 import { Card } from '../../components/Card'
 import { Button } from '../../components/Button'
@@ -42,6 +42,7 @@ export function ProductosScreen({ onCerrarSesion }: ProductosScreenProps) {
 
   const [busqueda, setBusqueda] = useState('')
   const [categoriaId, setCategoriaId] = useState<string | null>(null)
+  const [soloDescuentos, setSoloDescuentos] = useState(false)
   const [mostrarDesactivados, setMostrarDesactivados] = useState(false)
   const [cobrando, setCobrando] = useState(false)
   const [reciboVenta, setReciboVenta] = useState<Venta | null>(null)
@@ -108,10 +109,16 @@ export function ProductosScreen({ onCerrarSesion }: ProductosScreenProps) {
     return [...mapa.entries()].map(([id, nombre]) => ({ id, nombre })).sort((a, b) => a.nombre.localeCompare(b.nombre))
   }, [productos])
 
+  const totalDescuentos = useMemo(
+    () => (productos ?? []).filter((p) => p.descuentoPorcentaje).length,
+    [productos],
+  )
+
   const productosFiltrados = useMemo(() => {
     if (!productos) return []
     let lista = productos
-    if (categoriaId) lista = lista.filter((p) => p.categoriaId === categoriaId)
+    if (soloDescuentos) lista = lista.filter((p) => p.descuentoPorcentaje)
+    else if (categoriaId) lista = lista.filter((p) => p.categoriaId === categoriaId)
     const q = busqueda.trim().toLowerCase()
     if (q) {
       lista = lista.filter((p) =>
@@ -121,7 +128,7 @@ export function ProductosScreen({ onCerrarSesion }: ProductosScreenProps) {
       )
     }
     return lista
-  }, [productos, busqueda, categoriaId])
+  }, [productos, busqueda, categoriaId, soloDescuentos])
 
   function handleDesactivar(id: string, nombre: string) {
     const confirmado = window.confirm(
@@ -205,17 +212,36 @@ export function ProductosScreen({ onCerrarSesion }: ProductosScreenProps) {
           <div className="gg-categorias-chips">
             <button
               type="button"
-              className={'gg-chip' + (categoriaId === null ? ' gg-chip--activo' : '')}
-              onClick={() => setCategoriaId(null)}
+              className={'gg-chip' + (categoriaId === null && !soloDescuentos ? ' gg-chip--activo' : '')}
+              onClick={() => {
+                setCategoriaId(null)
+                setSoloDescuentos(false)
+              }}
             >
               Todas
             </button>
+            {totalDescuentos > 0 && (
+              <button
+                type="button"
+                className={'gg-chip gg-chip--descuento' + (soloDescuentos ? ' gg-chip--activo' : '')}
+                onClick={() => {
+                  setSoloDescuentos((v) => !v)
+                  setCategoriaId(null)
+                }}
+              >
+                <Flame size={13} />
+                Descuentos ({totalDescuentos})
+              </button>
+            )}
             {categorias.map((c) => (
               <button
                 key={c.id}
                 type="button"
-                className={'gg-chip' + (categoriaId === c.id ? ' gg-chip--activo' : '')}
-                onClick={() => setCategoriaId(c.id)}
+                className={'gg-chip' + (categoriaId === c.id && !soloDescuentos ? ' gg-chip--activo' : '')}
+                onClick={() => {
+                  setCategoriaId(c.id)
+                  setSoloDescuentos(false)
+                }}
               >
                 {c.nombre}
               </button>
@@ -255,7 +281,11 @@ export function ProductosScreen({ onCerrarSesion }: ProductosScreenProps) {
 
         {!isLoading && !isError && productosFiltrados.length === 0 && (
           <Card className="gg-productos-estado">
-            <p>No encontramos productos con esa búsqueda.</p>
+            <p>
+              {soloDescuentos
+                ? 'No tienes productos con descuento activo en este momento.'
+                : 'No encontramos productos con esa búsqueda.'}
+            </p>
           </Card>
         )}
 

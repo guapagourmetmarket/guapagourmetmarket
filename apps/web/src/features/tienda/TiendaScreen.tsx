@@ -18,6 +18,7 @@ const formatoCOP = new Intl.NumberFormat('es-CO', {
 export function TiendaScreen() {
   const [busqueda, setBusqueda] = useState('')
   const [categoria, setCategoria] = useState<string | null>(null)
+  const [soloDescuentos, setSoloDescuentos] = useState(false)
 
   const { data: productos, isLoading, isError } = useQuery({
     queryKey: ['productos-publico'],
@@ -54,7 +55,8 @@ export function TiendaScreen() {
   const productosFiltrados = useMemo(() => {
     if (!productos) return []
     let lista = productos
-    if (categoria) lista = lista.filter((p) => p.categoriaNombre === categoria)
+    if (soloDescuentos) lista = lista.filter((p) => p.descuentoPorcentaje)
+    else if (categoria) lista = lista.filter((p) => p.categoriaNombre === categoria)
     const q = busqueda.trim().toLowerCase()
     if (q) {
       lista = lista.filter((p) =>
@@ -62,7 +64,7 @@ export function TiendaScreen() {
       )
     }
     return lista
-  }, [productos, busqueda, categoria])
+  }, [productos, busqueda, categoria, soloDescuentos])
 
   return (
     <div className="gg-productos-page">
@@ -136,17 +138,36 @@ export function TiendaScreen() {
           <div className="gg-categorias-chips">
             <button
               type="button"
-              className={'gg-chip' + (categoria === null ? ' gg-chip--activo' : '')}
-              onClick={() => setCategoria(null)}
+              className={'gg-chip' + (categoria === null && !soloDescuentos ? ' gg-chip--activo' : '')}
+              onClick={() => {
+                setCategoria(null)
+                setSoloDescuentos(false)
+              }}
             >
               Todas
             </button>
+            {ofertas.length > 0 && (
+              <button
+                type="button"
+                className={'gg-chip gg-chip--descuento' + (soloDescuentos ? ' gg-chip--activo' : '')}
+                onClick={() => {
+                  setSoloDescuentos((v) => !v)
+                  setCategoria(null)
+                }}
+              >
+                <Flame size={13} />
+                Descuentos ({ofertas.length})
+              </button>
+            )}
             {categorias.map((c) => (
               <button
                 key={c}
                 type="button"
-                className={'gg-chip' + (categoria === c ? ' gg-chip--activo' : '')}
-                onClick={() => setCategoria(c)}
+                className={'gg-chip' + (categoria === c && !soloDescuentos ? ' gg-chip--activo' : '')}
+                onClick={() => {
+                  setCategoria(c)
+                  setSoloDescuentos(false)
+                }}
               >
                 {c}
               </button>
@@ -168,7 +189,11 @@ export function TiendaScreen() {
 
         {!isLoading && !isError && productosFiltrados.length === 0 && (
           <Card className="gg-productos-estado">
-            <p>No encontramos productos con esa búsqueda.</p>
+            <p>
+              {soloDescuentos
+                ? 'No hay productos con descuento activo en este momento.'
+                : 'No encontramos productos con esa búsqueda.'}
+            </p>
           </Card>
         )}
 
