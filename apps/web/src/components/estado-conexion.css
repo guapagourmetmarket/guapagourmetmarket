@@ -16,6 +16,23 @@
   color: #fff;
   background: var(--c-danger);
   border-bottom-color: var(--c-danger);
+  animation: gg-respirar-suave 2.4s ease-in-out infinite;
+}
+
+@keyframes gg-respirar-suave {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.88;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gg-estado-conexion--offline {
+    animation: none;
+  }
 }
 
 .gg-estado-conexion-contador {

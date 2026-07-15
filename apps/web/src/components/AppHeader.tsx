@@ -1,12 +1,13 @@
 import { useState } from 'react'
 import { NavLink } from 'react-router-dom'
+import { useQuery } from '@tanstack/react-query'
 import { LogOut, Menu, Phone, UserCircle, X } from 'lucide-react'
 import { Button } from './Button'
 import { MiCuentaModal } from './MiCuentaModal'
 import { EstadoConexion } from './EstadoConexion'
 import { InstagramIcon, TikTokIcon } from './SocialIcons'
 import { brand } from '../theme/theme'
-import { obtenerUsuarioSesion, type Rol } from '../lib/api'
+import { obtenerAlertas, obtenerUsuarioSesion, type Rol } from '../lib/api'
 import './app-header.css'
 
 interface AppHeaderProps {
@@ -44,6 +45,15 @@ export function AppHeader({ onCerrarSesion }: AppHeaderProps) {
   const enlacesVisibles = ENLACES.filter(
     (enlace) => !enlace.roles || (rolActual && enlace.roles.includes(rolActual)),
   )
+
+  // Puntico animado en "Alertas" cuando hay algo por vencer o con poco
+  // stock: llama la atención sin que haga falta entrar a revisar.
+  const { data: alertas } = useQuery({
+    queryKey: ['alertas-resumen'],
+    queryFn: obtenerAlertas,
+    staleTime: 60_000,
+  })
+  const totalAlertas = (alertas?.stockBajo.length ?? 0) + (alertas?.porVencer.length ?? 0)
 
   return (
     <header className="gg-header">
@@ -88,6 +98,9 @@ export function AppHeader({ onCerrarSesion }: AppHeaderProps) {
           {enlacesVisibles.map((enlace) => (
             <NavLink key={enlace.to} to={enlace.to} className={claseLink}>
               {enlace.label}
+              {enlace.to === '/alertas' && totalAlertas > 0 && (
+                <span className="gg-header-alerta-punto" aria-label={`${totalAlertas} alertas activas`} />
+              )}
             </NavLink>
           ))}
         </nav>
@@ -131,6 +144,9 @@ export function AppHeader({ onCerrarSesion }: AppHeaderProps) {
                 onClick={() => setMenuAbierto(false)}
               >
                 {enlace.label}
+                {enlace.to === '/alertas' && totalAlertas > 0 && (
+                  <span className="gg-header-alerta-punto" aria-label={`${totalAlertas} alertas activas`} />
+                )}
               </NavLink>
             ))}
             <div className="gg-header-menu-movil-separador" />

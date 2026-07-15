@@ -144,6 +144,31 @@
   color: var(--c-sageDeep);
 }
 
+.gg-header-alerta-punto {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--c-danger);
+  box-shadow: 0 0 0 0 rgba(203, 97, 73, 0.55);
+  animation: gg-pulso-punto 1.8s ease-in-out infinite;
+}
+
+@keyframes gg-pulso-punto {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(203, 97, 73, 0.55);
+  }
+  50% {
+    box-shadow: 0 0 0 5px rgba(203, 97, 73, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gg-header-alerta-punto {
+    animation: none;
+  }
+}
+
 .gg-header-acciones {
   display: flex;
   align-items: center;

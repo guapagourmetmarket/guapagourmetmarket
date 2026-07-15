@@ -71,7 +71,7 @@ export function TiendaScreen() {
       {ofertas.length > 0 && (
         <section className="gg-tienda-ofertas">
           <h2 className="gg-tienda-ofertas-titulo">
-            <Flame size={20} />
+            <Flame size={20} className="gg-tienda-ofertas-icono" />
             Ofertas de hoy
           </h2>
           <div className="gg-tienda-ofertas-scroll">

@@ -14,6 +14,29 @@
   color: var(--c-roseDeep);
 }
 
+.gg-tienda-ofertas-icono {
+  animation: gg-respirar 1.8s ease-in-out infinite;
+  transform-origin: center;
+}
+
+@keyframes gg-respirar {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.85;
+  }
+  50% {
+    transform: scale(1.18);
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gg-tienda-ofertas-icono {
+    animation: none;
+  }
+}
+
 .gg-tienda-ofertas-scroll {
   display: flex;
   gap: 14px;

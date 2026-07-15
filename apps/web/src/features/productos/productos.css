@@ -343,6 +343,25 @@
   font-family: inherit;
   cursor: pointer;
   z-index: 30;
+  animation: gg-flotante-pulso 2.2s ease-in-out infinite;
+}
+
+/* La sombra normal del botón (var(--shadow-pop)) se conserva; el anillo
+   animado se suma encima, no la reemplaza. */
+@keyframes gg-flotante-pulso {
+  0%,
+  100% {
+    box-shadow: var(--shadow-pop), 0 0 0 0 rgba(74, 128, 84, 0.35);
+  }
+  50% {
+    box-shadow: var(--shadow-pop), 0 0 0 9px rgba(74, 128, 84, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gg-carrito-flotante {
+    animation: none;
+  }
 }
 
 .gg-carrito-flotante-cta {
