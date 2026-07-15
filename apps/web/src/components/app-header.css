@@ -169,6 +169,82 @@
   }
 }
 
+/* Letrero que se desplaza sin fin: el "elemento con movimiento" que
+   pidió la dueña además de los puntos/pulsos ya existentes. */
+.gg-marquee {
+  overflow: hidden;
+  white-space: nowrap;
+  border-bottom: 1px solid var(--c-line);
+}
+
+.gg-marquee-track {
+  display: inline-flex;
+  width: max-content;
+  animation: gg-marquee-desplazar 26s linear infinite;
+}
+
+.gg-marquee-item {
+  display: inline-flex;
+  align-items: center;
+  padding: 7px 20px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+
+.gg-marquee-item:not(:last-child)::after {
+  content: '•';
+  margin-left: 20px;
+  opacity: 0.5;
+}
+
+@keyframes gg-marquee-desplazar {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gg-marquee-track {
+    animation: none;
+  }
+  .gg-marquee {
+    overflow-x: auto;
+  }
+}
+
+/* Variante interna (POS): franja discreta color salvia con datos operativos. */
+.gg-marquee--interna {
+  background: var(--c-sageSoft);
+  border-bottom: 1px solid var(--c-line);
+}
+
+.gg-marquee--interna .gg-marquee-item {
+  color: var(--c-sageDeep);
+}
+
+/* Variante pública (tienda): franja cálida, más protagonista. */
+.gg-marquee--tienda {
+  background: var(--c-sageDeep);
+}
+
+.gg-marquee--tienda .gg-marquee-item {
+  color: var(--c-surface);
+}
+
+.gg-marquee--tienda .gg-marquee-item:not(:last-child)::after {
+  opacity: 0.6;
+}
+
+.gg-header-alerta-punto--clientes {
+  background: var(--c-warning);
+  box-shadow: 0 0 0 0 rgba(214, 158, 46, 0.55);
+}
+
 .gg-header-acciones {
   display: flex;
   align-items: center;

@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { Flame, Leaf, Search } from 'lucide-react'
 import { Card } from '../../components/Card'
+import { Marquee } from '../../components/Marquee'
 import { obtenerProductosPublico } from '../../lib/api'
 import { brand } from '../../theme/theme'
 import '../../components/app-header.css'
@@ -37,6 +38,19 @@ export function TiendaScreen() {
       .sort((a, b) => (b.descuentoPorcentaje ?? 0) - (a.descuentoPorcentaje ?? 0))
   }, [productos])
 
+  const mensajesTienda = useMemo(
+    () =>
+      [
+        `📍 ${brand.contacto.direccion}`,
+        `📞 ${brand.contacto.telefono}`,
+        ofertas.length > 0
+          ? `🔥 ${ofertas.length} producto${ofertas.length === 1 ? '' : 's'} en oferta ahora mismo`
+          : null,
+        '🌿 Productos saludables y naturales, elegidos con cariño',
+      ].filter((m): m is string => Boolean(m)),
+    [ofertas.length],
+  )
+
   const productosFiltrados = useMemo(() => {
     if (!productos) return []
     let lista = productos
@@ -67,6 +81,8 @@ export function TiendaScreen() {
           </div>
         </div>
       </header>
+
+      <Marquee items={mensajesTienda} className="gg-marquee--tienda" />
 
       {ofertas.length > 0 && (
         <section className="gg-tienda-ofertas">

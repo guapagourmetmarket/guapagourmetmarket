@@ -6,8 +6,15 @@ import { Button } from './Button'
 import { MiCuentaModal } from './MiCuentaModal'
 import { EstadoConexion } from './EstadoConexion'
 import { InstagramIcon, TikTokIcon } from './SocialIcons'
+import { Marquee } from './Marquee'
 import { brand } from '../theme/theme'
-import { obtenerAlertas, obtenerUsuarioSesion, type Rol } from '../lib/api'
+import {
+  obtenerAlertas,
+  obtenerCartera,
+  obtenerCarteraClientes,
+  obtenerUsuarioSesion,
+  type Rol,
+} from '../lib/api'
 import './app-header.css'
 
 interface AppHeaderProps {
@@ -42,6 +49,7 @@ export function AppHeader({ onCerrarSesion }: AppHeaderProps) {
   const [miCuentaAbierta, setMiCuentaAbierta] = useState(false)
   const [menuAbierto, setMenuAbierto] = useState(false)
   const rolActual = obtenerUsuarioSesion()?.rol as Rol | undefined
+  const esGerencial = rolActual ? GERENCIAL.includes(rolActual) : false
   const enlacesVisibles = ENLACES.filter(
     (enlace) => !enlace.roles || (rolActual && enlace.roles.includes(rolActual)),
   )
@@ -55,9 +63,50 @@ export function AppHeader({ onCerrarSesion }: AppHeaderProps) {
   })
   const totalAlertas = (alertas?.stockBajo.length ?? 0) + (alertas?.porVencer.length ?? 0)
 
+  const hoy = new Date().toISOString().slice(0, 10)
+
+  // Mismo patrón para "Clientes": fiado con fecha de pago vencida. Este
+  // endpoint es abierto para cualquier rol con sesión, así que no hay que
+  // condicionar la consulta.
+  const { data: carteraClientes } = useQuery({
+    queryKey: ['cartera-clientes-resumen'],
+    queryFn: obtenerCarteraClientes,
+    staleTime: 60_000,
+  })
+  const clientesVencidos = (carteraClientes ?? []).filter(
+    (v) => v.fechaVencimientoPago && v.fechaVencimientoPago < hoy,
+  ).length
+
+  // "Contabilidad" (cuentas por pagar a proveedores): el endpoint es
+  // gerencial, así que la consulta solo se dispara para esos roles.
+  const { data: carteraProveedores } = useQuery({
+    queryKey: ['cartera-proveedores-resumen'],
+    queryFn: obtenerCartera,
+    staleTime: 60_000,
+    enabled: esGerencial,
+  })
+  const proveedoresVencidos = (carteraProveedores ?? []).filter(
+    (c) => c.fechaVencimientoPago && c.fechaVencimientoPago < hoy,
+  ).length
+
+  const mensajesInternos = [
+    `🏪 ${brand.name} · ${brand.contacto.direccion}`,
+    totalAlertas > 0
+      ? `⚠️ ${totalAlertas} alerta${totalAlertas === 1 ? '' : 's'} de inventario (stock bajo o por vencer)`
+      : null,
+    clientesVencidos > 0
+      ? `💳 ${clientesVencidos} cliente${clientesVencidos === 1 ? '' : 's'} con pago vencido`
+      : null,
+    esGerencial && proveedoresVencidos > 0
+      ? `🧾 ${proveedoresVencidos} cuenta${proveedoresVencidos === 1 ? '' : 's'} por pagar vencida${proveedoresVencidos === 1 ? '' : 's'}`
+      : null,
+    '🌿 Gracias por elegir productos saludables',
+  ].filter((m): m is string => Boolean(m))
+
   return (
     <header className="gg-header">
       <EstadoConexion />
+      <Marquee items={mensajesInternos} className="gg-marquee--interna" />
       <div className="gg-header-marca">
         <div className="gg-header-marca-fila">
           <img src={brand.logo.hi} alt={brand.name} width={96} height={96} />
@@ -100,6 +149,18 @@ export function AppHeader({ onCerrarSesion }: AppHeaderProps) {
               {enlace.label}
               {enlace.to === '/alertas' && totalAlertas > 0 && (
                 <span className="gg-header-alerta-punto" aria-label={`${totalAlertas} alertas activas`} />
+              )}
+              {enlace.to === '/clientes' && clientesVencidos > 0 && (
+                <span
+                  className="gg-header-alerta-punto gg-header-alerta-punto--clientes"
+                  aria-label={`${clientesVencidos} clientes con pago vencido`}
+                />
+              )}
+              {enlace.to === '/contabilidad' && esGerencial && proveedoresVencidos > 0 && (
+                <span
+                  className="gg-header-alerta-punto gg-header-alerta-punto--clientes"
+                  aria-label={`${proveedoresVencidos} cuentas por pagar vencidas`}
+                />
               )}
             </NavLink>
           ))}
