@@ -8,7 +8,8 @@ const SELECT_BASE = `
   SELECT
     p.id, p.codigo_interno, p.codigo_barras, p.nombre, p.descripcion,
     p.precio_compra, p.costo_promedio, p.precio_venta, p.iva, p.unidad_medida, p.existencias,
-    p.stock_minimo, p.vende_por_peso, p.favorito_pos, p.activo, p.ingredientes, p.info_nutricional, p.peso, p.peso_unidad,
+    p.stock_minimo, p.vende_por_peso, p.descuento_porcentaje, p.favorito_pos, p.activo,
+    p.ingredientes, p.info_nutricional, p.peso, p.peso_unidad,
     p.categoria_id, c.nombre AS categoria_nombre,
     p.marca_id, m.nombre AS marca_nombre,
     pi.url AS imagen_url,
@@ -38,6 +39,7 @@ const CAMPO_COLUMNA: Record<keyof CambiosProducto, string> = {
   existencias: 'existencias',
   stockMinimo: 'stock_minimo',
   vendePorPeso: 'vende_por_peso',
+  descuentoPorcentaje: 'descuento_porcentaje',
   ingredientes: 'ingredientes',
   infoNutricional: 'info_nutricional',
   peso: 'peso',
@@ -47,6 +49,9 @@ const CAMPO_COLUMNA: Record<keyof CambiosProducto, string> = {
 const CAMPOS_JSON = new Set<keyof CambiosProducto>(['infoNutricional']);
 
 function aProducto(row: QueryResultRow): Producto {
+  const precioVenta = Number(row.precio_venta);
+  const descuentoPorcentaje =
+    row.descuento_porcentaje === null ? null : Number(row.descuento_porcentaje);
   return {
     id: row.id,
     codigoInterno: row.codigo_interno,
@@ -55,7 +60,7 @@ function aProducto(row: QueryResultRow): Producto {
     descripcion: row.descripcion,
     precioCompra: Number(row.precio_compra),
     costoPromedio: row.costo_promedio === null ? null : Number(row.costo_promedio),
-    precioVenta: Number(row.precio_venta),
+    precioVenta,
     iva: row.iva,
     categoriaId: row.categoria_id,
     categoriaNombre: row.categoria_nombre,
@@ -65,6 +70,8 @@ function aProducto(row: QueryResultRow): Producto {
     existencias: row.existencias,
     stockMinimo: row.stock_minimo,
     vendePorPeso: row.vende_por_peso,
+    descuentoPorcentaje,
+    precioOferta: descuentoPorcentaje ? Math.round(precioVenta * (1 - descuentoPorcentaje / 100)) : null,
     favoritoPos: row.favorito_pos,
     imagenUrl: row.imagen_url,
     imagenes: row.imagenes ?? [],
@@ -109,8 +116,8 @@ export class ProductosRepositoryPg implements ProductosRepository {
         `INSERT INTO productos
           (codigo_interno, codigo_barras, nombre, descripcion, precio_compra, costo_promedio, precio_venta,
            iva, categoria_id, marca_id, unidad_medida, existencias, stock_minimo, vende_por_peso,
-           ingredientes, info_nutricional, peso, peso_unidad)
-         VALUES ($1,$2,$3,$4,$5,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17)
+           descuento_porcentaje, ingredientes, info_nutricional, peso, peso_unidad)
+         VALUES ($1,$2,$3,$4,$5,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18)
          RETURNING id`,
         [
           nuevo.codigoInterno,
@@ -126,6 +133,7 @@ export class ProductosRepositoryPg implements ProductosRepository {
           nuevo.existencias,
           nuevo.stockMinimo ?? 0,
           nuevo.vendePorPeso ?? false,
+          nuevo.descuentoPorcentaje ?? null,
           nuevo.ingredientes ?? null,
           nuevo.infoNutricional ? JSON.stringify(nuevo.infoNutricional) : null,
           nuevo.peso ?? null,

@@ -6,6 +6,7 @@ import {
   IsOptional,
   IsString,
   IsUUID,
+  Max,
   Min,
   MinLength,
   ValidateNested,
@@ -72,6 +73,12 @@ export class ActualizarProductoDto {
   @IsOptional()
   @IsBoolean()
   vendePorPeso?: boolean;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(0.01)
+  @Max(100)
+  descuentoPorcentaje?: number | null;
 
   @IsOptional()
   @IsString()

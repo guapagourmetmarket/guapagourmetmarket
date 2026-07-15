@@ -226,6 +226,45 @@
   color: var(--c-sageDeep);
 }
 
+.gg-producto-precio-tachado {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--c-muted);
+  text-decoration: line-through;
+}
+
+.gg-producto-oferta-badge {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  color: #fff;
+  background: var(--c-roseDeep);
+  padding: 3px 9px;
+  border-radius: var(--radius-pill);
+  box-shadow: 0 0 0 0 rgba(226, 90, 90, 0.5);
+  animation: gg-pulso-oferta 1.8s ease-in-out infinite;
+}
+
+@keyframes gg-pulso-oferta {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(226, 90, 90, 0.45);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(226, 90, 90, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gg-producto-oferta-badge {
+    animation: none;
+  }
+}
+
 .gg-producto-stock {
   font-size: 12px;
   color: var(--c-muted);

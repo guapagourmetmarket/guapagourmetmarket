@@ -6,6 +6,7 @@ import {
   IsOptional,
   IsString,
   IsUUID,
+  Max,
   Min,
   MinLength,
   ValidateNested,
@@ -64,6 +65,14 @@ export class CrearProductoDto {
   @IsOptional()
   @IsBoolean()
   vendePorPeso?: boolean;
+
+  // null = sin oferta activa. @IsOptional trata null y undefined igual, así
+  // que esto también sirve para quitar un descuento ya activo.
+  @IsOptional()
+  @IsNumber()
+  @Min(0.01)
+  @Max(100)
+  descuentoPorcentaje?: number | null;
 
   @IsOptional()
   @IsString()

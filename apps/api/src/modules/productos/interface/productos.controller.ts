@@ -86,6 +86,8 @@ export class ProductosController {
       nombre: p.nombre,
       descripcion: p.descripcion,
       precioVenta: p.precioVenta,
+      descuentoPorcentaje: p.descuentoPorcentaje,
+      precioOferta: p.precioOferta,
       categoriaNombre: p.categoriaNombre,
       marcaNombre: p.marcaNombre,
       unidadMedida: p.unidadMedida,

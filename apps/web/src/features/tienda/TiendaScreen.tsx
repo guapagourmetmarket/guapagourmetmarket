@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { Leaf, Search } from 'lucide-react'
+import { Flame, Leaf, Search } from 'lucide-react'
 import { Card } from '../../components/Card'
 import { obtenerProductosPublico } from '../../lib/api'
 import { brand } from '../../theme/theme'
@@ -26,6 +26,15 @@ export function TiendaScreen() {
   const categorias = useMemo(() => {
     if (!productos) return []
     return [...new Set(productos.map((p) => p.categoriaNombre))].sort((a, b) => a.localeCompare(b, 'es'))
+  }, [productos])
+
+  // Se arma sola con lo que tenga descuento activo: no hay que mantener
+  // esta sección a mano, basta con ponerle % de descuento a un producto.
+  const ofertas = useMemo(() => {
+    if (!productos) return []
+    return [...productos]
+      .filter((p) => p.descuentoPorcentaje)
+      .sort((a, b) => (b.descuentoPorcentaje ?? 0) - (a.descuentoPorcentaje ?? 0))
   }, [productos])
 
   const productosFiltrados = useMemo(() => {
@@ -58,6 +67,38 @@ export function TiendaScreen() {
           </div>
         </div>
       </header>
+
+      {ofertas.length > 0 && (
+        <section className="gg-tienda-ofertas">
+          <h2 className="gg-tienda-ofertas-titulo">
+            <Flame size={20} />
+            Ofertas de hoy
+          </h2>
+          <div className="gg-tienda-ofertas-scroll">
+            {ofertas.map((producto) => (
+              <Card key={producto.id} className="gg-tienda-oferta-card">
+                <div className="gg-tienda-oferta-imagen">
+                  {producto.imagenUrl ? (
+                    <img src={producto.imagenUrl} alt={producto.nombre} />
+                  ) : (
+                    <Leaf size={28} strokeWidth={1.5} />
+                  )}
+                  <span className="gg-producto-oferta-badge gg-tienda-oferta-badge-flotante">
+                    -{producto.descuentoPorcentaje}%
+                  </span>
+                </div>
+                <p className="gg-tienda-oferta-nombre">{producto.nombre}</p>
+                <div className="gg-tienda-oferta-precios">
+                  <span className="gg-producto-precio-tachado">{formatoCOP.format(producto.precioVenta)}</span>
+                  <span className="gg-tienda-oferta-precio-nuevo">
+                    {formatoCOP.format(producto.precioOferta ?? producto.precioVenta)}
+                  </span>
+                </div>
+              </Card>
+            ))}
+          </div>
+        </section>
+      )}
 
       <main className="gg-productos-main">
         <div className="gg-productos-toolbar">
@@ -130,8 +171,20 @@ export function TiendaScreen() {
                   <p className="gg-producto-categoria">{producto.categoriaNombre}</p>
                   <h2 className="gg-producto-nombre">{producto.nombre}</h2>
                   {producto.marcaNombre && <p className="gg-producto-marca">{producto.marcaNombre}</p>}
+                  {producto.descuentoPorcentaje && (
+                    <span className="gg-producto-oferta-badge">-{producto.descuentoPorcentaje}% OFERTA</span>
+                  )}
                   <div className="gg-producto-footer">
-                    <span className="gg-producto-precio">{formatoCOP.format(producto.precioVenta)}</span>
+                    {producto.descuentoPorcentaje ? (
+                      <span className="gg-producto-precio">
+                        <span className="gg-producto-precio-tachado">
+                          {formatoCOP.format(producto.precioVenta)}
+                        </span>{' '}
+                        {formatoCOP.format(producto.precioOferta ?? producto.precioVenta)}
+                      </span>
+                    ) : (
+                      <span className="gg-producto-precio">{formatoCOP.format(producto.precioVenta)}</span>
+                    )}
                     <span className={'gg-producto-stock' + (producto.disponible ? '' : ' gg-producto-stock--agotado')}>
                       {producto.disponible ? 'Disponible' : 'Agotado'}
                     </span>

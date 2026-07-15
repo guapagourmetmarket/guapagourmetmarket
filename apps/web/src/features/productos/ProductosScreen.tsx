@@ -280,8 +280,20 @@ export function ProductosScreen({ onCerrarSesion }: ProductosScreenProps) {
                   <p className="gg-producto-categoria">{producto.categoriaNombre}</p>
                   <h2 className="gg-producto-nombre">{producto.nombre}</h2>
                   {producto.marcaNombre && <p className="gg-producto-marca">{producto.marcaNombre}</p>}
+                  {producto.descuentoPorcentaje && (
+                    <span className="gg-producto-oferta-badge">-{producto.descuentoPorcentaje}% OFERTA</span>
+                  )}
                   <div className="gg-producto-footer">
-                    <span className="gg-producto-precio">{formatoCOP.format(producto.precioVenta)}</span>
+                    {producto.descuentoPorcentaje ? (
+                      <span className="gg-producto-precio">
+                        <span className="gg-producto-precio-tachado">
+                          {formatoCOP.format(producto.precioVenta)}
+                        </span>{' '}
+                        {formatoCOP.format(producto.precioOferta ?? producto.precioVenta)}
+                      </span>
+                    ) : (
+                      <span className="gg-producto-precio">{formatoCOP.format(producto.precioVenta)}</span>
+                    )}
                     <span
                       className={
                         'gg-producto-stock' +

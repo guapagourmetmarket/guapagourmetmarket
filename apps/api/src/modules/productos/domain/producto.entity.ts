@@ -34,6 +34,10 @@ export interface Producto {
   stockMinimo: number;
   vendePorPeso: boolean;
   favoritoPos: boolean;
+  /** % de descuento promocional activo, o null si no está en oferta. */
+  descuentoPorcentaje: number | null;
+  /** Precio ya con el descuento aplicado, o null si no está en oferta. Calculado, no se guarda. */
+  precioOferta: number | null;
   imagenUrl: string | null;
   imagenes: ImagenProducto[];
   activo: boolean;
@@ -57,6 +61,7 @@ export interface NuevoProducto {
   existencias: number;
   stockMinimo?: number;
   vendePorPeso?: boolean;
+  descuentoPorcentaje?: number | null;
   ingredientes?: string;
   infoNutricional?: InfoNutricional;
   peso?: number;

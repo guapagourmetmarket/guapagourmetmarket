@@ -29,6 +29,12 @@ interface ProductoFormScreenProps {
 
 const IVAS = [0, 5, 19] as const
 
+const formatoCOP = new Intl.NumberFormat('es-CO', {
+  style: 'currency',
+  currency: 'COP',
+  maximumFractionDigits: 0,
+})
+
 const CAMPOS_NUTRICIONALES: { clave: keyof InfoNutricional; label: string }[] = [
   { clave: 'calorias', label: 'Calorías' },
   { clave: 'proteinaG', label: 'Proteína (g)' },
@@ -69,6 +75,7 @@ export function ProductoFormScreen({ onCerrarSesion }: ProductoFormScreenProps) 
   const [existencias, setExistencias] = useState('0')
   const [stockMinimo, setStockMinimo] = useState('0')
   const [vendePorPeso, setVendePorPeso] = useState(false)
+  const [descuentoPorcentaje, setDescuentoPorcentaje] = useState('')
   const [ingredientes, setIngredientes] = useState('')
   const [peso, setPeso] = useState('')
   const [pesoUnidad, setPesoUnidad] = useState('g')
@@ -92,6 +99,9 @@ export function ProductoFormScreen({ onCerrarSesion }: ProductoFormScreenProps) 
     setExistencias(String(productoExistente.existencias))
     setStockMinimo(String(productoExistente.stockMinimo ?? 0))
     setVendePorPeso(productoExistente.vendePorPeso ?? false)
+    setDescuentoPorcentaje(
+      productoExistente.descuentoPorcentaje != null ? String(productoExistente.descuentoPorcentaje) : '',
+    )
     setIngredientes(productoExistente.ingredientes ?? '')
     setPeso(productoExistente.peso != null ? String(productoExistente.peso) : '')
     setPesoUnidad(productoExistente.pesoUnidad ?? 'g')
@@ -177,6 +187,10 @@ export function ProductoFormScreen({ onCerrarSesion }: ProductoFormScreenProps) 
       existencias: Number(existencias) || 0,
       stockMinimo: Number(stockMinimo) || 0,
       vendePorPeso,
+      // null (no undefined) a propósito: así, si se borra el campo, se
+      // manda explícitamente y se quita el descuento activo en vez de que
+      // "campo vacío" simplemente no se envíe y la oferta se quede pegada.
+      descuentoPorcentaje: descuentoPorcentaje.trim() ? Number(descuentoPorcentaje) : null,
       ingredientes: ingredientes.trim() || undefined,
       infoNutricional: datosNutricion(),
       peso: peso.trim() ? Number(peso) : undefined,
@@ -445,6 +459,33 @@ export function ProductoFormScreen({ onCerrarSesion }: ProductoFormScreenProps) 
                 onKeyDown={bloquearEnter}
                 placeholder="0"
               />
+            </div>
+
+            <div className="gg-field">
+              <label htmlFor="descuento-producto">% de descuento (oferta activa, opcional)</label>
+              <input
+                id="descuento-producto"
+                className="gg-input"
+                type="number"
+                min="0.01"
+                max="100"
+                step="0.01"
+                value={descuentoPorcentaje}
+                onChange={(e) => setDescuentoPorcentaje(e.target.value)}
+                onKeyDown={bloquearEnter}
+                placeholder="Ej: 20 (vacío = sin oferta)"
+              />
+              {descuentoPorcentaje.trim() !== '' && Number(precioVenta) > 0 && (
+                <p className="gg-nuevo-producto-oferta-preview">
+                  Se verá en la tienda como{' '}
+                  <strong>
+                    {formatoCOP.format(
+                      Math.round(Number(precioVenta) * (1 - Number(descuentoPorcentaje) / 100)),
+                    )}
+                  </strong>{' '}
+                  (antes {formatoCOP.format(Number(precioVenta))})
+                </p>
+              )}
             </div>
 
             <div className="gg-nuevo-producto-grid">

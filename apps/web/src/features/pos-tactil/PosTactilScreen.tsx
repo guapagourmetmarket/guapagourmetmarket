@@ -6,6 +6,7 @@ import type { Producto } from '@guapa/shared'
 import { AppHeader } from '../../components/AppHeader'
 import { Card } from '../../components/Card'
 import { useCarrito } from '../../lib/carrito'
+import { precioEfectivo } from '../../lib/precio'
 import {
   ApiError,
   cambiarEstadoProducto,
@@ -146,7 +147,10 @@ export function PosTactilScreen({ onCerrarSesion }: PosTactilScreenProps) {
                   <div className="gg-tactil-resultado-info">
                     <span className="gg-tactil-resultado-nombre">{producto.nombre}</span>
                     <span className="gg-tactil-resultado-precio">
-                      {formatoCOP.format(producto.precioVenta)}
+                      {formatoCOP.format(precioEfectivo(producto))}
+                      {producto.descuentoPorcentaje && (
+                        <span className="gg-tactil-oferta-badge">-{producto.descuentoPorcentaje}%</span>
+                      )}
                     </span>
                   </div>
                   {producto.existencias === 0 && (
@@ -210,8 +214,16 @@ export function PosTactilScreen({ onCerrarSesion }: PosTactilScreenProps) {
                         <div className="gg-tactil-tile-info">
                           <span className="gg-tactil-tile-nombre">{producto.nombre}</span>
                           <span className="gg-tactil-tile-precio">
-                            {formatoCOP.format(producto.precioVenta)}
+                            {producto.descuentoPorcentaje && (
+                              <span className="gg-tactil-tile-precio-tachado">
+                                {formatoCOP.format(producto.precioVenta)}
+                              </span>
+                            )}
+                            {formatoCOP.format(precioEfectivo(producto))}
                           </span>
+                          {producto.descuentoPorcentaje && (
+                            <span className="gg-tactil-oferta-badge">-{producto.descuentoPorcentaje}%</span>
+                          )}
                         </div>
                       </button>
 

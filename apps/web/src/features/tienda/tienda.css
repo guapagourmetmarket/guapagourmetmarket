@@ -1,3 +1,85 @@
+.gg-tienda-ofertas {
+  padding: 20px 24px 24px;
+  background: linear-gradient(135deg, var(--c-roseSoft, #f4e0dc) 0%, var(--c-beige) 100%);
+  border-bottom: 1px solid var(--c-line);
+}
+
+.gg-tienda-ofertas-titulo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 14px;
+  font-size: 19px;
+  font-weight: 700;
+  color: var(--c-roseDeep);
+}
+
+.gg-tienda-ofertas-scroll {
+  display: flex;
+  gap: 14px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+  scroll-snap-type: x proximity;
+}
+
+.gg-tienda-oferta-card {
+  flex: 0 0 auto;
+  width: 150px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  scroll-snap-align: start;
+}
+
+.gg-tienda-oferta-imagen {
+  position: relative;
+  height: 90px;
+  border-radius: var(--radius-md);
+  background: var(--c-sageSoft);
+  color: var(--c-sageDeep);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.gg-tienda-oferta-imagen img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.gg-tienda-oferta-badge-flotante {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+}
+
+.gg-tienda-oferta-nombre {
+  margin: 0;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--c-ink);
+  line-height: 1.25;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.gg-tienda-oferta-precios {
+  display: flex;
+  flex-direction: column;
+}
+
+.gg-tienda-oferta-precio-nuevo {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--c-roseDeep);
+  font-variant-numeric: tabular-nums;
+}
+
 .gg-tienda-footer {
   text-align: center;
   padding: 24px 16px 40px;

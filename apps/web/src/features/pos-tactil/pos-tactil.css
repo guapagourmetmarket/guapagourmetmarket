@@ -203,6 +203,24 @@
   font-variant-numeric: tabular-nums;
 }
 
+.gg-tactil-tile-precio-tachado {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--c-muted);
+  text-decoration: line-through;
+  margin-right: 5px;
+}
+
+.gg-tactil-oferta-badge {
+  align-self: flex-start;
+  font-size: 10px;
+  font-weight: 800;
+  color: #fff;
+  background: var(--c-roseDeep);
+  padding: 2px 7px;
+  border-radius: var(--radius-pill);
+}
+
 .gg-tactil-agotado {
   font-size: 11px;
   font-weight: 700;

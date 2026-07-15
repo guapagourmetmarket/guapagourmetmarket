@@ -207,6 +207,18 @@
   color: var(--c-muted);
 }
 
+.gg-carrito-linea-precio-tachado {
+  text-decoration: line-through;
+  opacity: 0.7;
+  margin-right: 4px;
+}
+
+.gg-carrito-linea-oferta {
+  margin-left: 4px;
+  font-weight: 700;
+  color: var(--c-roseDeep);
+}
+
 .gg-carrito-linea-controles {
   display: flex;
   align-items: center;

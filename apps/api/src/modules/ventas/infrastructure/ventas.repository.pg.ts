@@ -85,7 +85,8 @@ export class VentasRepositoryPg implements VentasRepository {
 
       for (const item of venta.items) {
         const { rows } = await client.query(
-          `SELECT nombre, precio_venta, iva, existencias, costo_promedio, unidad_medida, vende_por_peso
+          `SELECT nombre, precio_venta, iva, existencias, costo_promedio, unidad_medida,
+                  vende_por_peso, descuento_porcentaje
            FROM productos WHERE id = $1 FOR UPDATE`,
           [item.productoId],
         );
@@ -99,7 +100,12 @@ export class VentasRepositoryPg implements VentasRepository {
             `Solo quedan ${producto.existencias} ${unidad} de "${producto.nombre}".`,
           );
         }
-        const precioUnitario = Number(producto.precio_venta);
+        // Si el producto tiene una oferta activa, se cobra el precio ya
+        // rebajado — la promoción no es solo decorativa en la tienda pública.
+        const precioLista = Number(producto.precio_venta);
+        const precioUnitario = producto.descuento_porcentaje
+          ? Math.round(precioLista * (1 - Number(producto.descuento_porcentaje) / 100))
+          : precioLista;
         itemsConDatos.push({
           productoId: item.productoId,
           nombre: producto.nombre,

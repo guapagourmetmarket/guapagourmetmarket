@@ -33,6 +33,8 @@ export interface Producto {
   existencias: number;
   stockMinimo?: number;
   vendePorPeso?: boolean;
+  descuentoPorcentaje?: number | null;
+  precioOferta?: number | null;
   imagenUrl?: string;
   imagenes: ImagenProducto[];
   favoritoPos?: boolean;

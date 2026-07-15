@@ -1,5 +1,6 @@
 import { createContext, useContext, useMemo, useState, type PropsWithChildren } from 'react'
 import type { Producto } from '@guapa/shared'
+import { precioEfectivo } from './precio'
 
 export interface LineaCarrito {
   producto: Producto
@@ -60,7 +61,7 @@ export function CarritoProvider({ children }: PropsWithChildren) {
   }
 
   const total = useMemo(
-    () => lineas.reduce((acc, l) => acc + l.producto.precioVenta * l.cantidad, 0),
+    () => lineas.reduce((acc, l) => acc + precioEfectivo(l.producto) * l.cantidad, 0),
     [lineas],
   )
 

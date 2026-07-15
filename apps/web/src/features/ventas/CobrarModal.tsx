@@ -7,6 +7,7 @@ import { Input } from '../../components/Input'
 import { useCarrito } from '../../lib/carrito'
 import { ApiError, obtenerClientes, type MetodoPago, type Venta } from '../../lib/api'
 import { registrarVentaConSync } from '../../lib/sync'
+import { precioEfectivo } from '../../lib/precio'
 import { useDescuento } from './descuento'
 import { ControlCantidad } from './ControlCantidad'
 import './ventas.css'
@@ -81,13 +82,21 @@ export function CobrarModal({ onClose, onVentaRegistrada }: CobrarModalProps) {
             <div className="gg-carrito-linea-info">
               <span className="gg-carrito-linea-nombre">{linea.producto.nombre}</span>
               <span className="gg-carrito-linea-precio">
-                {formatoCOP.format(linea.producto.precioVenta)}{' '}
+                {linea.producto.descuentoPorcentaje && (
+                  <span className="gg-carrito-linea-precio-tachado">
+                    {formatoCOP.format(linea.producto.precioVenta)}
+                  </span>
+                )}
+                {formatoCOP.format(precioEfectivo(linea.producto))}{' '}
                 {linea.producto.vendePorPeso ? `/ ${linea.producto.unidadMedida}` : 'c/u'}
+                {linea.producto.descuentoPorcentaje && (
+                  <span className="gg-carrito-linea-oferta">-{linea.producto.descuentoPorcentaje}%</span>
+                )}
               </span>
             </div>
             <ControlCantidad linea={linea} />
             <span className="gg-carrito-linea-subtotal">
-              {formatoCOP.format(linea.producto.precioVenta * linea.cantidad)}
+              {formatoCOP.format(precioEfectivo(linea.producto) * linea.cantidad)}
             </span>
             <button
               type="button"

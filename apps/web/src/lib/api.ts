@@ -232,6 +232,8 @@ export interface ProductoPublico {
   nombre: string
   descripcion: string | null
   precioVenta: number
+  descuentoPorcentaje: number | null
+  precioOferta: number | null
   categoriaNombre: string
   marcaNombre: string | null
   unidadMedida: string
@@ -262,6 +264,7 @@ export type NuevoProducto = Omit<
   | 'favoritoPos'
   | 'activo'
   | 'costoPromedio'
+  | 'precioOferta'
 >
 export type CambiosProducto = Partial<NuevoProducto>
 
