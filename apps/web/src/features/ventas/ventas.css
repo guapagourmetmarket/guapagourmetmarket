@@ -233,6 +233,23 @@
   font-variant-numeric: tabular-nums;
 }
 
+.gg-carrito-linea-controles--peso {
+  gap: 4px;
+}
+
+.gg-carrito-peso-input {
+  width: 64px;
+  padding: 4px 6px;
+  font-size: 13px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.gg-carrito-peso-unidad {
+  font-size: 12px;
+  color: var(--c-muted);
+}
+
 .gg-carrito-linea-subtotal {
   font-size: 13px;
   font-weight: 600;

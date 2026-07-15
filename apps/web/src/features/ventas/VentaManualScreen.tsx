@@ -1,7 +1,7 @@
 import { useMemo, useState, type FormEvent } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useLiveQuery } from 'dexie-react-hooks'
-import { Ban, Loader2, Minus, Plus, ReceiptText, Search, Sparkles, Trash2 } from 'lucide-react'
+import { Ban, Loader2, ReceiptText, Search, Sparkles, Trash2 } from 'lucide-react'
 import { AppHeader } from '../../components/AppHeader'
 import { Card } from '../../components/Card'
 import { Button } from '../../components/Button'
@@ -22,6 +22,7 @@ import {
 import { registrarVentaConSync, sincronizarOutbox } from '../../lib/sync'
 import { ReciboModal } from './ReciboModal'
 import { useDescuento } from './descuento'
+import { ControlCantidad } from './ControlCantidad'
 import './ventas.css'
 
 interface VentaManualScreenProps {
@@ -244,26 +245,11 @@ export function VentaManualScreen({ onCerrarSesion }: VentaManualScreenProps) {
                     <div className="gg-carrito-linea-info">
                       <span className="gg-carrito-linea-nombre">{linea.producto.nombre}</span>
                       <span className="gg-carrito-linea-precio">
-                        {formatoCOP.format(linea.producto.precioVenta)} c/u
+                        {formatoCOP.format(linea.producto.precioVenta)}{' '}
+                        {linea.producto.vendePorPeso ? `/ ${linea.producto.unidadMedida}` : 'c/u'}
                       </span>
                     </div>
-                    <div className="gg-carrito-linea-controles">
-                      <button
-                        type="button"
-                        onClick={() => carrito.cambiarCantidad(linea.producto.id, -1)}
-                        aria-label="Quitar una unidad"
-                      >
-                        <Minus size={14} />
-                      </button>
-                      <span>{linea.cantidad}</span>
-                      <button
-                        type="button"
-                        onClick={() => carrito.cambiarCantidad(linea.producto.id, 1)}
-                        aria-label="Agregar una unidad"
-                      >
-                        <Plus size={14} />
-                      </button>
-                    </div>
+                    <ControlCantidad linea={linea} />
                     <span className="gg-carrito-linea-subtotal">
                       {formatoCOP.format(linea.producto.precioVenta * linea.cantidad)}
                     </span>

@@ -124,7 +124,7 @@ export class ImportarProductosUseCase {
           precioCompra: precioCompraTexto ? Number(precioCompraTexto) : 0,
           precioVenta: precioVentaTexto ? Number(precioVentaTexto) : 0,
           iva: iva as Iva,
-          existencias: existenciasTexto ? Math.max(0, Math.trunc(Number(existenciasTexto))) : 0,
+          existencias: existenciasTexto ? Math.max(0, Math.round(Number(existenciasTexto) * 1000) / 1000) : 0,
           ingredientes: celda(row, columnaPorClave.get('ingredientes')) || undefined,
           peso: pesoTexto ? Number(pesoTexto) : undefined,
           pesoUnidad: celda(row, columnaPorClave.get('pesoUnidad')) || undefined,

@@ -68,6 +68,7 @@ export function ProductoFormScreen({ onCerrarSesion }: ProductoFormScreenProps) 
   const [iva, setIva] = useState<(typeof IVAS)[number]>(0)
   const [existencias, setExistencias] = useState('0')
   const [stockMinimo, setStockMinimo] = useState('0')
+  const [vendePorPeso, setVendePorPeso] = useState(false)
   const [ingredientes, setIngredientes] = useState('')
   const [peso, setPeso] = useState('')
   const [pesoUnidad, setPesoUnidad] = useState('g')
@@ -90,6 +91,7 @@ export function ProductoFormScreen({ onCerrarSesion }: ProductoFormScreenProps) 
     setIva(productoExistente.iva)
     setExistencias(String(productoExistente.existencias))
     setStockMinimo(String(productoExistente.stockMinimo ?? 0))
+    setVendePorPeso(productoExistente.vendePorPeso ?? false)
     setIngredientes(productoExistente.ingredientes ?? '')
     setPeso(productoExistente.peso != null ? String(productoExistente.peso) : '')
     setPesoUnidad(productoExistente.pesoUnidad ?? 'g')
@@ -174,6 +176,7 @@ export function ProductoFormScreen({ onCerrarSesion }: ProductoFormScreenProps) 
       iva,
       existencias: Number(existencias) || 0,
       stockMinimo: Number(stockMinimo) || 0,
+      vendePorPeso,
       ingredientes: ingredientes.trim() || undefined,
       infoNutricional: datosNutricion(),
       peso: peso.trim() ? Number(peso) : undefined,
@@ -412,11 +415,21 @@ export function ProductoFormScreen({ onCerrarSesion }: ProductoFormScreenProps) 
               />
             </div>
 
+            <label className="gg-toggle-desactivados">
+              <input
+                type="checkbox"
+                checked={vendePorPeso}
+                onChange={(e) => setVendePorPeso(e.target.checked)}
+              />
+              Se vende por peso (permite cantidades con decimales, ej. 0.350 kg de frutos secos a granel)
+            </label>
+
             <div className="gg-nuevo-producto-grid">
               <Input
                 label="Existencias"
                 type="number"
                 min="0"
+                step={vendePorPeso ? '0.001' : '1'}
                 value={existencias}
                 onChange={(e) => setExistencias(e.target.value)}
                 onKeyDown={bloquearEnter}
@@ -426,6 +439,7 @@ export function ProductoFormScreen({ onCerrarSesion }: ProductoFormScreenProps) 
                 label="Stock mínimo (alerta de bajo inventario)"
                 type="number"
                 min="0"
+                step={vendePorPeso ? '0.001' : '1'}
                 value={stockMinimo}
                 onChange={(e) => setStockMinimo(e.target.value)}
                 onKeyDown={bloquearEnter}
@@ -512,7 +526,11 @@ export function ProductoFormScreen({ onCerrarSesion }: ProductoFormScreenProps) 
           </form>
 
           {editando && productoExistente && (
-            <KardexProducto productoId={id!} existenciasActuales={productoExistente.existencias} />
+            <KardexProducto
+              productoId={id!}
+              existenciasActuales={productoExistente.existencias}
+              vendePorPeso={productoExistente.vendePorPeso}
+            />
           )}
         </Card>
       </main>

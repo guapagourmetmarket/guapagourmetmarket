@@ -5,7 +5,6 @@ import {
   IsBoolean,
   IsIn,
   IsISO8601,
-  IsInt,
   IsNumber,
   IsOptional,
   IsString,
@@ -29,8 +28,10 @@ export class VentaItemDto {
   @IsUUID()
   productoId!: string;
 
-  @IsInt()
-  @Min(1)
+  // Decimal para poder vender por peso (ej. 0.350 kg); en productos que se
+  // venden por unidad, el front sigue mandando enteros.
+  @IsNumber({ maxDecimalPlaces: 3 })
+  @Min(0.001)
   cantidad!: number;
 }
 

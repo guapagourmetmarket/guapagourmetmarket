@@ -8,7 +8,7 @@ const SELECT_BASE = `
   SELECT
     p.id, p.codigo_interno, p.codigo_barras, p.nombre, p.descripcion,
     p.precio_compra, p.costo_promedio, p.precio_venta, p.iva, p.unidad_medida, p.existencias,
-    p.stock_minimo, p.favorito_pos, p.activo, p.ingredientes, p.info_nutricional, p.peso, p.peso_unidad,
+    p.stock_minimo, p.vende_por_peso, p.favorito_pos, p.activo, p.ingredientes, p.info_nutricional, p.peso, p.peso_unidad,
     p.categoria_id, c.nombre AS categoria_nombre,
     p.marca_id, m.nombre AS marca_nombre,
     pi.url AS imagen_url,
@@ -37,6 +37,7 @@ const CAMPO_COLUMNA: Record<keyof CambiosProducto, string> = {
   unidadMedida: 'unidad_medida',
   existencias: 'existencias',
   stockMinimo: 'stock_minimo',
+  vendePorPeso: 'vende_por_peso',
   ingredientes: 'ingredientes',
   infoNutricional: 'info_nutricional',
   peso: 'peso',
@@ -63,6 +64,7 @@ function aProducto(row: QueryResultRow): Producto {
     unidadMedida: row.unidad_medida,
     existencias: row.existencias,
     stockMinimo: row.stock_minimo,
+    vendePorPeso: row.vende_por_peso,
     favoritoPos: row.favorito_pos,
     imagenUrl: row.imagen_url,
     imagenes: row.imagenes ?? [],
@@ -106,9 +108,9 @@ export class ProductosRepositoryPg implements ProductosRepository {
       const { rows } = await this.pool.query(
         `INSERT INTO productos
           (codigo_interno, codigo_barras, nombre, descripcion, precio_compra, costo_promedio, precio_venta,
-           iva, categoria_id, marca_id, unidad_medida, existencias, stock_minimo, ingredientes,
-           info_nutricional, peso, peso_unidad)
-         VALUES ($1,$2,$3,$4,$5,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16)
+           iva, categoria_id, marca_id, unidad_medida, existencias, stock_minimo, vende_por_peso,
+           ingredientes, info_nutricional, peso, peso_unidad)
+         VALUES ($1,$2,$3,$4,$5,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17)
          RETURNING id`,
         [
           nuevo.codigoInterno,
@@ -123,6 +125,7 @@ export class ProductosRepositoryPg implements ProductosRepository {
           nuevo.unidadMedida,
           nuevo.existencias,
           nuevo.stockMinimo ?? 0,
+          nuevo.vendePorPeso ?? false,
           nuevo.ingredientes ?? null,
           nuevo.infoNutricional ? JSON.stringify(nuevo.infoNutricional) : null,
           nuevo.peso ?? null,
@@ -236,6 +239,7 @@ export class ProductosRepositoryPg implements ProductosRepository {
       marcaId: original.marcaId ?? undefined,
       unidadMedida: original.unidadMedida,
       existencias: 0,
+      vendePorPeso: original.vendePorPeso,
       ingredientes: original.ingredientes ?? undefined,
       infoNutricional: original.infoNutricional ?? undefined,
       peso: original.peso ?? undefined,

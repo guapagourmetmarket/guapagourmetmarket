@@ -32,6 +32,7 @@ export interface Producto {
   unidadMedida: string;
   existencias: number;
   stockMinimo?: number;
+  vendePorPeso?: boolean;
   imagenUrl?: string;
   imagenes: ImagenProducto[];
   favoritoPos?: boolean;

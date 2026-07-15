@@ -1,6 +1,6 @@
 import { useMemo, useState, type FormEvent } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Loader2, Minus, Plus, Sparkles, Trash2 } from 'lucide-react'
+import { Loader2, Sparkles, Trash2 } from 'lucide-react'
 import { Modal } from '../../components/Modal'
 import { Button } from '../../components/Button'
 import { Input } from '../../components/Input'
@@ -8,6 +8,7 @@ import { useCarrito } from '../../lib/carrito'
 import { ApiError, obtenerClientes, type MetodoPago, type Venta } from '../../lib/api'
 import { registrarVentaConSync } from '../../lib/sync'
 import { useDescuento } from './descuento'
+import { ControlCantidad } from './ControlCantidad'
 import './ventas.css'
 
 interface CobrarModalProps {
@@ -80,26 +81,11 @@ export function CobrarModal({ onClose, onVentaRegistrada }: CobrarModalProps) {
             <div className="gg-carrito-linea-info">
               <span className="gg-carrito-linea-nombre">{linea.producto.nombre}</span>
               <span className="gg-carrito-linea-precio">
-                {formatoCOP.format(linea.producto.precioVenta)} c/u
+                {formatoCOP.format(linea.producto.precioVenta)}{' '}
+                {linea.producto.vendePorPeso ? `/ ${linea.producto.unidadMedida}` : 'c/u'}
               </span>
             </div>
-            <div className="gg-carrito-linea-controles">
-              <button
-                type="button"
-                onClick={() => carrito.cambiarCantidad(linea.producto.id, -1)}
-                aria-label="Quitar una unidad"
-              >
-                <Minus size={14} />
-              </button>
-              <span>{linea.cantidad}</span>
-              <button
-                type="button"
-                onClick={() => carrito.cambiarCantidad(linea.producto.id, 1)}
-                aria-label="Agregar una unidad"
-              >
-                <Plus size={14} />
-              </button>
-            </div>
+            <ControlCantidad linea={linea} />
             <span className="gg-carrito-linea-subtotal">
               {formatoCOP.format(linea.producto.precioVenta * linea.cantidad)}
             </span>

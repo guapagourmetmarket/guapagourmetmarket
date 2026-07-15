@@ -1,7 +1,7 @@
 import { Type } from 'class-transformer';
 import {
+  IsBoolean,
   IsIn,
-  IsInt,
   IsNumber,
   IsOptional,
   IsString,
@@ -52,14 +52,18 @@ export class CrearProductoDto {
   @MinLength(1)
   unidadMedida!: string;
 
-  @IsInt()
+  @IsNumber({ maxDecimalPlaces: 3 })
   @Min(0)
   existencias!: number;
 
   @IsOptional()
-  @IsInt()
+  @IsNumber({ maxDecimalPlaces: 3 })
   @Min(0)
   stockMinimo?: number;
+
+  @IsOptional()
+  @IsBoolean()
+  vendePorPeso?: boolean;
 
   @IsOptional()
   @IsString()

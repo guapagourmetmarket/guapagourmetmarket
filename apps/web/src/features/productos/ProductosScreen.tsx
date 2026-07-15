@@ -289,7 +289,11 @@ export function ProductosScreen({ onCerrarSesion }: ProductosScreenProps) {
                             : '')
                       }
                     >
-                      {producto.existencias === 0 ? 'Agotado' : `${producto.existencias} en stock`}
+                      {producto.existencias === 0
+                        ? 'Agotado'
+                        : producto.vendePorPeso
+                          ? `${producto.existencias} ${producto.unidadMedida} en stock`
+                          : `${producto.existencias} en stock`}
                     </span>
                   </div>
                 </div>

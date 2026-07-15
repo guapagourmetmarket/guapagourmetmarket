@@ -15,6 +15,7 @@ import './kardex.css'
 interface KardexProductoProps {
   productoId: string
   existenciasActuales: number
+  vendePorPeso?: boolean
 }
 
 const ETIQUETA_REFERENCIA: Record<ReferenciaTipo, string> = {
@@ -36,7 +37,7 @@ function IconoMovimiento({ tipo }: { tipo: MovimientoInventario['tipo'] }) {
   return <SlidersHorizontal size={16} className="gg-kardex-icono gg-kardex-icono--ajuste" />
 }
 
-export function KardexProducto({ productoId, existenciasActuales }: KardexProductoProps) {
+export function KardexProducto({ productoId, existenciasActuales, vendePorPeso }: KardexProductoProps) {
   const queryClient = useQueryClient()
   const [ajustando, setAjustando] = useState(false)
   const [cantidadNueva, setCantidadNueva] = useState('')
@@ -93,6 +94,7 @@ export function KardexProducto({ productoId, existenciasActuales }: KardexProduc
               label="Existencias reales"
               type="number"
               min="0"
+              step={vendePorPeso ? '0.001' : '1'}
               value={cantidadNueva}
               onChange={(e) => setCantidadNueva(e.target.value)}
               autoFocus

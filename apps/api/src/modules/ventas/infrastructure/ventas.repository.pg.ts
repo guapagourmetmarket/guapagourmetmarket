@@ -85,7 +85,8 @@ export class VentasRepositoryPg implements VentasRepository {
 
       for (const item of venta.items) {
         const { rows } = await client.query(
-          `SELECT nombre, precio_venta, iva, existencias, costo_promedio FROM productos WHERE id = $1 FOR UPDATE`,
+          `SELECT nombre, precio_venta, iva, existencias, costo_promedio, unidad_medida, vende_por_peso
+           FROM productos WHERE id = $1 FOR UPDATE`,
           [item.productoId],
         );
         if (rows.length === 0) {
@@ -93,8 +94,9 @@ export class VentasRepositoryPg implements VentasRepository {
         }
         const producto = rows[0];
         if (producto.existencias < item.cantidad) {
+          const unidad = producto.vende_por_peso ? producto.unidad_medida : 'unidades';
           throw new BadRequestException(
-            `Solo quedan ${producto.existencias} unidades de "${producto.nombre}".`,
+            `Solo quedan ${producto.existencias} ${unidad} de "${producto.nombre}".`,
           );
         }
         const precioUnitario = Number(producto.precio_venta);

@@ -10,6 +10,7 @@ interface CarritoContextValue {
   lineas: LineaCarrito[]
   agregarProducto: (producto: Producto) => void
   cambiarCantidad: (productoId: string, delta: number) => void
+  establecerCantidad: (productoId: string, cantidad: number) => void
   quitarLinea: (productoId: string) => void
   vaciar: () => void
   total: number
@@ -40,6 +41,16 @@ export function CarritoProvider({ children }: PropsWithChildren) {
     )
   }
 
+  // Para productos que se venden por peso: el cajero escribe el peso exacto
+  // (ej. 0.350 kg) en vez de sumar de a una unidad.
+  function establecerCantidad(productoId: string, cantidad: number) {
+    setLineas((prev) =>
+      prev
+        .map((l) => (l.producto.id === productoId ? { ...l, cantidad } : l))
+        .filter((l) => l.cantidad > 0),
+    )
+  }
+
   function quitarLinea(productoId: string) {
     setLineas((prev) => prev.filter((l) => l.producto.id !== productoId))
   }
@@ -55,7 +66,7 @@ export function CarritoProvider({ children }: PropsWithChildren) {
 
   return (
     <CarritoContext.Provider
-      value={{ lineas, agregarProducto, cambiarCantidad, quitarLinea, vaciar, total }}
+      value={{ lineas, agregarProducto, cambiarCantidad, establecerCantidad, quitarLinea, vaciar, total }}
     >
       {children}
     </CarritoContext.Provider>

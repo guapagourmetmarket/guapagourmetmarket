@@ -32,6 +32,7 @@ export interface Producto {
   unidadMedida: string;
   existencias: number;
   stockMinimo: number;
+  vendePorPeso: boolean;
   favoritoPos: boolean;
   imagenUrl: string | null;
   imagenes: ImagenProducto[];
@@ -55,6 +56,7 @@ export interface NuevoProducto {
   unidadMedida: string;
   existencias: number;
   stockMinimo?: number;
+  vendePorPeso?: boolean;
   ingredientes?: string;
   infoNutricional?: InfoNutricional;
   peso?: number;
