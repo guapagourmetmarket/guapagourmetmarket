@@ -242,7 +242,32 @@
 
 .gg-header-alerta-punto--clientes {
   background: var(--c-warning);
-  box-shadow: 0 0 0 0 rgba(214, 158, 46, 0.55);
+  box-shadow: 0 0 0 0 rgba(217, 161, 58, 0.55);
+}
+
+/* Insignia de cumpleaños: torta con un pequeño rebote, distinta a los
+   puntos de alerta porque no avisa de un problema sino de algo bonito. */
+.gg-header-cumpleanos-badge {
+  display: inline-flex;
+  font-size: 13px;
+  line-height: 1;
+  animation: gg-cumpleanos-rebote 1.4s ease-in-out infinite;
+}
+
+@keyframes gg-cumpleanos-rebote {
+  0%,
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
+  50% {
+    transform: scale(1.25) rotate(-8deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gg-header-cumpleanos-badge {
+    animation: none;
+  }
 }
 
 .gg-header-acciones {

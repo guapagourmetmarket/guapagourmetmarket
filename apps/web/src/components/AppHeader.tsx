@@ -12,6 +12,7 @@ import {
   obtenerAlertas,
   obtenerCartera,
   obtenerCarteraClientes,
+  obtenerCumpleanosDelMes,
   obtenerUsuarioSesion,
   type Rol,
 } from '../lib/api'
@@ -89,8 +90,26 @@ export function AppHeader({ onCerrarSesion }: AppHeaderProps) {
     (c) => c.fechaVencimientoPago && c.fechaVencimientoPago < hoy,
   ).length
 
+  // Cumpleaños: "hoy" es lo que realmente amerita una alerta; "este mes"
+  // es el respaldo si hoy no hay ninguno, para que la torta no desaparezca
+  // apenas pasa el día exacto.
+  const { data: cumpleanosMes } = useQuery({
+    queryKey: ['cumpleanos-resumen'],
+    queryFn: obtenerCumpleanosDelMes,
+    staleTime: 60_000,
+  })
+  const hoyDia = new Date().getDate()
+  const cumpleanosHoy = (cumpleanosMes ?? []).filter(
+    (c) => c.fechaNacimiento && Number(c.fechaNacimiento.split('-')[2]) === hoyDia,
+  )
+
   const mensajesInternos = [
     `🏪 ${brand.name} · ${brand.contacto.direccion}`,
+    cumpleanosHoy.length > 0
+      ? `🎂 ¡Hoy cumple años ${cumpleanosHoy.map((c) => c.nombre).join(', ')}!`
+      : cumpleanosMes && cumpleanosMes.length > 0
+        ? `🎂 ${cumpleanosMes.length} cliente${cumpleanosMes.length === 1 ? '' : 's'} de cumpleaños este mes`
+        : null,
     totalAlertas > 0
       ? `⚠️ ${totalAlertas} alerta${totalAlertas === 1 ? '' : 's'} de inventario (stock bajo o por vencer)`
       : null,
@@ -155,6 +174,14 @@ export function AppHeader({ onCerrarSesion }: AppHeaderProps) {
                   className="gg-header-alerta-punto gg-header-alerta-punto--clientes"
                   aria-label={`${clientesVencidos} clientes con pago vencido`}
                 />
+              )}
+              {enlace.to === '/clientes' && cumpleanosHoy.length > 0 && (
+                <span
+                  className="gg-header-cumpleanos-badge"
+                  aria-label={`Hoy cumple años: ${cumpleanosHoy.map((c) => c.nombre).join(', ')}`}
+                >
+                  🎂
+                </span>
               )}
               {enlace.to === '/contabilidad' && esGerencial && proveedoresVencidos > 0 && (
                 <span
