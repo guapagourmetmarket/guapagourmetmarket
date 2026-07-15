@@ -81,24 +81,84 @@
 .gg-tactil-tile {
   display: flex;
   flex-direction: column;
-  border: none;
-  border-radius: var(--radius-lg);
-  background: var(--c-surface);
-  box-shadow: var(--shadow-card);
+  padding: 0;
   overflow: hidden;
+}
+
+.gg-tactil-tile-tap {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  border: none;
+  background: none;
   cursor: pointer;
   padding: 0;
   text-align: left;
-  transition: transform 0.08s ease, box-shadow 0.08s ease;
+  font: inherit;
+  color: inherit;
+  transition: transform 0.08s ease;
 }
 
-.gg-tactil-tile:active {
+.gg-tactil-tile-tap:active {
   transform: scale(0.97);
 }
 
-.gg-tactil-tile:disabled {
+.gg-tactil-tile-tap:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+.gg-tactil-favorito-badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--c-warning);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gg-tactil-tile-cantidad {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px 0;
+  font-size: 13px;
+  color: var(--c-sageDeep);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.gg-tactil-tile-cantidad button {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--c-sand);
+  border-radius: var(--radius-sm);
+  background: var(--c-surface);
+  cursor: pointer;
+  color: var(--c-sageDeep);
+}
+
+.gg-tactil-tile-cantidad-label {
+  color: var(--c-muted);
+  font-weight: 600;
+  font-size: 11px;
+}
+
+.gg-tactil-tile-acciones {
+  display: flex;
+  gap: 4px;
+  padding: 10px 10px 12px;
+  margin-top: 10px;
+  border-top: 1px solid var(--c-line);
 }
 
 .gg-tactil-tile-imagen {

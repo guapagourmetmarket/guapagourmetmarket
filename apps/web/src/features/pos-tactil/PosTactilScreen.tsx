@@ -1,11 +1,18 @@
 import { useMemo, useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
-import { Leaf, Search, ShoppingCart, Star } from 'lucide-react'
+import { Leaf, Minus, Pencil, Power, Search, ShoppingCart, Star, Trash2 } from 'lucide-react'
+import type { Producto } from '@guapa/shared'
 import { AppHeader } from '../../components/AppHeader'
 import { Card } from '../../components/Card'
 import { useCarrito } from '../../lib/carrito'
-import { obtenerProductos } from '../../lib/api'
+import {
+  ApiError,
+  cambiarEstadoProducto,
+  cambiarFavoritoProducto,
+  eliminarProducto,
+  obtenerProductos,
+} from '../../lib/api'
 import { CobrarModal } from '../ventas/CobrarModal'
 import { ReciboModal } from '../ventas/ReciboModal'
 import { obtenerNegocio, type Venta } from '../../lib/api'
@@ -24,6 +31,7 @@ const formatoCOP = new Intl.NumberFormat('es-CO', {
 
 export function PosTactilScreen({ onCerrarSesion }: PosTactilScreenProps) {
   const carrito = useCarrito()
+  const queryClient = useQueryClient()
   const { data: negocio } = useQuery({ queryKey: ['negocio'], queryFn: obtenerNegocio })
   const { data: productos, isLoading, isError } = useQuery({
     queryKey: ['productos'],
@@ -34,8 +42,33 @@ export function PosTactilScreen({ onCerrarSesion }: PosTactilScreenProps) {
   const [cobrando, setCobrando] = useState(false)
   const [reciboVenta, setReciboVenta] = useState<Venta | null>(null)
 
-  const favoritos = useMemo(
-    () => (productos ?? []).filter((p) => p.favoritoPos && p.activo !== false),
+  const mutacionEstado = useMutation({
+    mutationFn: ({ id, activo }: { id: string; activo: boolean }) => cambiarEstadoProducto(id, activo),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['productos'] }),
+  })
+
+  const mutacionFavorito = useMutation({
+    mutationFn: ({ id, favoritoPos }: { id: string; favoritoPos: boolean }) =>
+      cambiarFavoritoProducto(id, favoritoPos),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['productos'] }),
+  })
+
+  const mutacionEliminar = useMutation({
+    mutationFn: eliminarProducto,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['productos'] }),
+    onError: (err) => {
+      window.alert(err instanceof ApiError ? err.message : 'No pudimos eliminar el producto. Intenta de nuevo.')
+    },
+  })
+
+  // Todos los productos activos, no solo los favoritos: los favoritos
+  // simplemente aparecen primero, para que nada quede escondido en modo
+  // táctil, pero los que más se venden sigan siendo los más a mano.
+  const productosGrid = useMemo(
+    () =>
+      (productos ?? [])
+        .filter((p) => p.activo !== false)
+        .sort((a, b) => Number(b.favoritoPos) - Number(a.favoritoPos) || a.nombre.localeCompare(b.nombre)),
     [productos],
   )
 
@@ -52,9 +85,23 @@ export function PosTactilScreen({ onCerrarSesion }: PosTactilScreenProps) {
       .slice(0, 12)
   }, [productos, busqueda])
 
-  function agregarYLimpiar(producto: (typeof favoritos)[number]) {
+  function agregarYLimpiar(producto: Producto) {
     carrito.agregarProducto(producto)
     setBusqueda('')
+  }
+
+  function handleEliminar(producto: Producto) {
+    const confirmado = window.confirm(
+      `¿Eliminar "${producto.nombre}" para siempre? Esta acción no se puede deshacer. Si prefieres poder recuperarlo más adelante, usa "Desactivar" en su lugar.`,
+    )
+    if (confirmado) mutacionEliminar.mutate(producto.id)
+  }
+
+  function handleDesactivar(producto: Producto) {
+    const confirmado = window.confirm(
+      `¿Desactivar "${producto.nombre}"? Deja de aparecer aquí y en Productos, pero puedes reactivarlo cuando quieras.`,
+    )
+    if (confirmado) mutacionEstado.mutate({ id: producto.id, activo: false })
   }
 
   return (
@@ -123,45 +170,108 @@ export function PosTactilScreen({ onCerrarSesion }: PosTactilScreenProps) {
               </Card>
             )}
 
-            {!isLoading && !isError && favoritos.length === 0 && (
+            {!isLoading && !isError && productosGrid.length === 0 && (
               <Card className="gg-tactil-estado gg-tactil-estado-vacio">
                 <Star size={32} strokeWidth={1.5} />
                 <p>
-                  Todavía no marcaste ningún producto como favorito del modo táctil. Ve a{' '}
-                  <Link to="/productos">Productos</Link> y toca la estrella <Star size={14} /> en
-                  los que más vendas para que aparezcan aquí, grandes y con foto.
+                  Todavía no tienes productos activos. Ve a{' '}
+                  <Link to="/productos">Productos</Link> para agregar el primero.
                 </p>
               </Card>
             )}
 
-            {!isLoading && !isError && favoritos.length > 0 && (
+            {!isLoading && !isError && productosGrid.length > 0 && (
               <div className="gg-tactil-grid">
-                {favoritos.map((producto) => (
-                  <button
-                    key={producto.id}
-                    type="button"
-                    className="gg-tactil-tile"
-                    disabled={producto.existencias === 0}
-                    onClick={() => carrito.agregarProducto(producto)}
-                  >
-                    <div className="gg-tactil-tile-imagen">
-                      {producto.imagenUrl ? (
-                        <img src={producto.imagenUrl} alt={producto.nombre} />
-                      ) : (
-                        <Leaf size={40} strokeWidth={1.5} />
+                {productosGrid.map((producto) => {
+                  const linea = carrito.lineas.find((l) => l.producto.id === producto.id)
+                  return (
+                    <Card key={producto.id} className="gg-tactil-tile">
+                      <button
+                        type="button"
+                        className="gg-tactil-tile-tap"
+                        disabled={producto.existencias === 0}
+                        onClick={() => carrito.agregarProducto(producto)}
+                      >
+                        <div className="gg-tactil-tile-imagen">
+                          {producto.imagenUrl ? (
+                            <img src={producto.imagenUrl} alt={producto.nombre} />
+                          ) : (
+                            <Leaf size={40} strokeWidth={1.5} />
+                          )}
+                          {producto.favoritoPos && (
+                            <span className="gg-tactil-favorito-badge">
+                              <Star size={11} fill="currentColor" />
+                            </span>
+                          )}
+                          {producto.existencias === 0 && (
+                            <span className="gg-tactil-agotado gg-tactil-agotado--tile">Agotado</span>
+                          )}
+                        </div>
+                        <div className="gg-tactil-tile-info">
+                          <span className="gg-tactil-tile-nombre">{producto.nombre}</span>
+                          <span className="gg-tactil-tile-precio">
+                            {formatoCOP.format(producto.precioVenta)}
+                          </span>
+                        </div>
+                      </button>
+
+                      {linea && (
+                        <div className="gg-tactil-tile-cantidad">
+                          <button
+                            type="button"
+                            title="Quitar una unidad del carrito"
+                            onClick={() => carrito.cambiarCantidad(producto.id, -1)}
+                          >
+                            <Minus size={13} />
+                          </button>
+                          <span>{linea.cantidad}</span>
+                          <span className="gg-tactil-tile-cantidad-label">en el carrito</span>
+                        </div>
                       )}
-                      {producto.existencias === 0 && (
-                        <span className="gg-tactil-agotado gg-tactil-agotado--tile">Agotado</span>
-                      )}
-                    </div>
-                    <div className="gg-tactil-tile-info">
-                      <span className="gg-tactil-tile-nombre">{producto.nombre}</span>
-                      <span className="gg-tactil-tile-precio">
-                        {formatoCOP.format(producto.precioVenta)}
-                      </span>
-                    </div>
-                  </button>
-                ))}
+
+                      <div className="gg-tactil-tile-acciones">
+                        <Link
+                          to={`/productos/${producto.id}/editar`}
+                          className="gg-producto-accion"
+                          title="Editar producto"
+                        >
+                          <Pencil size={14} />
+                        </Link>
+                        <button
+                          type="button"
+                          className={
+                            'gg-producto-accion' + (producto.favoritoPos ? ' gg-producto-accion--favorito' : '')
+                          }
+                          title={producto.favoritoPos ? 'Quitar de favoritos' : 'Marcar como favorito'}
+                          disabled={mutacionFavorito.isPending}
+                          onClick={() =>
+                            mutacionFavorito.mutate({ id: producto.id, favoritoPos: !producto.favoritoPos })
+                          }
+                        >
+                          <Star size={14} fill={producto.favoritoPos ? 'currentColor' : 'none'} />
+                        </button>
+                        <button
+                          type="button"
+                          className="gg-producto-accion"
+                          title="Desactivar producto (se puede reactivar luego)"
+                          disabled={mutacionEstado.isPending}
+                          onClick={() => handleDesactivar(producto)}
+                        >
+                          <Power size={14} />
+                        </button>
+                        <button
+                          type="button"
+                          className="gg-producto-accion gg-producto-accion--peligro"
+                          title="Eliminar producto para siempre"
+                          disabled={mutacionEliminar.isPending}
+                          onClick={() => handleEliminar(producto)}
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                    </Card>
+                  )
+                })}
               </div>
             )}
           </>
