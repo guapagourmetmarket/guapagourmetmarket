@@ -17,6 +17,12 @@ export default defineConfig({
         // cubre el "cascarón" de la app (JS/CSS/fuentes/íconos); los datos
         // offline (productos, ventas) los maneja lib/db.ts y lib/sync.ts.
         globPatterns: ['**/*.{js,css,html,woff2,png,svg}'],
+        // Sin esto, un service worker viejo se queda sirviendo la versión
+        // anterior de la app hasta que se cierren todas las pestañas: con
+        // skipWaiting + clientsClaim, el nuevo toma control de inmediato y
+        // main.tsx fuerza un recargo una sola vez para mostrarlo.
+        skipWaiting: true,
+        clientsClaim: true,
       },
     }),
   ],
