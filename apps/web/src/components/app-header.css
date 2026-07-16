@@ -70,47 +70,12 @@
 
 /* Datos de contacto, debajo de "by Paola Rodríguez". */
 .gg-header-contacto {
-  position: relative;
   display: flex;
   align-items: center;
   flex-wrap: wrap;
   justify-content: center;
   gap: 4px 14px;
   margin-top: 6px;
-  overflow: hidden;
-}
-
-/* Brillo suave que recorre la dirección y las redes, muy despacio — un
-   recorrido continuo (sin saltos al reiniciar) para que no maree. */
-.gg-header-contacto::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  /* Verde salvia (no blanco): sobre el fondo ya clarito de esta franja,
-     un brillo blanco casi no se notaba — este sí resalta, pero suave. */
-  background: linear-gradient(100deg, transparent 30%, rgba(74, 128, 84, 0.13) 50%, transparent 70%);
-  transform: translateX(-150%);
-  animation: gg-brillo-contacto 10s ease-in-out infinite;
-  pointer-events: none;
-}
-
-@keyframes gg-brillo-contacto {
-  0% {
-    transform: translateX(-150%);
-  }
-  50% {
-    transform: translateX(150%);
-  }
-  100% {
-    transform: translateX(-150%);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .gg-header-contacto::after {
-    animation: none;
-    display: none;
-  }
 }
 
 .gg-header-contacto-direccion {
