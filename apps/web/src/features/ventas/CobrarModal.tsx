@@ -10,6 +10,7 @@ import { registrarVentaConSync } from '../../lib/sync'
 import { precioEfectivo } from '../../lib/precio'
 import { useDescuento } from './descuento'
 import { ControlCantidad } from './ControlCantidad'
+import { CuponInput } from './CuponInput'
 import './ventas.css'
 
 interface CobrarModalProps {
@@ -163,6 +164,14 @@ export function CobrarModal({ onClose, onVentaRegistrada }: CobrarModalProps) {
             ))}
           </select>
         </div>
+
+        <CuponInput
+          onAplicar={(pct) => {
+            descuento.setTipo('porcentaje')
+            descuento.setEntrada(String(pct))
+          }}
+          onQuitar={() => descuento.setEntrada('')}
+        />
 
         <div className="gg-field">
           <label htmlFor="descuento-cobrar">Descuento (opcional)</label>

@@ -13,6 +13,7 @@ import {
   obtenerCartera,
   obtenerCarteraClientes,
   obtenerCumpleanosDelMes,
+  obtenerPedidos,
   obtenerUsuarioSesion,
   type Rol,
 } from '../lib/api'
@@ -32,8 +33,11 @@ const ENLACES: { to: string; label: string; roles?: Rol[] }[] = [
   { to: '/caja', label: 'Caja' },
   { to: '/pos-tactil', label: 'Táctil' },
   { to: '/ventas', label: 'Venta manual' },
+  { to: '/cuentas', label: 'Cuentas' },
+  { to: '/pedidos', label: 'Pedidos' },
   { to: '/compras', label: 'Compras', roles: GERENCIAL },
   { to: '/proveedores', label: 'Proveedores', roles: GERENCIAL },
+  { to: '/cupones', label: 'Cupones', roles: GERENCIAL },
   { to: '/clientes', label: 'Clientes' },
   { to: '/alertas', label: 'Alertas' },
   { to: '/contabilidad', label: 'Contabilidad', roles: GERENCIAL },
@@ -103,8 +107,25 @@ export function AppHeader({ onCerrarSesion }: AppHeaderProps) {
     (c) => c.fechaNacimiento && Number(c.fechaNacimiento.split('-')[2]) === hoyDia,
   )
 
+  // "Pedidos" (encargos especiales, ej. tortas): se avisa cuando la fecha
+  // de entrega está a 2 días o menos, para no dejarlo pasar.
+  const { data: pedidos } = useQuery({
+    queryKey: ['pedidos-resumen'],
+    queryFn: obtenerPedidos,
+    staleTime: 60_000,
+  })
+  const limitePedidos = new Date()
+  limitePedidos.setDate(limitePedidos.getDate() + 2)
+  const limitePedidosStr = limitePedidos.toISOString().slice(0, 10)
+  const pedidosProximos = (pedidos ?? []).filter(
+    (p) => p.estado === 'pendiente' && p.fechaEntrega <= limitePedidosStr,
+  )
+
   const mensajesInternos = [
     `🏪 ${brand.name} · ${brand.contacto.direccion}`,
+    pedidosProximos.length > 0
+      ? `📦 ${pedidosProximos.length} pedido${pedidosProximos.length === 1 ? '' : 's'} por encargo próximo${pedidosProximos.length === 1 ? '' : 's'} a entregar`
+      : null,
     cumpleanosHoy.length > 0
       ? `🎂 ¡Hoy cumple años ${cumpleanosHoy.map((c) => c.nombre).join(', ')}!`
       : cumpleanosMes && cumpleanosMes.length > 0
@@ -187,6 +208,12 @@ export function AppHeader({ onCerrarSesion }: AppHeaderProps) {
                 <span
                   className="gg-header-alerta-punto gg-header-alerta-punto--clientes"
                   aria-label={`${proveedoresVencidos} cuentas por pagar vencidas`}
+                />
+              )}
+              {enlace.to === '/pedidos' && pedidosProximos.length > 0 && (
+                <span
+                  className="gg-header-alerta-punto gg-header-alerta-punto--clientes"
+                  aria-label={`${pedidosProximos.length} pedidos por encargo próximos`}
                 />
               )}
             </NavLink>

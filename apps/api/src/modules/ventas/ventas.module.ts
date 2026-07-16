@@ -20,5 +20,9 @@ import { VENTAS_REPOSITORY } from './domain/ventas.repository';
     MarcarVentaPagadaUseCase,
     { provide: VENTAS_REPOSITORY, useClass: VentasRepositoryPg },
   ],
+  // Cuentas abiertas reusa este caso de uso para "cerrar" una cuenta como
+  // una venta real (mismo historial, kardex y puntos), en vez de duplicar
+  // esa lógica de transacción.
+  exports: [RegistrarVentaUseCase],
 })
 export class VentasModule {}

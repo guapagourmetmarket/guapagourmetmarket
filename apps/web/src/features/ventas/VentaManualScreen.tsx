@@ -23,6 +23,7 @@ import { registrarVentaConSync, sincronizarOutbox } from '../../lib/sync'
 import { precioEfectivo } from '../../lib/precio'
 import { ReciboModal } from './ReciboModal'
 import { useDescuento } from './descuento'
+import { CuponInput } from './CuponInput'
 import { ControlCantidad } from './ControlCantidad'
 import './ventas.css'
 
@@ -352,6 +353,14 @@ export function VentaManualScreen({ onCerrarSesion }: VentaManualScreenProps) {
                   ))}
                 </select>
               </div>
+
+              <CuponInput
+                onAplicar={(pct) => {
+                  descuento.setTipo('porcentaje')
+                  descuento.setEntrada(String(pct))
+                }}
+                onQuitar={() => descuento.setEntrada('')}
+              />
 
               <div className="gg-field">
                 <label htmlFor="descuento-venta">Descuento (opcional)</label>

@@ -11,6 +11,9 @@ import { ComprasScreen } from './features/compras/ComprasScreen'
 import { AlertasScreen } from './features/alertas/AlertasScreen'
 import { ContabilidadScreen } from './features/contabilidad/ContabilidadScreen'
 import { GastosScreen } from './features/contabilidad/GastosScreen'
+import { CuponesScreen } from './features/cupones/CuponesScreen'
+import { PedidosScreen } from './features/pedidos/PedidosScreen'
+import { CuentasScreen } from './features/cuentas/CuentasScreen'
 import { ClientesScreen } from './features/clientes/ClientesScreen'
 import { EnlacesScreen } from './features/enlaces/EnlacesScreen'
 import { TiendaScreen } from './features/tienda/TiendaScreen'
@@ -165,6 +168,36 @@ function App() {
         element={
           autenticado ? (
             <GastosScreen onCerrarSesion={cerrarSesion} />
+          ) : (
+            <Navigate to="/login" replace />
+          )
+        }
+      />
+      <Route
+        path="/cupones"
+        element={
+          autenticado ? (
+            <CuponesScreen onCerrarSesion={cerrarSesion} />
+          ) : (
+            <Navigate to="/login" replace />
+          )
+        }
+      />
+      <Route
+        path="/pedidos"
+        element={
+          autenticado ? (
+            <PedidosScreen onCerrarSesion={cerrarSesion} />
+          ) : (
+            <Navigate to="/login" replace />
+          )
+        }
+      />
+      <Route
+        path="/cuentas"
+        element={
+          autenticado ? (
+            <CuentasScreen onCerrarSesion={cerrarSesion} />
           ) : (
             <Navigate to="/login" replace />
           )

@@ -13,6 +13,9 @@ import { ContabilidadModule } from './modules/contabilidad/contabilidad.module';
 import { ClientesModule } from './modules/clientes/clientes.module';
 import { ReportesModule } from './modules/reportes/reportes.module';
 import { CajaModule } from './modules/caja/caja.module';
+import { CuponesModule } from './modules/cupones/cupones.module';
+import { PedidosModule } from './modules/pedidos/pedidos.module';
+import { CuentasModule } from './modules/cuentas/cuentas.module';
 
 @Module({
   imports: [
@@ -28,6 +31,9 @@ import { CajaModule } from './modules/caja/caja.module';
     ClientesModule,
     ReportesModule,
     CajaModule,
+    CuponesModule,
+    PedidosModule,
+    CuentasModule,
   ],
   controllers: [AppController],
   providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }],

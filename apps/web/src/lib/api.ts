@@ -872,3 +872,139 @@ export function obtenerMargenProductos(desde?: string, hasta?: string, limite = 
   params.set('limite', String(limite))
   return api.get<MargenProducto[]>(`/reportes/margen-productos?${params.toString()}`)
 }
+
+// ─── Cupones de descuento ───────────────────────────────────────────────
+
+export interface Cupon {
+  id: string
+  codigo: string
+  porcentaje: number
+  activo: boolean
+}
+
+export interface ResultadoValidacionCupon {
+  valido: boolean
+  porcentaje: number | null
+  mensaje: string | null
+}
+
+export function obtenerCupones() {
+  return api.get<Cupon[]>('/cupones')
+}
+
+export function crearCupon(codigo: string, porcentaje: number) {
+  return api.post<Cupon>('/cupones', { codigo, porcentaje })
+}
+
+export function cambiarEstadoCupon(id: string, activo: boolean) {
+  return api.patch<Cupon>(`/cupones/${id}/estado`, { activo })
+}
+
+export function eliminarCupon(id: string) {
+  return api.delete<void>(`/cupones/${id}`)
+}
+
+export function validarCupon(codigo: string) {
+  return api.post<ResultadoValidacionCupon>('/cupones/validar', { codigo })
+}
+
+// ─── Pedidos por encargo ────────────────────────────────────────────────
+
+export type EstadoPedidoEncargo = 'pendiente' | 'entregado' | 'cancelado'
+
+export interface PedidoEncargo {
+  id: string
+  clienteNombre: string
+  clienteTelefono: string | null
+  descripcion: string
+  fechaEntrega: string
+  valor: number | null
+  anticipo: number
+  estado: EstadoPedidoEncargo
+  notas: string | null
+  createdAt: string
+}
+
+export interface NuevoPedidoEncargo {
+  clienteNombre: string
+  clienteTelefono?: string
+  descripcion: string
+  fechaEntrega: string
+  valor?: number
+  anticipo?: number
+  notas?: string
+}
+
+export function obtenerPedidos() {
+  return api.get<PedidoEncargo[]>('/pedidos')
+}
+
+export function crearPedido(pedido: NuevoPedidoEncargo) {
+  return api.post<PedidoEncargo>('/pedidos', pedido)
+}
+
+export function cambiarEstadoPedido(id: string, estado: EstadoPedidoEncargo) {
+  return api.patch<PedidoEncargo>(`/pedidos/${id}/estado`, { estado })
+}
+
+export function eliminarPedido(id: string) {
+  return api.delete<void>(`/pedidos/${id}`)
+}
+
+// ─── Cuentas abiertas ───────────────────────────────────────────────────
+
+export interface CuentaItem {
+  id: string
+  productoId: string | null
+  nombre: string
+  cantidad: number
+  precioUnitario: number
+  subtotal: number
+}
+
+export interface CuentaAbierta {
+  id: string
+  nombre: string
+  estado: 'abierta' | 'cerrada'
+  ventaId: string | null
+  createdAt: string
+  items: CuentaItem[]
+  total: number
+}
+
+export interface NuevoItemCuenta {
+  productoId?: string
+  descripcionLibre?: string
+  cantidad: number
+  precioUnitario?: number
+}
+
+export interface DatosCierreCuenta {
+  metodoPago: MetodoPago
+  descuento?: number
+  clienteId?: string
+}
+
+export function obtenerCuentas() {
+  return api.get<CuentaAbierta[]>('/cuentas')
+}
+
+export function abrirCuenta(nombre: string) {
+  return api.post<CuentaAbierta>('/cuentas', { nombre })
+}
+
+export function agregarItemCuenta(cuentaId: string, item: NuevoItemCuenta) {
+  return api.post<CuentaAbierta>(`/cuentas/${cuentaId}/items`, item)
+}
+
+export function quitarItemCuenta(cuentaId: string, itemId: string) {
+  return api.delete<CuentaAbierta>(`/cuentas/${cuentaId}/items/${itemId}`)
+}
+
+export function cerrarCuenta(cuentaId: string, datos: DatosCierreCuenta) {
+  return api.post<Venta>(`/cuentas/${cuentaId}/cerrar`, datos)
+}
+
+export function cancelarCuenta(cuentaId: string) {
+  return api.delete<void>(`/cuentas/${cuentaId}`)
+}

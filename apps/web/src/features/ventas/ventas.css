@@ -449,3 +449,67 @@
     padding: 16px;
   }
 }
+
+.gg-cupon-input-wrap {
+  margin-bottom: 4px;
+}
+
+.gg-cupon-input {
+  display: flex;
+  gap: 8px;
+}
+
+.gg-cupon-input .gg-input {
+  flex: 1;
+}
+
+.gg-cupon-boton {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--c-roseDeep);
+  background: var(--c-roseSoft);
+  color: var(--c-roseDeep);
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.gg-cupon-boton:hover {
+  background: var(--c-rose);
+}
+
+.gg-cupon-boton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.gg-cupon-aplicado {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  margin-bottom: 4px;
+  border-radius: var(--radius-sm);
+  background: var(--c-sageSoft);
+  color: var(--c-sageDeep);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.gg-cupon-aplicado button {
+  margin-left: auto;
+  display: flex;
+  border: none;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  opacity: 0.7;
+}
+
+.gg-cupon-aplicado button:hover {
+  opacity: 1;
+}

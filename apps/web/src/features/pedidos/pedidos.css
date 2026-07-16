@@ -1,0 +1,23 @@
+.gg-pedido-estado {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding: 1px 8px;
+  border-radius: var(--radius-pill);
+}
+
+.gg-pedido-estado--pendiente {
+  background: var(--c-roseSoft);
+  color: var(--c-roseDeep);
+}
+
+.gg-pedido-estado--entregado {
+  background: var(--c-sageSoft);
+  color: var(--c-sageDeep);
+}
+
+.gg-pedido-estado--cancelado {
+  background: var(--c-beige);
+  color: var(--c-muted);
+}
