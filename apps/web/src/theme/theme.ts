@@ -72,6 +72,13 @@ export const brand = {
     // rojo mostaza): el tono claro de arriba no se leía bien sobre blanco.
     warningText: "#876424",
     danger: "#CB6149",      // stock bajo / error
+    dangerHover: "#B34E38", // hover de botones de peligro (~12% más oscuro)
+
+    // Texto de botones/insignias con fondo sólido de un color de marca
+    // (sageDeep, roseDeep, danger, warning). En modo claro esos fondos son
+    // oscuros → texto blanco. En modo oscuro esos mismos tokens se aclaran
+    // (ver `darkColors`) → el texto pasa a oscuro en esa variante.
+    onAccent: "#FFFFFF",
   },
 
   typography: {
@@ -84,14 +91,57 @@ export const brand = {
   shadow: { card: "0 1px 2px rgba(46,51,44,0.05)", pop: "0 8px 24px rgba(46,51,44,0.12)" },
 } as const;
 
+/**
+ * Modo oscuro — mismos matices de marca (salvia y rosa empolvado), pero
+ * invertidos: fondo oscuro cálido en vez de crema, texto claro en vez de
+ * tinta. Los acentos (sageDeep, roseDeep, warning, danger) se aclaran para
+ * leerse bien como texto sobre el fondo oscuro; por eso `onAccent` cambia
+ * a un tono oscuro aquí (antes era blanco), para que los botones/insignias
+ * de fondo sólido sigan siendo legibles. Todos los valores verificados con
+ * la fórmula de contraste WCAG (mínimo 4.5:1 texto, 3:1 íconos/UI).
+ */
+export const darkColors = {
+  sage: "#6FA378",
+  sageDeep: "#7EB484",
+  sageDark: "#94C99B",
+  sageSoft: "#2E3B2C",
+
+  rose: "#D9998D",
+  roseSoft: "#3A2C29",
+  roseDeep: "#E2A79C",
+
+  cream: "#232922",
+  beige: "#2E352A",
+  sand: "#4A5142",
+  surface: "#333A2D",
+  line: "#3F4638",
+
+  ink: "#F3EFE3",
+  muted: "#C6C7BA",
+  faint: "#93968A",
+
+  success: "#7EB484",
+  warning: "#E3AE4E",
+  warningText: "#F0C878",
+  danger: "#E28268",
+  dangerHover: "#EC9782", // en oscuro el hover aclara en vez de oscurecer
+
+  onAccent: "#232922",
+} as const;
+
+export type TemaModo = "claro" | "oscuro";
+
 /** Publica la marca como variables CSS en :root. Llamar al arrancar la app. */
-export function applyBrand(b = brand) {
+export function applyBrand(b = brand, modo: TemaModo = "claro") {
   const r = document.documentElement.style;
-  Object.entries(b.colors).forEach(([k, v]) => r.setProperty(`--c-${k}`, v));
+  const colores = modo === "oscuro" ? darkColors : b.colors;
+  Object.entries(colores).forEach(([k, v]) => r.setProperty(`--c-${k}`, v));
   Object.entries(b.radius).forEach(([k, v]) => r.setProperty(`--radius-${k}`, v));
   Object.entries(b.shadow).forEach(([k, v]) => r.setProperty(`--shadow-${k}`, v));
   r.setProperty("--font-display", b.typography.display);
   r.setProperty("--font-body", b.typography.body);
+  document.documentElement.style.colorScheme = modo === "oscuro" ? "dark" : "light";
+  document.documentElement.setAttribute("data-tema", modo);
 }
 
 export type BrandColors = keyof typeof brand.colors;

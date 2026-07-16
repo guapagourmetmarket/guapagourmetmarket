@@ -116,7 +116,7 @@
   height: 22px;
   border-radius: 50%;
   background: var(--c-warning);
-  color: #fff;
+  color: var(--c-onAccent);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -215,7 +215,7 @@
   align-self: flex-start;
   font-size: 10px;
   font-weight: 800;
-  color: #fff;
+  color: var(--c-onAccent);
   background: var(--c-roseDeep);
   padding: 2px 7px;
   border-radius: var(--radius-pill);

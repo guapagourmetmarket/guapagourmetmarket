@@ -13,7 +13,7 @@
 }
 
 .gg-estado-conexion--offline {
-  color: #fff;
+  color: var(--c-onAccent);
   background: var(--c-danger);
   border-bottom-color: var(--c-danger);
   animation: gg-respirar-suave 2.4s ease-in-out infinite;

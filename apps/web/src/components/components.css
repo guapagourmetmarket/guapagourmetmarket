@@ -26,7 +26,7 @@
 
 .gg-button--primary {
   background: var(--c-sageDeep);
-  color: var(--c-surface);
+  color: var(--c-onAccent);
 }
 .gg-button--primary:hover:not(:disabled) {
   background: var(--c-sageDark);
@@ -51,10 +51,10 @@
 
 .gg-button--danger {
   background: var(--c-danger);
-  color: var(--c-surface);
+  color: var(--c-onAccent);
 }
 .gg-button--danger:hover:not(:disabled) {
-  background: #b34e38;
+  background: var(--c-dangerHover);
 }
 
 .gg-button--lg {
@@ -95,6 +95,55 @@
 
 .gg-input::placeholder {
   color: var(--c-faint);
+}
+
+.gg-switch-fila {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.gg-switch-etiqueta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--c-ink);
+}
+
+.gg-switch {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  width: 44px;
+  height: 26px;
+  border: none;
+  border-radius: var(--radius-pill);
+  background: var(--c-sand);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background-color 0.15s ease;
+}
+
+.gg-switch--activo {
+  background: var(--c-sageDeep);
+}
+
+.gg-switch-bola {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--c-onAccent);
+  transition: transform 0.15s ease;
+}
+
+.gg-switch--activo .gg-switch-bola {
+  transform: translateX(18px);
 }
 
 .gg-input:focus-visible {

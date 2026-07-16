@@ -96,7 +96,7 @@
 .gg-chip--activo {
   background: var(--c-sageDeep);
   border-color: var(--c-sageDeep);
-  color: var(--c-surface);
+  color: var(--c-onAccent);
 }
 
 /* Pestaña de descuentos: se distingue a propósito del resto de chips
@@ -118,7 +118,7 @@
 .gg-chip--descuento.gg-chip--activo {
   background: var(--c-roseDeep);
   border-color: var(--c-roseDeep);
-  color: var(--c-surface);
+  color: var(--c-onAccent);
 }
 
 .gg-toggle-desactivados {
@@ -195,7 +195,7 @@
   top: 6px;
   right: 6px;
   background: var(--c-danger);
-  color: var(--c-surface);
+  color: var(--c-onAccent);
   font-size: 10px;
   font-weight: 700;
   text-transform: uppercase;
@@ -264,7 +264,7 @@
   font-size: 11px;
   font-weight: 800;
   letter-spacing: 0.02em;
-  color: #fff;
+  color: var(--c-onAccent);
   background: var(--c-roseDeep);
   padding: 3px 9px;
   border-radius: var(--radius-pill);
@@ -363,7 +363,7 @@
 
 .gg-producto-accion--peligro:hover {
   background: var(--c-danger);
-  color: var(--c-surface);
+  color: var(--c-onAccent);
 }
 
 .gg-producto-accion--favorito {
@@ -379,7 +379,7 @@
   align-items: center;
   gap: 12px;
   background: var(--c-sageDeep);
-  color: var(--c-surface);
+  color: var(--c-onAccent);
   padding: 12px 20px;
   border: none;
   border-radius: var(--radius-pill);

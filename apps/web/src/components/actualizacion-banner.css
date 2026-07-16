@@ -9,7 +9,7 @@
   padding: 12px 16px;
   border-radius: var(--radius-md);
   background: var(--c-sageDeep);
-  color: var(--c-surface);
+  color: var(--c-onAccent);
   box-shadow: var(--shadow-pop);
   font-size: 13px;
   font-weight: 600;

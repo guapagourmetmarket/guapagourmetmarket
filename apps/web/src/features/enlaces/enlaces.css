@@ -79,7 +79,7 @@
 
 .gg-enlaces-boton > svg:first-child {
   flex-shrink: 0;
-  color: #fff;
+  color: var(--c-onAccent);
   background: var(--c-sageDeep);
   border-radius: 50%;
   padding: 7px;
@@ -97,8 +97,12 @@
   height: 16px !important;
 }
 
+/* Los íconos con color de marca fija (WhatsApp, Instagram, TikTok, Waze)
+   no cambian con el tema — su texto queda blanco fijo, a diferencia de
+   los que usan un token nuestro (tel, mapa) y sí siguen var(--c-onAccent). */
 .gg-enlaces-boton--whatsapp svg:first-child {
   background: #25d366;
+  color: #fff;
 }
 
 .gg-enlaces-boton--tel svg:first-child {
@@ -107,10 +111,12 @@
 
 .gg-enlaces-boton--ig svg:first-child {
   background: #e1306c;
+  color: #fff;
 }
 
 .gg-enlaces-boton--tt svg:first-child {
   background: #000000;
+  color: #fff;
 }
 
 .gg-enlaces-boton--mapa svg:first-child {
@@ -119,10 +125,15 @@
 
 .gg-enlaces-boton--waze svg:first-child {
   background: #33ccff;
+  color: #fff;
 }
 
 .gg-enlaces-boton--resena {
+  /* Fondo crema fijo (no cambia con el tema) para que destaque como
+     insignia de reseña; por eso el texto también queda fijo en oscuro,
+     ya que --c-ink se invierte en modo oscuro y perdería contraste aquí. */
   background: #fbf1da;
+  color: #2e332c;
 }
 
 .gg-enlaces-estrellas {
@@ -131,7 +142,7 @@
   align-items: center;
   justify-content: center;
   gap: 1.5px;
-  color: #fff;
+  color: var(--c-onAccent);
   background: var(--c-warning);
   border-radius: 10px;
   width: 58px;

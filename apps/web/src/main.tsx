@@ -6,13 +6,16 @@ import { registerSW } from 'virtual:pwa-register'
 import { applyBrand } from './theme/theme'
 import { CarritoProvider } from './lib/carrito'
 import { ConfirmProvider } from './lib/confirm'
+import { ThemeModeProvider, leerModoGuardado } from './lib/themeMode'
 import { iniciarSincronizacionAutomatica } from './lib/sync'
 import { notificarActualizacionDisponible } from './lib/swUpdate'
 import { ActualizacionBanner } from './components/ActualizacionBanner'
 import './index.css'
 import App from './App.tsx'
 
-applyBrand()
+// Se aplica de una vez (antes de montar React) para que no se vea un
+// parpadeo del tema claro antes de que ThemeModeProvider tome control.
+applyBrand(undefined, leerModoGuardado())
 iniciarSincronizacionAutomatica()
 
 // Antes esto recargaba la página sola apenas había una versión nueva
@@ -31,14 +34,16 @@ const queryClient = new QueryClient()
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
-      <ConfirmProvider>
-        <CarritoProvider>
-          <BrowserRouter>
-            <App />
-          </BrowserRouter>
-          <ActualizacionBanner />
-        </CarritoProvider>
-      </ConfirmProvider>
+      <ThemeModeProvider>
+        <ConfirmProvider>
+          <CarritoProvider>
+            <BrowserRouter>
+              <App />
+            </BrowserRouter>
+            <ActualizacionBanner />
+          </CarritoProvider>
+        </ConfirmProvider>
+      </ThemeModeProvider>
     </QueryClientProvider>
   </StrictMode>,
 )

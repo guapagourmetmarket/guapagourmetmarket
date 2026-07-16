@@ -104,7 +104,7 @@
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  color: #fff;
+  color: var(--c-onAccent);
   flex-shrink: 0;
 }
 
@@ -114,10 +114,12 @@
 
 .gg-header-insignia--ig {
   background: #e1306c;
+  color: #fff;
 }
 
 .gg-header-insignia--tt {
   background: #000000;
+  color: #fff;
 }
 
 /* Fila inferior: navegación, ahora con botones separados en relieve
@@ -182,7 +184,7 @@
 
 .gg-header-link--active {
   background: var(--c-sageDeep);
-  color: var(--c-surface);
+  color: var(--c-onAccent);
   box-shadow:
     0 3px 0 var(--c-sageDark),
     0 5px 8px rgba(46, 51, 44, 0.2);
@@ -292,7 +294,7 @@
 }
 
 .gg-marquee--interna .gg-marquee-item {
-  color: var(--c-surface);
+  color: var(--c-onAccent);
 }
 
 .gg-marquee--interna .gg-marquee-item:not(:last-child)::after {
@@ -305,7 +307,7 @@
 }
 
 .gg-marquee--tienda .gg-marquee-item {
-  color: var(--c-surface);
+  color: var(--c-onAccent);
 }
 
 .gg-marquee--tienda .gg-marquee-item:not(:last-child)::after {

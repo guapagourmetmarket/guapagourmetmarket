@@ -1,9 +1,11 @@
 import { useState, type FormEvent } from 'react'
 import { useMutation, useQuery } from '@tanstack/react-query'
+import { Moon, Sun } from 'lucide-react'
 import { Modal } from './Modal'
 import { Button } from './Button'
 import { Input } from './Input'
 import { ApiError, actualizarPerfil, obtenerPerfil } from '../lib/api'
+import { useThemeMode } from '../lib/themeMode'
 
 interface MiCuentaModalProps {
   onClose: () => void
@@ -11,6 +13,7 @@ interface MiCuentaModalProps {
 
 export function MiCuentaModal({ onClose }: MiCuentaModalProps) {
   const { data: perfil } = useQuery({ queryKey: ['perfil'], queryFn: obtenerPerfil })
+  const { modo, alternar } = useThemeMode()
 
   const [email, setEmail] = useState('')
   const [passwordActual, setPasswordActual] = useState('')
@@ -67,6 +70,23 @@ export function MiCuentaModal({ onClose }: MiCuentaModalProps) {
             Correo actual: <strong>{perfil.email}</strong>
           </p>
         )}
+
+        <div className="gg-switch-fila">
+          <span className="gg-switch-etiqueta">
+            {modo === 'oscuro' ? <Moon size={16} /> : <Sun size={16} />}
+            Modo oscuro
+          </span>
+          <button
+            type="button"
+            role="switch"
+            aria-checked={modo === 'oscuro'}
+            aria-label="Modo oscuro"
+            className={`gg-switch ${modo === 'oscuro' ? 'gg-switch--activo' : ''}`}
+            onClick={alternar}
+          >
+            <span className="gg-switch-bola" />
+          </button>
+        </div>
 
         <Input
           label="Nuevo correo (opcional)"
