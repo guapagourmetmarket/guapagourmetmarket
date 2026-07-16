@@ -6,25 +6,24 @@ import { registerSW } from 'virtual:pwa-register'
 import { applyBrand } from './theme/theme'
 import { CarritoProvider } from './lib/carrito'
 import { iniciarSincronizacionAutomatica } from './lib/sync'
+import { notificarActualizacionDisponible } from './lib/swUpdate'
+import { ActualizacionBanner } from './components/ActualizacionBanner'
 import './index.css'
 import App from './App.tsx'
 
 applyBrand()
 iniciarSincronizacionAutomatica()
 
-// El service worker ya se actualiza solo (skipWaiting + clientsClaim en
-// vite.config.ts); esto recarga la página una sola vez cuando eso pasa, para
-// que la pantalla abierta muestre el código nuevo en vez de quedarse con el
-// viejo hasta que alguien cierre y vuelva a abrir la app.
-registerSW({ immediate: true })
-if ('serviceWorker' in navigator) {
-  let recargando = false
-  navigator.serviceWorker.addEventListener('controllerchange', () => {
-    if (recargando) return
-    recargando = true
-    window.location.reload()
-  })
-}
+// Antes esto recargaba la página sola apenas había una versión nueva
+// publicada — con varios cambios seguidos en el mismo rato, la pantalla
+// se reiniciaba de golpe mientras se estaba usando, y se sentía como
+// "saltos" random. Ahora solo avisa (ActualizacionBanner) y la persona
+// decide cuándo actualizar.
+const actualizarSW = registerSW({
+  onNeedRefresh() {
+    notificarActualizacionDisponible(() => actualizarSW(true))
+  },
+})
 
 const queryClient = new QueryClient()
 
@@ -35,6 +34,7 @@ createRoot(document.getElementById('root')!).render(
         <BrowserRouter>
           <App />
         </BrowserRouter>
+        <ActualizacionBanner />
       </CarritoProvider>
     </QueryClientProvider>
   </StrictMode>,

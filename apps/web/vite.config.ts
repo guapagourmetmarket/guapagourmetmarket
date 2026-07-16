@@ -11,18 +11,18 @@ export default defineConfig({
       // colores, íconos); solo se agrega el service worker que cachea la
       // app para que abra sin internet.
       manifest: false,
-      registerType: 'autoUpdate',
+      // 'prompt' (no 'autoUpdate'): antes la app se actualizaba y recargaba
+      // sola apenas había una versión nueva publicada, y con varios cambios
+      // seguidos la pantalla se reiniciaba de golpe mientras se estaba
+      // usando ("saltos" random). Ahora el service worker nuevo se instala
+      // pero espera; main.tsx avisa con un banner y la persona decide
+      // cuándo actualizar (ver src/components/ActualizacionBanner.tsx).
+      registerType: 'prompt',
       workbox: {
         // La API vive en otro dominio (Render), así que este precache solo
         // cubre el "cascarón" de la app (JS/CSS/fuentes/íconos); los datos
         // offline (productos, ventas) los maneja lib/db.ts y lib/sync.ts.
         globPatterns: ['**/*.{js,css,html,woff2,png,svg}'],
-        // Sin esto, un service worker viejo se queda sirviendo la versión
-        // anterior de la app hasta que se cierren todas las pestañas: con
-        // skipWaiting + clientsClaim, el nuevo toma control de inmediato y
-        // main.tsx fuerza un recargo una sola vez para mostrarlo.
-        skipWaiting: true,
-        clientsClaim: true,
       },
     }),
   ],
