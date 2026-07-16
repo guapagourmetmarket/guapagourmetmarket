@@ -21,7 +21,9 @@ import {
 } from '../../lib/api'
 import { registrarVentaConSync, sincronizarOutbox } from '../../lib/sync'
 import { precioEfectivo } from '../../lib/precio'
+import { useConfirm } from '../../lib/confirm'
 import { ReciboModal } from './ReciboModal'
+import { DevolucionModal } from './DevolucionModal'
 import { useDescuento } from './descuento'
 import { CuponInput } from './CuponInput'
 import { ControlCantidad } from './ControlCantidad'
@@ -62,6 +64,7 @@ function resumenVenta(venta: Venta) {
 
 export function VentaManualScreen({ onCerrarSesion }: VentaManualScreenProps) {
   const queryClient = useQueryClient()
+  const confirmar = useConfirm()
   const carrito = useCarrito()
 
   const { data: negocio } = useQuery({ queryKey: ['negocio'], queryFn: obtenerNegocio })
@@ -83,6 +86,7 @@ export function VentaManualScreen({ onCerrarSesion }: VentaManualScreenProps) {
   const [fechaVencimientoPago, setFechaVencimientoPago] = useState('')
   const [error, setError] = useState('')
   const [reciboVenta, setReciboVenta] = useState<Venta | null>(null)
+  const [devolucionVenta, setDevolucionVenta] = useState<Venta | null>(null)
   const [anulando, setAnulando] = useState<string | null>(null)
 
   const clienteSeleccionado = useMemo(
@@ -177,9 +181,10 @@ export function VentaManualScreen({ onCerrarSesion }: VentaManualScreenProps) {
     })
   }
 
-  function handleAnular(venta: Venta) {
-    const confirmado = window.confirm(
+  async function handleAnular(venta: Venta) {
+    const confirmado = await confirmar(
       `¿Anular la venta No. ${venta.numero}? Esto devuelve el inventario vendido y no se puede deshacer.`,
+      { peligro: true, textoConfirmar: 'Anular' },
     )
     if (confirmado) mutacionAnular.mutate(venta.id)
   }
@@ -495,6 +500,15 @@ export function VentaManualScreen({ onCerrarSesion }: VentaManualScreenProps) {
                       >
                         Ver recibo
                       </button>
+                      {venta.items.some((i) => i.cantidad - i.cantidadDevuelta > 0) && (
+                        <button
+                          type="button"
+                          className="gg-venta-item-recibo"
+                          onClick={() => setDevolucionVenta(venta)}
+                        >
+                          Devolver
+                        </button>
+                      )}
                       <button
                         type="button"
                         className="gg-venta-item-anular"
@@ -515,6 +529,9 @@ export function VentaManualScreen({ onCerrarSesion }: VentaManualScreenProps) {
 
       {reciboVenta && (
         <ReciboModal venta={reciboVenta} negocio={negocio} onClose={() => setReciboVenta(null)} />
+      )}
+      {devolucionVenta && (
+        <DevolucionModal venta={devolucionVenta} onClose={() => setDevolucionVenta(null)} />
       )}
     </div>
   )

@@ -14,6 +14,7 @@ import { GastosScreen } from './features/contabilidad/GastosScreen'
 import { CuponesScreen } from './features/cupones/CuponesScreen'
 import { PedidosScreen } from './features/pedidos/PedidosScreen'
 import { CuentasScreen } from './features/cuentas/CuentasScreen'
+import { AuditoriaScreen } from './features/auditoria/AuditoriaScreen'
 import { ClientesScreen } from './features/clientes/ClientesScreen'
 import { EnlacesScreen } from './features/enlaces/EnlacesScreen'
 import { TiendaScreen } from './features/tienda/TiendaScreen'
@@ -240,6 +241,16 @@ function App() {
         element={
           autenticado ? (
             <UsuariosScreen onCerrarSesion={cerrarSesion} />
+          ) : (
+            <Navigate to="/login" replace />
+          )
+        }
+      />
+      <Route
+        path="/auditoria"
+        element={
+          autenticado ? (
+            <AuditoriaScreen onCerrarSesion={cerrarSesion} />
           ) : (
             <Navigate to="/login" replace />
           )

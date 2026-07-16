@@ -22,7 +22,13 @@ export interface NuevoTurno {
   efectivoInicial: number;
 }
 
+export interface DenominacionConteo {
+  denominacion: number;
+  cantidad: number;
+}
+
 export interface CierreTurno {
   efectivoContado: number;
   notas?: string;
+  denominaciones?: DenominacionConteo[];
 }

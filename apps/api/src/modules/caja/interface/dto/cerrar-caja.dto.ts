@@ -1,4 +1,6 @@
-import { IsNumber, IsOptional, IsString, Min } from 'class-validator';
+import { ArrayMaxSize, IsArray, IsNumber, IsOptional, IsString, Min, ValidateNested } from 'class-validator';
+import { Type } from 'class-transformer';
+import { DenominacionDto } from './denominacion.dto';
 
 export class CerrarCajaDto {
   @IsNumber()
@@ -8,4 +10,11 @@ export class CerrarCajaDto {
   @IsOptional()
   @IsString()
   notas?: string;
+
+  @IsOptional()
+  @IsArray()
+  @ArrayMaxSize(20)
+  @ValidateNested({ each: true })
+  @Type(() => DenominacionDto)
+  denominaciones?: DenominacionDto[];
 }

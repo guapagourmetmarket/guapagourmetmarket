@@ -5,6 +5,7 @@ import { ObtenerTurnoAbiertoUseCase } from '../application/obtener-turno-abierto
 import { AbrirCajaUseCase } from '../application/abrir-caja.use-case';
 import { CerrarCajaUseCase } from '../application/cerrar-caja.use-case';
 import { ListarTurnosUseCase } from '../application/listar-turnos.use-case';
+import { ObtenerDenominacionesUseCase } from '../application/obtener-denominaciones.use-case';
 import { AbrirCajaDto } from './dto/abrir-caja.dto';
 import { CerrarCajaDto } from './dto/cerrar-caja.dto';
 
@@ -20,6 +21,7 @@ export class CajaController {
     private readonly abrirCajaUseCase: AbrirCajaUseCase,
     private readonly cerrarCajaUseCase: CerrarCajaUseCase,
     private readonly listarTurnosUseCase: ListarTurnosUseCase,
+    private readonly obtenerDenominacionesUseCase: ObtenerDenominacionesUseCase,
   ) {}
 
   @Get('actual')
@@ -39,6 +41,15 @@ export class CajaController {
 
   @Post(':id/cerrar')
   cerrar(@Param('id') id: string, @Body() dto: CerrarCajaDto) {
-    return this.cerrarCajaUseCase.ejecutar(id, { efectivoContado: dto.efectivoContado, notas: dto.notas });
+    return this.cerrarCajaUseCase.ejecutar(id, {
+      efectivoContado: dto.efectivoContado,
+      notas: dto.notas,
+      denominaciones: dto.denominaciones,
+    });
+  }
+
+  @Get(':id/denominaciones')
+  obtenerDenominaciones(@Param('id') id: string) {
+    return this.obtenerDenominacionesUseCase.ejecutar(id);
   }
 }

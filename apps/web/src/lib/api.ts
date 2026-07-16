@@ -413,8 +413,22 @@ export function abrirCaja(efectivoInicial: number) {
   return api.post<TurnoCaja>('/caja/abrir', { efectivoInicial })
 }
 
-export function cerrarCaja(id: string, efectivoContado: number, notas?: string) {
-  return api.post<TurnoCaja>(`/caja/${id}/cerrar`, { efectivoContado, notas })
+export interface DenominacionConteo {
+  denominacion: number
+  cantidad: number
+}
+
+export function cerrarCaja(
+  id: string,
+  efectivoContado: number,
+  notas?: string,
+  denominaciones?: DenominacionConteo[],
+) {
+  return api.post<TurnoCaja>(`/caja/${id}/cerrar`, { efectivoContado, notas, denominaciones })
+}
+
+export function obtenerDenominacionesTurno(id: string) {
+  return api.get<DenominacionConteo[]>(`/caja/${id}/denominaciones`)
 }
 
 export function obtenerTurnos() {
@@ -431,6 +445,7 @@ export interface VentaItem {
   precioUnitario: number
   iva: number
   subtotal: number
+  cantidadDevuelta: number
 }
 
 export interface Venta {
@@ -479,6 +494,13 @@ export function registrarVenta(venta: NuevaVenta) {
 
 export function anularVenta(id: string) {
   return api.delete<void>(`/ventas/${id}`)
+}
+
+export function registrarDevolucion(ventaItemId: string, cantidad: number, motivo?: string) {
+  return api.post<{ id: string; ventaItemId: string; cantidad: number; valor: number }>(
+    `/ventas/items/${ventaItemId}/devolucion`,
+    { cantidad, motivo },
+  )
 }
 
 export function obtenerCarteraClientes() {
@@ -1007,4 +1029,21 @@ export function cerrarCuenta(cuentaId: string, datos: DatosCierreCuenta) {
 
 export function cancelarCuenta(cuentaId: string) {
   return api.delete<void>(`/cuentas/${cuentaId}`)
+}
+
+// ─── Auditoría ──────────────────────────────────────────────────────────
+
+export interface RegistroAuditoria {
+  id: string
+  usuarioId: string | null
+  usuarioNombre: string | null
+  accion: string
+  entidadTipo: string
+  entidadId: string | null
+  detalle: string | null
+  createdAt: string
+}
+
+export function obtenerAuditoria(limite = 200) {
+  return api.get<RegistroAuditoria[]>(`/auditoria?limite=${limite}`)
 }

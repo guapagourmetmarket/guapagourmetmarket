@@ -5,6 +5,7 @@ import { ObtenerTurnoAbiertoUseCase } from './application/obtener-turno-abierto.
 import { AbrirCajaUseCase } from './application/abrir-caja.use-case';
 import { CerrarCajaUseCase } from './application/cerrar-caja.use-case';
 import { ListarTurnosUseCase } from './application/listar-turnos.use-case';
+import { ObtenerDenominacionesUseCase } from './application/obtener-denominaciones.use-case';
 import { CajaRepositoryPg } from './infrastructure/caja.repository.pg';
 import { CAJA_REPOSITORY } from './domain/caja.repository';
 
@@ -16,6 +17,7 @@ import { CAJA_REPOSITORY } from './domain/caja.repository';
     AbrirCajaUseCase,
     CerrarCajaUseCase,
     ListarTurnosUseCase,
+    ObtenerDenominacionesUseCase,
     { provide: CAJA_REPOSITORY, useClass: CajaRepositoryPg },
   ],
 })

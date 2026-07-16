@@ -16,11 +16,13 @@ import { CajaModule } from './modules/caja/caja.module';
 import { CuponesModule } from './modules/cupones/cupones.module';
 import { PedidosModule } from './modules/pedidos/pedidos.module';
 import { CuentasModule } from './modules/cuentas/cuentas.module';
+import { AuditoriaModule } from './modules/auditoria/auditoria.module';
 
 @Module({
   imports: [
     ThrottlerModule.forRoot([{ name: 'default', ttl: 60_000, limit: 100 }]),
     DatabaseModule,
+    AuditoriaModule,
     AuthModule,
     ProductosModule,
     NegocioModule,

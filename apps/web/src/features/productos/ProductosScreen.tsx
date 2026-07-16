@@ -20,6 +20,7 @@ import {
   type Venta,
 } from '../../lib/api'
 import { CobrarModal } from '../ventas/CobrarModal'
+import { useConfirm } from '../../lib/confirm'
 import { ReciboModal } from '../ventas/ReciboModal'
 import { ImportarModal } from './ImportarModal'
 import { GestionCategoriasModal } from './GestionCategoriasModal'
@@ -38,6 +39,7 @@ const formatoCOP = new Intl.NumberFormat('es-CO', {
 
 export function ProductosScreen({ onCerrarSesion }: ProductosScreenProps) {
   const queryClient = useQueryClient()
+  const confirmar = useConfirm()
   const carrito = useCarrito()
 
   const [busqueda, setBusqueda] = useState('')
@@ -130,16 +132,18 @@ export function ProductosScreen({ onCerrarSesion }: ProductosScreenProps) {
     return lista
   }, [productos, busqueda, categoriaId, soloDescuentos])
 
-  function handleDesactivar(id: string, nombre: string) {
-    const confirmado = window.confirm(
+  async function handleDesactivar(id: string, nombre: string) {
+    const confirmado = await confirmar(
       `¿Desactivar "${nombre}"? Dejará de aparecer en la tienda, pero puedes volver a activarlo cuando quieras y su historial de ventas se conserva.`,
+      { peligro: true, textoConfirmar: 'Desactivar' },
     )
     if (confirmado) mutacionEstado.mutate({ id, activo: false })
   }
 
-  function handleEliminar(id: string, nombre: string) {
-    const confirmado = window.confirm(
+  async function handleEliminar(id: string, nombre: string) {
+    const confirmado = await confirmar(
       `¿Eliminar "${nombre}" para siempre? Esta acción no se puede deshacer. Si prefieres poder recuperarlo más adelante, usa "Desactivar" en su lugar.`,
+      { peligro: true, textoConfirmar: 'Eliminar para siempre' },
     )
     if (confirmado) mutacionEliminar.mutate(id)
   }

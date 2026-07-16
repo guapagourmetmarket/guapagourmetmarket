@@ -1,0 +1,14 @@
+.gg-confirm-mensaje {
+  margin: 0 0 20px;
+  color: var(--c-ink);
+  line-height: 1.5;
+}
+
+.gg-confirm-acciones {
+  display: flex;
+  gap: 10px;
+}
+
+.gg-confirm-acciones > * {
+  flex: 1;
+}

@@ -14,6 +14,7 @@ import {
   renombrarCategoria,
   renombrarMarca,
 } from '../../lib/api'
+import { useConfirm } from '../../lib/confirm'
 import './gestion-categorias.css'
 
 interface GestionCategoriasModalProps {
@@ -41,6 +42,7 @@ function ListaEditable({
   onEliminar: (id: string) => void
   creando: boolean
 }) {
+  const confirmar = useConfirm()
   const [nuevoNombre, setNuevoNombre] = useState('')
   const [editandoId, setEditandoId] = useState<string | null>(null)
   const [nombreEdicion, setNombreEdicion] = useState('')
@@ -67,9 +69,10 @@ function ListaEditable({
     setNuevoNombre('')
   }
 
-  function handleEliminar(item: Item) {
-    const confirmado = window.confirm(
+  async function handleEliminar(item: Item) {
+    const confirmado = await confirmar(
       `¿Eliminar "${item.nombre}"? Los productos que la usan quedarán sin asignar.`,
+      { peligro: true, textoConfirmar: 'Eliminar' },
     )
     if (confirmado) onEliminar(item.id)
   }

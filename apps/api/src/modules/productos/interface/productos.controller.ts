@@ -9,12 +9,13 @@ import {
   Patch,
   Post,
   Query,
+  Req,
   Res,
   UploadedFile,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import type { Response } from 'express';
+import type { Request, Response } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
 import { JwtAuthGuard } from '../../auth/interface/jwt-auth.guard';
@@ -41,6 +42,10 @@ import { CambiarEstadoDto } from './dto/cambiar-estado.dto';
 import { CambiarFavoritoDto } from './dto/cambiar-favorito.dto';
 
 const XLSX_MIME = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+
+interface RequestConUsuario extends Request {
+  user: { id: string; email: string; rol: string };
+}
 
 @Controller('productos')
 export class ProductosController {
@@ -195,8 +200,8 @@ export class ProductosController {
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
   @HttpCode(204)
-  eliminar(@Param('id') id: string) {
-    return this.eliminarProductoUseCase.ejecutar(id);
+  eliminar(@Param('id') id: string, @Req() req: RequestConUsuario) {
+    return this.eliminarProductoUseCase.ejecutar(id, req.user.id);
   }
 
   @Post(':id/imagen')

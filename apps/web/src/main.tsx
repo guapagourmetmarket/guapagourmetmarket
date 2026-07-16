@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { registerSW } from 'virtual:pwa-register'
 import { applyBrand } from './theme/theme'
 import { CarritoProvider } from './lib/carrito'
+import { ConfirmProvider } from './lib/confirm'
 import { iniciarSincronizacionAutomatica } from './lib/sync'
 import { notificarActualizacionDisponible } from './lib/swUpdate'
 import { ActualizacionBanner } from './components/ActualizacionBanner'
@@ -30,12 +31,14 @@ const queryClient = new QueryClient()
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
-      <CarritoProvider>
-        <BrowserRouter>
-          <App />
-        </BrowserRouter>
-        <ActualizacionBanner />
-      </CarritoProvider>
+      <ConfirmProvider>
+        <CarritoProvider>
+          <BrowserRouter>
+            <App />
+          </BrowserRouter>
+          <ActualizacionBanner />
+        </CarritoProvider>
+      </ConfirmProvider>
     </QueryClientProvider>
   </StrictMode>,
 )

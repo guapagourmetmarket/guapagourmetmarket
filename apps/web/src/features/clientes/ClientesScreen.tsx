@@ -7,6 +7,7 @@ import { AppHeader } from '../../components/AppHeader'
 import { cambiarEstadoCliente, obtenerCumpleanosDelMes, obtenerClientes, type Cliente } from '../../lib/api'
 import { ClienteFormModal } from './ClienteFormModal'
 import { ClienteDetalleModal } from './ClienteDetalleModal'
+import { useConfirm } from '../../lib/confirm'
 import './clientes.css'
 
 interface ClientesScreenProps {
@@ -15,6 +16,7 @@ interface ClientesScreenProps {
 
 export function ClientesScreen({ onCerrarSesion }: ClientesScreenProps) {
   const queryClient = useQueryClient()
+  const confirmar = useConfirm()
   const [busqueda, setBusqueda] = useState('')
   const [mostrarDesactivados, setMostrarDesactivados] = useState(false)
   const [modalAbierto, setModalAbierto] = useState(false)
@@ -64,8 +66,11 @@ export function ClientesScreen({ onCerrarSesion }: ClientesScreenProps) {
     setModalAbierto(true)
   }
 
-  function handleDesactivar(c: Cliente) {
-    const confirmado = window.confirm(`¿Desactivar a "${c.nombre}"? Ya no aparecerá al registrar ventas nuevas.`)
+  async function handleDesactivar(c: Cliente) {
+    const confirmado = await confirmar(
+      `¿Desactivar a "${c.nombre}"? Ya no aparecerá al registrar ventas nuevas.`,
+      { peligro: true, textoConfirmar: 'Desactivar' },
+    )
     if (confirmado) mutacionEstado.mutate({ id: c.id, activo: false })
   }
 

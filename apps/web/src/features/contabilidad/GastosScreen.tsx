@@ -12,6 +12,7 @@ import {
   obtenerGastos,
   type MetodoPagoGasto,
 } from '../../lib/api'
+import { useConfirm } from '../../lib/confirm'
 import './contabilidad.css'
 
 interface GastosScreenProps {
@@ -41,6 +42,7 @@ const formatoFecha = (fecha: string) => {
 
 export function GastosScreen({ onCerrarSesion }: GastosScreenProps) {
   const queryClient = useQueryClient()
+  const confirmar = useConfirm()
   const { data: gastos, isLoading, isError } = useQuery({ queryKey: ['gastos'], queryFn: obtenerGastos })
 
   const [fecha, setFecha] = useState(hoy())
@@ -95,10 +97,12 @@ export function GastosScreen({ onCerrarSesion }: GastosScreenProps) {
     })
   }
 
-  function handleEliminar(id: string) {
-    if (window.confirm('¿Eliminar este gasto? No se puede deshacer.')) {
-      mutacionEliminar.mutate(id)
-    }
+  async function handleEliminar(id: string) {
+    const confirmado = await confirmar('¿Eliminar este gasto? No se puede deshacer.', {
+      peligro: true,
+      textoConfirmar: 'Eliminar',
+    })
+    if (confirmado) mutacionEliminar.mutate(id)
   }
 
   return (

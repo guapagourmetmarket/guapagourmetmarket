@@ -24,6 +24,7 @@ async function construirVentaLocal(venta: NuevaVenta): Promise<Venta> {
       precioUnitario,
       iva: producto?.iva ?? 0,
       subtotal,
+      cantidadDevuelta: 0,
     })
   }
 

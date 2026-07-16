@@ -19,6 +19,9 @@ const formatoCOP = new Intl.NumberFormat('es-CO', {
   maximumFractionDigits: 0,
 })
 
+// Billetes y monedas del peso colombiano en circulación, de mayor a menor.
+const DENOMINACIONES = [100000, 50000, 20000, 10000, 5000, 2000, 1000, 500, 200, 100, 50]
+
 function formatoFechaHora(iso: string) {
   return new Date(iso).toLocaleString('es-CO', { dateStyle: 'medium', timeStyle: 'short' })
 }
@@ -36,6 +39,13 @@ export function CajaScreen({ onCerrarSesion }: CajaScreenProps) {
   const [efectivoContado, setEfectivoContado] = useState('')
   const [notas, setNotas] = useState('')
   const [error, setError] = useState('')
+  const [denominaciones, setDenominaciones] = useState<Record<number, string>>({})
+
+  const totalDenominaciones = DENOMINACIONES.reduce(
+    (acc, d) => acc + d * (Number(denominaciones[d]) || 0),
+    0,
+  )
+  const hayConteoDenominaciones = Object.values(denominaciones).some((v) => Number(v) > 0)
 
   function invalidarCaja() {
     queryClient.invalidateQueries({ queryKey: ['caja-actual'] })
@@ -53,12 +63,24 @@ export function CajaScreen({ onCerrarSesion }: CajaScreenProps) {
   })
 
   const mutacionCerrar = useMutation({
-    mutationFn: () => cerrarCaja(turnoActual!.id, Number(efectivoContado), notas.trim() || undefined),
+    mutationFn: () => {
+      const denominacionesEnviar = DENOMINACIONES.filter((d) => Number(denominaciones[d]) > 0).map((d) => ({
+        denominacion: d,
+        cantidad: Number(denominaciones[d]),
+      }))
+      return cerrarCaja(
+        turnoActual!.id,
+        Number(efectivoContado),
+        notas.trim() || undefined,
+        denominacionesEnviar.length > 0 ? denominacionesEnviar : undefined,
+      )
+    },
     onSuccess: () => {
       invalidarCaja()
       setCerrandoCaja(false)
       setEfectivoContado('')
       setNotas('')
+      setDenominaciones({})
       setError('')
     },
     onError: (err) => setError(err instanceof ApiError ? err.message : 'No pudimos cerrar la caja.'),
@@ -227,12 +249,45 @@ export function CajaScreen({ onCerrarSesion }: CajaScreenProps) {
           onClose={() => {
             setCerrandoCaja(false)
             setError('')
+            setDenominaciones({})
           }}
         >
           <p className="gg-caja-subtitulo">
-            Cuenta el efectivo físico que hay en la caja ahora mismo y anótalo aquí.
+            Cuenta el efectivo físico que hay en la caja ahora mismo y anótalo aquí. Si quieres,
+            cuenta billete por billete abajo y el total se calcula solo.
           </p>
           <div className="gg-caja-form-cerrar">
+            <details className="gg-caja-denominaciones">
+              <summary>Contar billetes y monedas (opcional)</summary>
+              <div className="gg-caja-denominaciones-grid">
+                {DENOMINACIONES.map((d) => (
+                  <label key={d} className="gg-caja-denominacion">
+                    <span>{formatoCOP.format(d)}</span>
+                    <input
+                      type="number"
+                      min="0"
+                      value={denominaciones[d] ?? ''}
+                      onChange={(e) =>
+                        setDenominaciones((prev) => ({ ...prev, [d]: e.target.value }))
+                      }
+                      placeholder="0"
+                    />
+                  </label>
+                ))}
+              </div>
+              {hayConteoDenominaciones && (
+                <div className="gg-caja-denominaciones-total">
+                  <span>Total contado: {formatoCOP.format(totalDenominaciones)}</span>
+                  <button
+                    type="button"
+                    onClick={() => setEfectivoContado(String(totalDenominaciones))}
+                  >
+                    Usar este total
+                  </button>
+                </div>
+              )}
+            </details>
+
             <Input
               label="Efectivo contado"
               type="number"

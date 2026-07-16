@@ -3,6 +3,7 @@ import { Pool } from 'pg';
 import { PG_POOL } from '../../../database/database.module';
 import { CuentaAbierta, CuentaItem, EstadoCuenta, NuevoCuentaItem } from '../domain/cuenta.entity';
 import { CuentasRepository } from '../domain/cuentas.repository';
+import { precioConDescuento } from '../../../shared/calculos';
 
 @Injectable()
 export class CuentasRepositoryPg implements CuentasRepository {
@@ -69,9 +70,10 @@ export class CuentasRepositoryPg implements CuentasRepository {
       }
       const producto = rows[0];
       const precioLista = Number(producto.precio_venta);
-      const precioUnitario = producto.descuento_porcentaje
-        ? Math.round(precioLista * (1 - Number(producto.descuento_porcentaje) / 100))
-        : precioLista;
+      const precioUnitario = precioConDescuento(
+        precioLista,
+        producto.descuento_porcentaje === null ? null : Number(producto.descuento_porcentaje),
+      );
       await this.pool.query(
         `INSERT INTO cuenta_items (cuenta_id, producto_id, nombre, cantidad, precio_unitario)
          VALUES ($1, $2, $3, $4, $5)`,

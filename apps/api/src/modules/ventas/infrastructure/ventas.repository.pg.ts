@@ -1,10 +1,9 @@
 import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { Pool } from 'pg';
 import { PG_POOL } from '../../../database/database.module';
-import { NuevaVenta, Venta, VentaItem } from '../domain/venta.entity';
+import { Devolucion, NuevaDevolucion, NuevaVenta, Venta, VentaItem } from '../domain/venta.entity';
 import { VentasRepository } from '../domain/ventas.repository';
-
-const PUNTOS_POR_PESO = 1000;
+import { precioConDescuento, puntosGanados } from '../../../shared/calculos';
 
 const SELECT_VENTA = `
   SELECT id, numero, to_char(fecha, 'YYYY-MM-DD') AS fecha, cliente_id, cliente_nombre, descripcion,
@@ -25,7 +24,8 @@ export class VentasRepositoryPg implements VentasRepository {
 
     const ids = ventaRows.map((r) => r.id);
     const { rows: itemRows } = await this.pool.query(
-      `SELECT id, venta_id, producto_id, nombre_producto, cantidad, precio_unitario, iva, subtotal
+      `SELECT id, venta_id, producto_id, nombre_producto, cantidad, precio_unitario, iva, subtotal,
+              cantidad_devuelta
        FROM venta_items WHERE venta_id = ANY($1::uuid[])`,
       [ids],
     );
@@ -41,6 +41,7 @@ export class VentasRepositoryPg implements VentasRepository {
         precioUnitario: Number(r.precio_unitario),
         iva: r.iva,
         subtotal: Number(r.subtotal),
+        cantidadDevuelta: Number(r.cantidad_devuelta),
       });
       itemsPorVenta.set(r.venta_id, lista);
     }
@@ -103,9 +104,10 @@ export class VentasRepositoryPg implements VentasRepository {
         // Si el producto tiene una oferta activa, se cobra el precio ya
         // rebajado — la promoción no es solo decorativa en la tienda pública.
         const precioLista = Number(producto.precio_venta);
-        const precioUnitario = producto.descuento_porcentaje
-          ? Math.round(precioLista * (1 - Number(producto.descuento_porcentaje) / 100))
-          : precioLista;
+        const precioUnitario = precioConDescuento(
+          precioLista,
+          producto.descuento_porcentaje === null ? null : Number(producto.descuento_porcentaje),
+        );
         itemsConDatos.push({
           productoId: item.productoId,
           nombre: producto.nombre,
@@ -208,15 +210,16 @@ export class VentasRepositoryPg implements VentasRepository {
           precioUnitario: Number(r.precio_unitario),
           iva: r.iva,
           subtotal: Number(r.subtotal),
+          cantidadDevuelta: 0,
         });
       }
 
       if (venta.clienteId) {
-        const puntosGanados = Math.floor(valorTotal / PUNTOS_POR_PESO);
-        if (puntosGanados > 0) {
+        const puntos = puntosGanados(valorTotal);
+        if (puntos > 0) {
           const { rows: puntosRows } = await client.query(
             `UPDATE clientes SET puntos = puntos + $1, updated_at = now() WHERE id = $2 RETURNING puntos`,
-            [puntosGanados, venta.clienteId],
+            [puntos, venta.clienteId],
           );
           await client.query(
             `INSERT INTO movimientos_puntos
@@ -224,7 +227,7 @@ export class VentasRepositoryPg implements VentasRepository {
              VALUES ($1, 'acumulado', $2, $3, 'venta', $4, $5)`,
             [
               venta.clienteId,
-              puntosGanados,
+              puntos,
               puntosRows[0].puntos,
               ventaRow.id,
               `Puntos por venta No. ${ventaRow.numero}`,
@@ -259,20 +262,25 @@ export class VentasRepositoryPg implements VentasRepository {
       const numero = ventaRows[0].numero;
 
       const { rows: itemRows } = await client.query(
-        `SELECT producto_id, cantidad FROM venta_items WHERE venta_id = $1`,
+        `SELECT producto_id, cantidad, cantidad_devuelta FROM venta_items WHERE venta_id = $1`,
         [id],
       );
       for (const item of itemRows) {
+        // Si parte de este item ya se había devuelto antes, esa parte del
+        // stock ya está repuesta — solo se repone lo que falta, para no
+        // sumarla dos veces.
+        const cantidadARestituir = Number(item.cantidad) - Number(item.cantidad_devuelta);
+        if (cantidadARestituir <= 0) continue;
         const { rows: prodRows } = await client.query(
           `UPDATE productos SET existencias = existencias + $1, updated_at = now()
            WHERE id = $2 RETURNING existencias`,
-          [item.cantidad, item.producto_id],
+          [cantidadARestituir, item.producto_id],
         );
         await client.query(
           `INSERT INTO movimientos_inventario
             (producto_id, tipo, cantidad, saldo_cantidad, referencia_tipo, referencia_id, motivo)
            VALUES ($1, 'ajuste', $2, $3, 'anulacion_venta', $4, $5)`,
-          [item.producto_id, item.cantidad, prodRows[0].existencias, id, `Anulación de venta No. ${numero}`],
+          [item.producto_id, cantidadARestituir, prodRows[0].existencias, id, `Anulación de venta No. ${numero}`],
         );
       }
 
@@ -329,7 +337,7 @@ export class VentasRepositoryPg implements VentasRepository {
 
     const { rows: ventaRows } = await this.pool.query(`${SELECT_VENTA} WHERE id = $1`, [id]);
     const { rows: itemRows } = await this.pool.query(
-      `SELECT id, producto_id, nombre_producto, cantidad, precio_unitario, iva, subtotal
+      `SELECT id, producto_id, nombre_producto, cantidad, precio_unitario, iva, subtotal, cantidad_devuelta
        FROM venta_items WHERE venta_id = $1`,
       [id],
     );
@@ -343,8 +351,82 @@ export class VentasRepositoryPg implements VentasRepository {
         precioUnitario: Number(r.precio_unitario),
         iva: r.iva,
         subtotal: Number(r.subtotal),
+        cantidadDevuelta: Number(r.cantidad_devuelta),
       })),
     );
+  }
+
+  async registrarDevolucion(ventaItemId: string, devolucion: NuevaDevolucion): Promise<Devolucion> {
+    const client = await this.pool.connect();
+    try {
+      await client.query('BEGIN');
+
+      const { rows } = await client.query(
+        `SELECT producto_id, cantidad, cantidad_devuelta, precio_unitario
+         FROM venta_items WHERE id = $1 FOR UPDATE`,
+        [ventaItemId],
+      );
+      if (rows.length === 0) {
+        throw new NotFoundException('Ese producto de la venta no existe.');
+      }
+      const item = rows[0];
+      const disponible = Number(item.cantidad) - Number(item.cantidad_devuelta);
+      if (devolucion.cantidad > disponible) {
+        throw new BadRequestException(
+          `Solo puedes devolver hasta ${disponible} de este producto (ya se devolvió parte antes).`,
+        );
+      }
+      const valor = Number(item.precio_unitario) * devolucion.cantidad;
+
+      await client.query(
+        `UPDATE venta_items SET cantidad_devuelta = cantidad_devuelta + $1 WHERE id = $2`,
+        [devolucion.cantidad, ventaItemId],
+      );
+
+      const { rows: prodRows } = await client.query(
+        `UPDATE productos SET existencias = existencias + $1, updated_at = now()
+         WHERE id = $2 RETURNING existencias`,
+        [devolucion.cantidad, item.producto_id],
+      );
+
+      await client.query(
+        `INSERT INTO movimientos_inventario
+          (producto_id, tipo, cantidad, saldo_cantidad, referencia_tipo, referencia_id, motivo, registrado_por)
+         VALUES ($1, 'entrada', $2, $3, 'devolucion', $4, $5, $6)`,
+        [
+          item.producto_id,
+          devolucion.cantidad,
+          prodRows[0].existencias,
+          ventaItemId,
+          devolucion.motivo ?? null,
+          devolucion.registradoPor,
+        ],
+      );
+
+      const { rows: devRows } = await client.query(
+        `INSERT INTO devoluciones (venta_item_id, cantidad, valor, motivo, registrado_por)
+         VALUES ($1, $2, $3, $4, $5)
+         RETURNING id, venta_item_id, cantidad, valor, motivo, created_at`,
+        [ventaItemId, devolucion.cantidad, valor, devolucion.motivo ?? null, devolucion.registradoPor],
+      );
+
+      await client.query('COMMIT');
+
+      const d = devRows[0];
+      return {
+        id: d.id,
+        ventaItemId: d.venta_item_id,
+        cantidad: Number(d.cantidad),
+        valor: Number(d.valor),
+        motivo: d.motivo ?? null,
+        createdAt: (d.created_at as Date).toISOString(),
+      };
+    } catch (err) {
+      await client.query('ROLLBACK');
+      throw err;
+    } finally {
+      client.release();
+    }
   }
 
   private aVenta(row: Record<string, unknown>, items: VentaItem[]): Venta {

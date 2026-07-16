@@ -57,7 +57,7 @@ export class CuentasController {
 
   @Delete(':id')
   @HttpCode(204)
-  cancelar(@Param('id') id: string) {
-    return this.cancelarCuentaUseCase.ejecutar(id);
+  cancelar(@Param('id') id: string, @Req() req: RequestConUsuario) {
+    return this.cancelarCuentaUseCase.ejecutar(id, req.user.id);
   }
 }

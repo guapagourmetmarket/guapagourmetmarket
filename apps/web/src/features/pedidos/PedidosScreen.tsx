@@ -13,6 +13,7 @@ import {
   obtenerPedidos,
   type EstadoPedidoEncargo,
 } from '../../lib/api'
+import { useConfirm } from '../../lib/confirm'
 import '../contabilidad/contabilidad.css'
 import './pedidos.css'
 
@@ -41,6 +42,7 @@ const ETIQUETAS_ESTADO: Record<EstadoPedidoEncargo, string> = {
 
 export function PedidosScreen({ onCerrarSesion }: PedidosScreenProps) {
   const queryClient = useQueryClient()
+  const confirmar = useConfirm()
   const { data: pedidos, isLoading, isError } = useQuery({ queryKey: ['pedidos'], queryFn: obtenerPedidos })
 
   const [clienteNombre, setClienteNombre] = useState('')
@@ -116,10 +118,12 @@ export function PedidosScreen({ onCerrarSesion }: PedidosScreenProps) {
     })
   }
 
-  function handleEliminar(id: string, nombre: string) {
-    if (window.confirm(`¿Eliminar el pedido de "${nombre}"? No se puede deshacer.`)) {
-      mutacionEliminar.mutate(id)
-    }
+  async function handleEliminar(id: string, nombre: string) {
+    const confirmado = await confirmar(`¿Eliminar el pedido de "${nombre}"? No se puede deshacer.`, {
+      peligro: true,
+      textoConfirmar: 'Eliminar',
+    })
+    if (confirmado) mutacionEliminar.mutate(id)
   }
 
   return (

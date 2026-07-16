@@ -45,7 +45,7 @@ export class UsuariosController {
 
   @Post(':id/resetear-password')
   @HttpCode(200)
-  resetearPassword(@Param('id') id: string) {
-    return this.resetearPasswordUsuarioUseCase.ejecutar(id);
+  resetearPassword(@Param('id') id: string, @Req() req: RequestConUsuario) {
+    return this.resetearPasswordUsuarioUseCase.ejecutar(id, req.user.id);
   }
 }

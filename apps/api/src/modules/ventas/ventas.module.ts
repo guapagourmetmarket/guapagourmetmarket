@@ -6,6 +6,7 @@ import { RegistrarVentaUseCase } from './application/registrar-venta.use-case';
 import { AnularVentaUseCase } from './application/anular-venta.use-case';
 import { ListarCarteraClientesUseCase } from './application/listar-cartera-clientes.use-case';
 import { MarcarVentaPagadaUseCase } from './application/marcar-venta-pagada.use-case';
+import { RegistrarDevolucionUseCase } from './application/registrar-devolucion.use-case';
 import { VentasRepositoryPg } from './infrastructure/ventas.repository.pg';
 import { VENTAS_REPOSITORY } from './domain/ventas.repository';
 
@@ -18,6 +19,7 @@ import { VENTAS_REPOSITORY } from './domain/ventas.repository';
     AnularVentaUseCase,
     ListarCarteraClientesUseCase,
     MarcarVentaPagadaUseCase,
+    RegistrarDevolucionUseCase,
     { provide: VENTAS_REPOSITORY, useClass: VentasRepositoryPg },
   ],
   // Cuentas abiertas reusa este caso de uso para "cerrar" una cuenta como

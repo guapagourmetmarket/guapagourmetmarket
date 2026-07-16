@@ -8,7 +8,9 @@ import { RegistrarVentaUseCase } from '../application/registrar-venta.use-case';
 import { AnularVentaUseCase } from '../application/anular-venta.use-case';
 import { ListarCarteraClientesUseCase } from '../application/listar-cartera-clientes.use-case';
 import { MarcarVentaPagadaUseCase } from '../application/marcar-venta-pagada.use-case';
+import { RegistrarDevolucionUseCase } from '../application/registrar-devolucion.use-case';
 import { RegistrarVentaDto } from './dto/registrar-venta.dto';
+import { RegistrarDevolucionDto } from './dto/registrar-devolucion.dto';
 
 interface RequestConUsuario extends Request {
   user: { id: string; email: string; rol: string };
@@ -23,6 +25,7 @@ export class VentasController {
     private readonly anularVentaUseCase: AnularVentaUseCase,
     private readonly listarCarteraClientesUseCase: ListarCarteraClientesUseCase,
     private readonly marcarVentaPagadaUseCase: MarcarVentaPagadaUseCase,
+    private readonly registrarDevolucionUseCase: RegistrarDevolucionUseCase,
   ) {}
 
   @Get()
@@ -63,7 +66,18 @@ export class VentasController {
   @HttpCode(204)
   @UseGuards(RolesGuard)
   @Roles('administrador', 'contador', 'supervisor')
-  anular(@Param('id') id: string) {
-    return this.anularVentaUseCase.ejecutar(id);
+  anular(@Param('id') id: string, @Req() req: RequestConUsuario) {
+    return this.anularVentaUseCase.ejecutar(id, req.user.id);
+  }
+
+  // Sin RolesGuard a propósito: devolver un solo producto es una operación
+  // de mostrador (como registrar()), no requiere ser gerencial.
+  @Post('items/:itemId/devolucion')
+  registrarDevolucion(@Param('itemId') itemId: string, @Body() dto: RegistrarDevolucionDto, @Req() req: RequestConUsuario) {
+    return this.registrarDevolucionUseCase.ejecutar(itemId, {
+      cantidad: dto.cantidad,
+      motivo: dto.motivo,
+      registradoPor: req.user.id,
+    });
   }
 }

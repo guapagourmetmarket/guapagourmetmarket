@@ -1,4 +1,5 @@
-import { Body, Controller, Delete, Get, HttpCode, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, Param, Patch, Post, Req, UseGuards } from '@nestjs/common';
+import type { Request } from 'express';
 import { JwtAuthGuard } from '../../auth/interface/jwt-auth.guard';
 import { Roles } from '../../auth/interface/roles.decorator';
 import { RolesGuard } from '../../auth/interface/roles.guard';
@@ -10,6 +11,10 @@ import { ValidarCuponUseCase } from '../application/validar-cupon.use-case';
 import { CrearCuponDto } from './dto/crear-cupon.dto';
 import { CambiarEstadoCuponDto } from './dto/cambiar-estado-cupon.dto';
 import { ValidarCuponDto } from './dto/validar-cupon.dto';
+
+interface RequestConUsuario extends Request {
+  user: { id: string; email: string; rol: string };
+}
 
 @Controller('cupones')
 @UseGuards(JwtAuthGuard)
@@ -54,7 +59,7 @@ export class CuponesController {
   @HttpCode(204)
   @UseGuards(RolesGuard)
   @Roles('administrador', 'contador', 'supervisor')
-  eliminar(@Param('id') id: string) {
-    return this.eliminarCuponUseCase.ejecutar(id);
+  eliminar(@Param('id') id: string, @Req() req: RequestConUsuario) {
+    return this.eliminarCuponUseCase.ejecutar(id, req.user.id);
   }
 }

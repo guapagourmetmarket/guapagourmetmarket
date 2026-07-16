@@ -3,6 +3,7 @@ import { Pool } from 'pg';
 import { PG_POOL } from '../../../database/database.module';
 import { Cupon, NuevoCupon, ResultadoValidacionCupon } from '../domain/cupon.entity';
 import { CuponesRepository } from '../domain/cupones.repository';
+import { normalizarCodigoCupon } from '../../../shared/calculos';
 
 const SELECT_CUPON = `SELECT id, codigo, porcentaje, activo FROM cupones`;
 
@@ -16,7 +17,7 @@ export class CuponesRepositoryPg implements CuponesRepository {
   }
 
   async crear(nuevo: NuevoCupon): Promise<Cupon> {
-    const codigo = nuevo.codigo.trim().toUpperCase();
+    const codigo = normalizarCodigoCupon(nuevo.codigo);
     if (codigo.length < 3) {
       throw new BadRequestException('El código debe tener al menos 3 caracteres.');
     }
@@ -53,7 +54,7 @@ export class CuponesRepositoryPg implements CuponesRepository {
   }
 
   async validar(codigo: string): Promise<ResultadoValidacionCupon> {
-    const codigoNormalizado = codigo.trim().toUpperCase();
+    const codigoNormalizado = normalizarCodigoCupon(codigo);
     const { rows } = await this.pool.query(`${SELECT_CUPON} WHERE codigo = $1`, [
       codigoNormalizado,
     ]);

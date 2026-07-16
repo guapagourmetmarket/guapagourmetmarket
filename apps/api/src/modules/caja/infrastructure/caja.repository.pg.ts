@@ -2,7 +2,8 @@ import { BadRequestException, ConflictException, Inject, Injectable, NotFoundExc
 import { Pool } from 'pg';
 import { PG_POOL } from '../../../database/database.module';
 import { CajaRepository } from '../domain/caja.repository';
-import { CierreTurno, NuevoTurno, TurnoCaja } from '../domain/turno.entity';
+import { CierreTurno, DenominacionConteo, NuevoTurno, TurnoCaja } from '../domain/turno.entity';
+import { diferenciaCaja } from '../../../shared/calculos';
 
 // Solo las ventas en efectivo mueven el cajón físico: tarjeta, transferencia,
 // Nequi y Daviplata no cuentan para el arqueo. Una venta "mixta" no guarda
@@ -72,7 +73,7 @@ export class CajaRepositoryPg implements CajaRepository {
     );
     const efectivoEsperado =
       Number(actualRows[0].efectivo_inicial) + Number(sumaRows[0].total_efectivo);
-    const diferencia = cierre.efectivoContado - efectivoEsperado;
+    const diferencia = diferenciaCaja(cierre.efectivoContado, efectivoEsperado);
 
     await this.pool.query(
       `UPDATE turnos_caja
@@ -81,6 +82,16 @@ export class CajaRepositoryPg implements CajaRepository {
        WHERE id = $5`,
       [efectivoEsperado, cierre.efectivoContado, diferencia, cierre.notas ?? null, id],
     );
+
+    if (cierre.denominaciones && cierre.denominaciones.length > 0) {
+      for (const d of cierre.denominaciones) {
+        if (d.cantidad <= 0) continue;
+        await this.pool.query(
+          `INSERT INTO turno_denominaciones (turno_id, denominacion, cantidad) VALUES ($1, $2, $3)`,
+          [id, d.denominacion, d.cantidad],
+        );
+      }
+    }
 
     const { rows: turnoRows } = await this.pool.query(
       `${SELECT_TURNO} WHERE t.id = $1 ${GROUP_BY_TURNO}`,
@@ -92,6 +103,15 @@ export class CajaRepositoryPg implements CajaRepository {
   async listar(): Promise<TurnoCaja[]> {
     const { rows } = await this.pool.query(`${SELECT_TURNO} ${GROUP_BY_TURNO} ORDER BY t.abierto_en DESC`);
     return rows.map((r) => this.aTurno(r));
+  }
+
+  async obtenerDenominaciones(turnoId: string): Promise<DenominacionConteo[]> {
+    const { rows } = await this.pool.query(
+      `SELECT denominacion, cantidad FROM turno_denominaciones
+       WHERE turno_id = $1 ORDER BY denominacion DESC`,
+      [turnoId],
+    );
+    return rows.map((r) => ({ denominacion: Number(r.denominacion), cantidad: Number(r.cantidad) }));
   }
 
   private aTurno(row: Record<string, unknown>): TurnoCaja {

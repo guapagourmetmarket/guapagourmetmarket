@@ -15,6 +15,7 @@ import {
   registrarCompra,
   type MetodoPagoCompra,
 } from '../../lib/api'
+import { useConfirm } from '../../lib/confirm'
 import './compras.css'
 
 interface ComprasScreenProps {
@@ -50,6 +51,7 @@ const formatoFecha = (fecha: string) => {
 
 export function ComprasScreen({ onCerrarSesion }: ComprasScreenProps) {
   const queryClient = useQueryClient()
+  const confirmar = useConfirm()
 
   const { data: proveedores } = useQuery({ queryKey: ['proveedores'], queryFn: () => obtenerProveedores() })
   const {
@@ -159,9 +161,10 @@ export function ComprasScreen({ onCerrarSesion }: ComprasScreenProps) {
     })
   }
 
-  function handleAnular(id: string, numero: number) {
-    const confirmado = window.confirm(
+  async function handleAnular(id: string, numero: number) {
+    const confirmado = await confirmar(
       `¿Anular la compra No. ${numero}? El inventario que agregó se descuenta de nuevo y no se puede deshacer.`,
+      { peligro: true, textoConfirmar: 'Anular' },
     )
     if (confirmado) mutacionAnular.mutate(id)
   }

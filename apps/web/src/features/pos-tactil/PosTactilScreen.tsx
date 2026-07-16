@@ -7,6 +7,7 @@ import { AppHeader } from '../../components/AppHeader'
 import { Card } from '../../components/Card'
 import { useCarrito } from '../../lib/carrito'
 import { precioEfectivo } from '../../lib/precio'
+import { useConfirm } from '../../lib/confirm'
 import {
   ApiError,
   cambiarEstadoProducto,
@@ -32,6 +33,7 @@ const formatoCOP = new Intl.NumberFormat('es-CO', {
 
 export function PosTactilScreen({ onCerrarSesion }: PosTactilScreenProps) {
   const carrito = useCarrito()
+  const confirmar = useConfirm()
   const queryClient = useQueryClient()
   const { data: negocio } = useQuery({ queryKey: ['negocio'], queryFn: obtenerNegocio })
   const { data: productos, isLoading, isError } = useQuery({
@@ -91,16 +93,18 @@ export function PosTactilScreen({ onCerrarSesion }: PosTactilScreenProps) {
     setBusqueda('')
   }
 
-  function handleEliminar(producto: Producto) {
-    const confirmado = window.confirm(
+  async function handleEliminar(producto: Producto) {
+    const confirmado = await confirmar(
       `¿Eliminar "${producto.nombre}" para siempre? Esta acción no se puede deshacer. Si prefieres poder recuperarlo más adelante, usa "Desactivar" en su lugar.`,
+      { peligro: true, textoConfirmar: 'Eliminar para siempre' },
     )
     if (confirmado) mutacionEliminar.mutate(producto.id)
   }
 
-  function handleDesactivar(producto: Producto) {
-    const confirmado = window.confirm(
+  async function handleDesactivar(producto: Producto) {
+    const confirmado = await confirmar(
       `¿Desactivar "${producto.nombre}"? Deja de aparecer aquí y en Productos, pero puedes reactivarlo cuando quieras.`,
+      { peligro: true, textoConfirmar: 'Desactivar' },
     )
     if (confirmado) mutacionEstado.mutate({ id: producto.id, activo: false })
   }

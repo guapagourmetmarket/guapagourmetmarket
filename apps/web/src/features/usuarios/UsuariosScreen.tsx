@@ -14,6 +14,7 @@ import {
 } from '../../lib/api'
 import { UsuarioFormModal } from './UsuarioFormModal'
 import { RevelarPasswordModal } from './RevelarPasswordModal'
+import { useConfirm } from '../../lib/confirm'
 import './usuarios.css'
 
 interface UsuariosScreenProps {
@@ -29,6 +30,7 @@ const ROL_LABEL: Record<Usuario['rol'], string> = {
 
 export function UsuariosScreen({ onCerrarSesion }: UsuariosScreenProps) {
   const queryClient = useQueryClient()
+  const confirmar = useConfirm()
   const usuarioActual = obtenerUsuarioSesion()
   const [modalAbierto, setModalAbierto] = useState(false)
   const [usuarioEditando, setUsuarioEditando] = useState<Usuario | null>(null)
@@ -63,13 +65,18 @@ export function UsuariosScreen({ onCerrarSesion }: UsuariosScreenProps) {
     setModalAbierto(true)
   }
 
-  function handleDesactivar(u: Usuario) {
-    const confirmado = window.confirm(`¿Desactivar a "${u.nombre}"? Ya no podrá iniciar sesión.`)
+  async function handleDesactivar(u: Usuario) {
+    const confirmado = await confirmar(`¿Desactivar a "${u.nombre}"? Ya no podrá iniciar sesión.`, {
+      peligro: true,
+      textoConfirmar: 'Desactivar',
+    })
     if (confirmado) mutacionEstado.mutate({ id: u.id, activo: false })
   }
 
   async function handleResetearPassword(u: Usuario) {
-    const confirmado = window.confirm(`¿Generar una nueva contraseña provisional para "${u.nombre}"?`)
+    const confirmado = await confirmar(`¿Generar una nueva contraseña provisional para "${u.nombre}"?`, {
+      textoConfirmar: 'Generar',
+    })
     if (!confirmado) return
     setErrorGeneral('')
     try {

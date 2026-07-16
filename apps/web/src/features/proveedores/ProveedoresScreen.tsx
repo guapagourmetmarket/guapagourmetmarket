@@ -6,6 +6,7 @@ import { Button } from '../../components/Button'
 import { AppHeader } from '../../components/AppHeader'
 import { cambiarEstadoProveedor, obtenerProveedores, type Proveedor } from '../../lib/api'
 import { ProveedorFormModal } from './ProveedorFormModal'
+import { useConfirm } from '../../lib/confirm'
 import './proveedores.css'
 
 interface ProveedoresScreenProps {
@@ -14,6 +15,7 @@ interface ProveedoresScreenProps {
 
 export function ProveedoresScreen({ onCerrarSesion }: ProveedoresScreenProps) {
   const queryClient = useQueryClient()
+  const confirmar = useConfirm()
   const [mostrarDesactivados, setMostrarDesactivados] = useState(false)
   const [modalAbierto, setModalAbierto] = useState(false)
   const [proveedorEditando, setProveedorEditando] = useState<Proveedor | null>(null)
@@ -43,8 +45,11 @@ export function ProveedoresScreen({ onCerrarSesion }: ProveedoresScreenProps) {
     setModalAbierto(true)
   }
 
-  function handleDesactivar(p: Proveedor) {
-    const confirmado = window.confirm(`¿Desactivar "${p.nombre}"? Ya no aparecerá al registrar compras nuevas.`)
+  async function handleDesactivar(p: Proveedor) {
+    const confirmado = await confirmar(
+      `¿Desactivar "${p.nombre}"? Ya no aparecerá al registrar compras nuevas.`,
+      { peligro: true, textoConfirmar: 'Desactivar' },
+    )
     if (confirmado) mutacionEstado.mutate({ id: p.id, activo: false })
   }
 

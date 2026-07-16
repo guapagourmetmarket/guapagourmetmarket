@@ -5,6 +5,7 @@ import { Modal } from '../../components/Modal'
 import { Button } from '../../components/Button'
 import { Input } from '../../components/Input'
 import { useEscaneoCodigoBarras } from '../../lib/useEscaneoCodigoBarras'
+import { useConfirm } from '../../lib/confirm'
 import {
   ApiError,
   agregarItemCuenta,
@@ -44,6 +45,7 @@ const formatoCOP = new Intl.NumberFormat('es-CO', {
 
 export function CuentaDetalleModal({ cuenta, onClose, onCerrada }: CuentaDetalleModalProps) {
   const queryClient = useQueryClient()
+  const confirmar = useConfirm()
   const [termino, setTermino] = useState('')
   const [cobrando, setCobrando] = useState(false)
   const [metodoPago, setMetodoPago] = useState<MetodoPago>('efectivo')
@@ -123,10 +125,12 @@ export function CuentaDetalleModal({ cuenta, onClose, onCerrada }: CuentaDetalle
 
   const { inputRef, handleKeyDown } = useEscaneoCodigoBarras(manejarEscaneo)
 
-  function handleCancelarCuenta() {
-    if (window.confirm(`¿Cancelar la cuenta de "${cuenta.nombre}" sin cobrar nada? No se puede deshacer.`)) {
-      mutacionCancelar.mutate()
-    }
+  async function handleCancelarCuenta() {
+    const confirmado = await confirmar(
+      `¿Cancelar la cuenta de "${cuenta.nombre}" sin cobrar nada? No se puede deshacer.`,
+      { peligro: true, textoConfirmar: 'Cancelar cuenta' },
+    )
+    if (confirmado) mutacionCancelar.mutate()
   }
 
   return (

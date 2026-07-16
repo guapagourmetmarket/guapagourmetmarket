@@ -49,6 +49,14 @@
   background: var(--c-beige);
 }
 
+.gg-button--danger {
+  background: var(--c-danger);
+  color: var(--c-surface);
+}
+.gg-button--danger:hover:not(:disabled) {
+  background: #b34e38;
+}
+
 .gg-button--lg {
   padding: 16px 24px;
   font-size: 17px;

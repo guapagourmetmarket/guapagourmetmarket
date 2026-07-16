@@ -175,7 +175,8 @@ export class ClientesRepositoryPg implements ClientesRepository {
 
     const ids = ventaRows.map((r) => r.id);
     const { rows: itemRows } = await this.pool.query(
-      `SELECT id, venta_id, producto_id, nombre_producto, cantidad, precio_unitario, iva, subtotal
+      `SELECT id, venta_id, producto_id, nombre_producto, cantidad, precio_unitario, iva, subtotal,
+              cantidad_devuelta
        FROM venta_items WHERE venta_id = ANY($1::uuid[])`,
       [ids],
     );
@@ -190,6 +191,7 @@ export class ClientesRepositoryPg implements ClientesRepository {
         precioUnitario: Number(r.precio_unitario),
         iva: r.iva,
         subtotal: Number(r.subtotal),
+        cantidadDevuelta: Number(r.cantidad_devuelta),
       });
       itemsPorVenta.set(r.venta_id, lista);
     }

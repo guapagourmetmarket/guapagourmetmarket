@@ -181,3 +181,64 @@
   flex-direction: column;
   gap: 14px;
 }
+
+.gg-caja-denominaciones {
+  border: 1px solid var(--c-sand);
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+}
+
+.gg-caja-denominaciones summary {
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--c-sageDeep);
+}
+
+.gg-caja-denominaciones-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.gg-caja-denominacion {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-size: 11.5px;
+  color: var(--c-muted);
+}
+
+.gg-caja-denominacion input {
+  padding: 6px 8px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--c-sand);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+.gg-caja-denominaciones-total {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid var(--c-line);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--c-ink);
+}
+
+.gg-caja-denominaciones-total button {
+  border: 1px solid var(--c-sageDeep);
+  background: var(--c-sageSoft);
+  color: var(--c-sageDeep);
+  font-weight: 700;
+  font-size: 12px;
+  padding: 5px 12px;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  white-space: nowrap;
+}

@@ -8,6 +8,22 @@ export interface VentaItem {
   precioUnitario: number;
   iva: number;
   subtotal: number;
+  cantidadDevuelta: number;
+}
+
+export interface NuevaDevolucion {
+  cantidad: number;
+  motivo?: string;
+  registradoPor: string;
+}
+
+export interface Devolucion {
+  id: string;
+  ventaItemId: string;
+  cantidad: number;
+  valor: number;
+  motivo: string | null;
+  createdAt: string;
 }
 
 export interface Venta {

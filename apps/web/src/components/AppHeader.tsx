@@ -44,6 +44,7 @@ const ENLACES: { to: string; label: string; roles?: Rol[] }[] = [
   { to: '/reportes', label: 'Reportes', roles: GERENCIAL },
   { to: '/negocio', label: 'Negocio', roles: ['administrador'] },
   { to: '/usuarios', label: 'Usuarios', roles: ['administrador'] },
+  { to: '/auditoria', label: 'Auditoría', roles: ['administrador'] },
 ]
 
 function claseLink({ isActive }: { isActive: boolean }) {

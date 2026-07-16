@@ -12,6 +12,7 @@ import {
   eliminarCupon,
   obtenerCupones,
 } from '../../lib/api'
+import { useConfirm } from '../../lib/confirm'
 import '../contabilidad/contabilidad.css'
 import './cupones.css'
 
@@ -21,6 +22,7 @@ interface CuponesScreenProps {
 
 export function CuponesScreen({ onCerrarSesion }: CuponesScreenProps) {
   const queryClient = useQueryClient()
+  const confirmar = useConfirm()
   const { data: cupones, isLoading, isError } = useQuery({ queryKey: ['cupones'], queryFn: obtenerCupones })
 
   const [codigo, setCodigo] = useState('')
@@ -65,10 +67,12 @@ export function CuponesScreen({ onCerrarSesion }: CuponesScreenProps) {
     mutacion.mutate()
   }
 
-  function handleEliminar(id: string, codigoCupon: string) {
-    if (window.confirm(`¿Eliminar el cupón "${codigoCupon}"? No se puede deshacer.`)) {
-      mutacionEliminar.mutate(id)
-    }
+  async function handleEliminar(id: string, codigoCupon: string) {
+    const confirmado = await confirmar(`¿Eliminar el cupón "${codigoCupon}"? No se puede deshacer.`, {
+      peligro: true,
+      textoConfirmar: 'Eliminar',
+    })
+    if (confirmado) mutacionEliminar.mutate(id)
   }
 
   return (
