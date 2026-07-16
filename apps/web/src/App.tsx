@@ -15,6 +15,7 @@ import { CuponesScreen } from './features/cupones/CuponesScreen'
 import { PedidosScreen } from './features/pedidos/PedidosScreen'
 import { CuentasScreen } from './features/cuentas/CuentasScreen'
 import { AuditoriaScreen } from './features/auditoria/AuditoriaScreen'
+import { DesignSystemScreen } from './features/design-system/DesignSystemScreen'
 import { ClientesScreen } from './features/clientes/ClientesScreen'
 import { EnlacesScreen } from './features/enlaces/EnlacesScreen'
 import { TiendaScreen } from './features/tienda/TiendaScreen'
@@ -251,6 +252,16 @@ function App() {
         element={
           autenticado ? (
             <AuditoriaScreen onCerrarSesion={cerrarSesion} />
+          ) : (
+            <Navigate to="/login" replace />
+          )
+        }
+      />
+      <Route
+        path="/design-system"
+        element={
+          autenticado ? (
+            <DesignSystemScreen onCerrarSesion={cerrarSesion} />
           ) : (
             <Navigate to="/login" replace />
           )
