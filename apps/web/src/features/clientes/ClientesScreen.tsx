@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Cake, Pencil, Plus, Power, Search, Sparkles, User } from 'lucide-react'
 import { Card } from '../../components/Card'
+import { SkeletonFila } from '../../components/Skeleton'
 import { Button } from '../../components/Button'
 import { AppHeader } from '../../components/AppHeader'
 import { cambiarEstadoCliente, obtenerCumpleanosDelMes, obtenerClientes, type Cliente } from '../../lib/api'
@@ -119,8 +120,8 @@ export function ClientesScreen({ onCerrarSesion }: ClientesScreenProps) {
         </div>
 
         {isLoading && (
-          <Card className="gg-clientes-estado">
-            <p>Cargando clientes…</p>
+          <Card>
+            <SkeletonFila cantidad={5} />
           </Card>
         )}
         {isError && (

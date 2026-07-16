@@ -59,12 +59,18 @@ export const brand = {
 
     // Texto
     ink: "#2E332C",         // primario (carbón cálido)
-    muted: "#7C8279",       // secundario
-    faint: "#A7ABA1",       // pistas / placeholders
+    // Un poco más oscuro que el salvia original (#7C8279): a ese tono le
+    // faltaba contraste (3.9:1) para leerse bien como texto sobre blanco;
+    // este cumple el mínimo de accesibilidad (4.5:1) sin verse distinto.
+    muted: "#61655E",       // secundario
+    faint: "#8E9189",       // pistas / placeholders
 
     // Semánticos (suaves)
     success: "#4A8054",
-    warning: "#D9A13A",     // próximo a vencer
+    warning: "#D9A13A",     // próximo a vencer — fondos de insignia/punto
+    // Variante oscura de `warning`, solo para texto (ej. "3 unidades" en
+    // rojo mostaza): el tono claro de arriba no se leía bien sobre blanco.
+    warningText: "#876424",
     danger: "#CB6149",      // stock bajo / error
   },
 

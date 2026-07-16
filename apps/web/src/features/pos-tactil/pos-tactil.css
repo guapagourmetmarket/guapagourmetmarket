@@ -58,7 +58,7 @@
 }
 
 .gg-tactil-estado-vacio svg:first-child {
-  color: var(--c-warning);
+  color: var(--c-warningText);
 }
 
 .gg-tactil-estado-vacio a {

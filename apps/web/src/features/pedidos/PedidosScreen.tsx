@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Cake, Check, Loader2, Trash2, X } from 'lucide-react'
 import { AppHeader } from '../../components/AppHeader'
 import { Card } from '../../components/Card'
+import { SkeletonFila } from '../../components/Skeleton'
 import { Button } from '../../components/Button'
 import { Input } from '../../components/Input'
 import {
@@ -222,7 +223,7 @@ export function PedidosScreen({ onCerrarSesion }: PedidosScreenProps) {
           <Card>
             <h2 className="gg-contabilidad-subtitulo-h2">Pedidos por encargo</h2>
 
-            {isLoading && <p className="gg-contabilidad-estado">Cargando…</p>}
+            {isLoading && <SkeletonFila cantidad={4} />}
             {isError && <p className="gg-contabilidad-estado">No pudimos cargar los pedidos.</p>}
             {!isLoading && !isError && pedidos?.length === 0 && (
               <p className="gg-contabilidad-estado">Todavía no hay pedidos por encargo.</p>

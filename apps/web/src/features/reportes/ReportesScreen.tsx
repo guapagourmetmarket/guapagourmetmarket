@@ -17,6 +17,7 @@ import {
 import { BarChart3, ShoppingBag, TrendingUp, Users } from 'lucide-react'
 import { AppHeader } from '../../components/AppHeader'
 import { Card } from '../../components/Card'
+import { SkeletonTabla } from '../../components/Skeleton'
 import { brand } from '../../theme/theme'
 import {
   obtenerMargenProductos,
@@ -147,7 +148,7 @@ export function ReportesScreen({ onCerrarSesion }: ReportesScreenProps) {
 
         <Card className="gg-reportes-grafico-card">
           <h2 className="gg-reportes-subtitulo">Ventas por día</h2>
-          {cargandoVentasDia && <p className="gg-reportes-estado">Cargando…</p>}
+          {cargandoVentasDia && <SkeletonTabla filas={4} columnas={2} />}
           {!cargandoVentasDia && (ventasPorDia?.length ?? 0) === 0 && (
             <p className="gg-reportes-estado">Sin ventas en este rango.</p>
           )}
@@ -193,7 +194,7 @@ export function ReportesScreen({ onCerrarSesion }: ReportesScreenProps) {
               <ShoppingBag size={16} style={{ marginRight: 6, verticalAlign: -2 }} />
               Más vendidos
             </h2>
-            {cargandoTop && <p className="gg-reportes-estado">Cargando…</p>}
+            {cargandoTop && <SkeletonTabla filas={5} columnas={2} />}
             {!cargandoTop && (topProductos?.length ?? 0) === 0 && (
               <p className="gg-reportes-estado">Sin ventas de productos en este rango.</p>
             )}
@@ -217,7 +218,7 @@ export function ReportesScreen({ onCerrarSesion }: ReportesScreenProps) {
 
           <Card className="gg-reportes-grafico-card">
             <h2 className="gg-reportes-subtitulo">Ventas por categoría</h2>
-            {cargandoCategoria && <p className="gg-reportes-estado">Cargando…</p>}
+            {cargandoCategoria && <SkeletonTabla filas={4} columnas={2} />}
             {!cargandoCategoria && (ventasPorCategoria?.length ?? 0) === 0 && (
               <p className="gg-reportes-estado">Sin datos en este rango.</p>
             )}
@@ -262,7 +263,7 @@ export function ReportesScreen({ onCerrarSesion }: ReportesScreenProps) {
               <Users size={16} style={{ marginRight: 6, verticalAlign: -2 }} />
               Ventas por empleado
             </h2>
-            {cargandoEmpleado && <p className="gg-reportes-estado">Cargando…</p>}
+            {cargandoEmpleado && <SkeletonTabla filas={4} columnas={2} />}
             {!cargandoEmpleado && (ventasPorEmpleado?.length ?? 0) === 0 && (
               <p className="gg-reportes-estado">Sin datos en este rango.</p>
             )}
@@ -298,7 +299,7 @@ export function ReportesScreen({ onCerrarSesion }: ReportesScreenProps) {
 
         <Card className="gg-reportes-grafico-card">
           <h2 className="gg-reportes-subtitulo">Margen por producto</h2>
-          {cargandoMargen && <p className="gg-reportes-estado">Cargando…</p>}
+          {cargandoMargen && <SkeletonTabla filas={5} columnas={2} />}
           {!cargandoMargen && (margenProductos?.length ?? 0) === 0 && (
             <p className="gg-reportes-estado">Sin datos de costo en este rango.</p>
           )}

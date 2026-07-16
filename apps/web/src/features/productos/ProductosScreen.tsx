@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 import { Barcode, Copy, Download, FileText, Flame, Leaf, Pencil, Plus, Power, Settings, ShoppingCart, Search, Star, Trash2, Upload } from 'lucide-react'
 import type { Producto } from '@guapa/shared'
 import { Card } from '../../components/Card'
+import { SkeletonTarjetas } from '../../components/Skeleton'
 import { Button } from '../../components/Button'
 import { AppHeader } from '../../components/AppHeader'
 import { useCarrito } from '../../lib/carrito'
@@ -271,11 +272,7 @@ export function ProductosScreen({ onCerrarSesion }: ProductosScreenProps) {
           </div>
         </div>
 
-        {isLoading && (
-          <Card className="gg-productos-estado">
-            <p>Cargando productos…</p>
-          </Card>
-        )}
+        {isLoading && <SkeletonTarjetas />}
 
         {isError && (
           <Card className="gg-productos-estado">

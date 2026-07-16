@@ -101,7 +101,7 @@
 .gg-alerta-cifra {
   font-size: 13px;
   font-weight: 600;
-  color: var(--c-warning);
+  color: var(--c-warningText);
   white-space: nowrap;
 }
 

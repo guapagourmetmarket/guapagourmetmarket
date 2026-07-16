@@ -4,6 +4,7 @@ import { Loader2, Plus, Receipt } from 'lucide-react'
 import { AppHeader } from '../../components/AppHeader'
 import { Card } from '../../components/Card'
 import { Button } from '../../components/Button'
+import { SkeletonTarjetas } from '../../components/Skeleton'
 import { abrirCuenta, obtenerCuentas, obtenerNegocio, type CuentaAbierta, type Venta } from '../../lib/api'
 import { CuentaDetalleModal } from './CuentaDetalleModal'
 import { ReciboModal } from '../ventas/ReciboModal'
@@ -79,7 +80,7 @@ export function CuentasScreen({ onCerrarSesion }: CuentasScreenProps) {
           </form>
         </div>
 
-        {isLoading && <p className="gg-contabilidad-estado">Cargando…</p>}
+        {isLoading && <SkeletonTarjetas cantidad={4} />}
         {isError && <p className="gg-contabilidad-estado">No pudimos cargar las cuentas.</p>}
         {!isLoading && !isError && cuentas?.length === 0 && (
           <p className="gg-contabilidad-estado">No hay cuentas abiertas en este momento.</p>

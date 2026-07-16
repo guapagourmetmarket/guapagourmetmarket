@@ -318,7 +318,7 @@
 }
 
 .gg-producto-stock--bajo {
-  color: var(--c-warning);
+  color: var(--c-warningText);
   font-weight: 600;
 }
 
@@ -367,7 +367,7 @@
 }
 
 .gg-producto-accion--favorito {
-  color: var(--c-warning);
+  color: var(--c-warningText);
 }
 
 .gg-carrito-flotante {

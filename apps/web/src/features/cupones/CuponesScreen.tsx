@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Loader2, Tag, Trash2 } from 'lucide-react'
 import { AppHeader } from '../../components/AppHeader'
 import { Card } from '../../components/Card'
+import { SkeletonFila } from '../../components/Skeleton'
 import { Button } from '../../components/Button'
 import { Input } from '../../components/Input'
 import {
@@ -132,7 +133,7 @@ export function CuponesScreen({ onCerrarSesion }: CuponesScreenProps) {
           <Card>
             <h2 className="gg-contabilidad-subtitulo-h2">Cupones creados</h2>
 
-            {isLoading && <p className="gg-contabilidad-estado">Cargando…</p>}
+            {isLoading && <SkeletonFila cantidad={3} />}
             {isError && <p className="gg-contabilidad-estado">No pudimos cargar los cupones.</p>}
             {!isLoading && !isError && cupones?.length === 0 && (
               <p className="gg-contabilidad-estado">Todavía no has creado ningún cupón.</p>

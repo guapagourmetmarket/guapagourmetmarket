@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 import { CheckCircle2, TrendingDown, TrendingUp, Wallet } from 'lucide-react'
 import { AppHeader } from '../../components/AppHeader'
 import { Card } from '../../components/Card'
+import { SkeletonFila, SkeletonTabla } from '../../components/Skeleton'
 import {
   marcarCompraPagada,
   marcarVentaPagada,
@@ -120,7 +121,7 @@ export function ContabilidadScreen({ onCerrarSesion }: ContabilidadScreenProps) 
               <span>Flujo de caja</span>
             </div>
             {cargandoFlujo || !flujo ? (
-              <p className="gg-contabilidad-estado">Cargando…</p>
+              <SkeletonTabla filas={4} columnas={2} />
             ) : (
               <>
                 <div className="gg-metrica-fila">
@@ -151,7 +152,7 @@ export function ContabilidadScreen({ onCerrarSesion }: ContabilidadScreenProps) 
               <span>Estado de resultados</span>
             </div>
             {cargandoResultados || !resultados ? (
-              <p className="gg-contabilidad-estado">Cargando…</p>
+              <SkeletonTabla filas={5} columnas={2} />
             ) : (
               <>
                 <div className="gg-metrica-fila">
@@ -184,7 +185,7 @@ export function ContabilidadScreen({ onCerrarSesion }: ContabilidadScreenProps) 
         <section className="gg-contabilidad-seccion">
           <h2 className="gg-contabilidad-subtitulo-h2">Cartera de proveedores (por pagar)</h2>
 
-          {cargandoCartera && <p className="gg-contabilidad-estado">Cargando…</p>}
+          {cargandoCartera && <SkeletonFila cantidad={3} />}
           {!cargandoCartera && cartera?.length === 0 && (
             <Card className="gg-contabilidad-estado-card">
               <CheckCircle2 size={22} />
@@ -221,7 +222,7 @@ export function ContabilidadScreen({ onCerrarSesion }: ContabilidadScreenProps) 
         <section className="gg-contabilidad-seccion">
           <h2 className="gg-contabilidad-subtitulo-h2">Cartera de clientes (por cobrar)</h2>
 
-          {cargandoCarteraClientes && <p className="gg-contabilidad-estado">Cargando…</p>}
+          {cargandoCarteraClientes && <SkeletonFila cantidad={3} />}
           {!cargandoCarteraClientes && carteraClientes?.length === 0 && (
             <Card className="gg-contabilidad-estado-card">
               <CheckCircle2 size={22} />
