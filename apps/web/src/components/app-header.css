@@ -120,49 +120,78 @@
   background: #000000;
 }
 
-/* Fila inferior: navegación, más discreta que la marca. */
+/* Fila inferior: navegación, ahora con botones separados en relieve
+   sobre un fondo rosado pastel, a pedido de Paola ("dale vida"). */
 .gg-header-fila-nav {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 16px;
-  padding: 10px 24px;
+  padding: 16px 24px;
+  background: linear-gradient(180deg, var(--c-roseSoft) 0%, var(--c-rose) 130%);
   border-bottom: 1px solid var(--c-line);
 }
 
 .gg-header-nav {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px;
+  gap: 10px;
   justify-content: center;
   flex: 1 1 auto;
   min-width: 0;
 }
 
+/* Efecto "botón 3D": una sombra sólida abajo simula el filo del botón;
+   al presionar, el botón "baja" hasta esa sombra. */
 .gg-header-link {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 7px 14px;
-  border-radius: var(--radius-pill);
+  padding: 9px 16px;
+  border-radius: var(--radius-md);
   border: none;
-  background: none;
-  font-size: 13px;
+  background: var(--c-surface);
+  font-size: 11.5px;
   font-family: inherit;
-  font-weight: 600;
-  color: var(--c-muted);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--c-roseDeep);
   text-decoration: none;
   cursor: pointer;
   text-align: left;
+  box-shadow:
+    0 3px 0 var(--c-roseDeep),
+    0 5px 8px rgba(46, 51, 44, 0.16);
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
 }
 
 .gg-header-link:hover {
-  background: var(--c-beige);
+  transform: translateY(-1px);
+  box-shadow:
+    0 4px 0 var(--c-roseDeep),
+    0 7px 10px rgba(46, 51, 44, 0.2);
+}
+
+.gg-header-link:active {
+  transform: translateY(3px);
+  box-shadow:
+    0 0 0 var(--c-roseDeep),
+    0 1px 2px rgba(46, 51, 44, 0.12);
 }
 
 .gg-header-link--active {
-  background: var(--c-sageSoft);
-  color: var(--c-sageDeep);
+  background: var(--c-sageDeep);
+  color: var(--c-surface);
+  box-shadow:
+    0 3px 0 var(--c-sageDark),
+    0 5px 8px rgba(46, 51, 44, 0.2);
+}
+
+.gg-header-link--active:hover {
+  box-shadow:
+    0 4px 0 var(--c-sageDark),
+    0 7px 10px rgba(46, 51, 44, 0.24);
 }
 
 .gg-header-alerta-punto {
@@ -349,20 +378,20 @@
   right: 0;
   bottom: 0;
   width: min(84vw, 320px);
-  background: var(--c-surface);
+  background: var(--c-roseSoft);
   box-shadow: var(--shadow-pop);
   z-index: 20;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 10px;
   padding: 84px 16px 24px;
   overflow-y: auto;
 }
 
 .gg-header-menu-movil .gg-header-link {
   width: 100%;
-  padding: 12px 16px;
-  font-size: 15px;
+  padding: 14px 16px;
+  font-size: 14px;
 }
 
 .gg-header-menu-movil-separador {
