@@ -113,6 +113,16 @@ export class ImportarProductosUseCase {
           continue;
         }
 
+        // Sin precio de compra y de venta (mayores a 0) no se puede calcular
+        // la rentabilidad del producto en los reportes de margen.
+        if (!(Number(precioCompraTexto) > 0) || !(Number(precioVentaTexto) > 0)) {
+          resultado.errores.push({
+            fila: numeroFila,
+            mensaje: 'Falta "Precio de compra" o "Precio de venta" (ambos deben ser mayores a 0).',
+          });
+          continue;
+        }
+
         const datos = {
           codigoInterno,
           codigoBarras: celda(row, columnaPorClave.get('codigoBarras')) || undefined,

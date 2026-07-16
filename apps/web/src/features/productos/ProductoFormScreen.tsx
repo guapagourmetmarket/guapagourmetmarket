@@ -227,6 +227,13 @@ export function ProductoFormScreen({ onCerrarSesion }: ProductoFormScreenProps) 
       return
     }
 
+    if (!(Number(precioCompra) > 0) || !(Number(precioVenta) > 0)) {
+      setError(
+        'Escribe el precio de compra y el precio de venta (ambos mayores a $0): sin esos dos datos no se puede calcular la rentabilidad del producto.',
+      )
+      return
+    }
+
     mutacion.mutate()
   }
 
@@ -384,7 +391,7 @@ export function ProductoFormScreen({ onCerrarSesion }: ProductoFormScreenProps) 
 
             <div className="gg-nuevo-producto-grid">
               <Input
-                label="Precio de compra"
+                label="Precio de compra *"
                 type="number"
                 min="0"
                 value={precioCompra}
@@ -393,7 +400,7 @@ export function ProductoFormScreen({ onCerrarSesion }: ProductoFormScreenProps) 
                 placeholder="0"
               />
               <Input
-                label="Precio de venta"
+                label="Precio de venta *"
                 type="number"
                 min="0"
                 value={precioVenta}

@@ -31,12 +31,14 @@ export class CrearProductoDto {
   @IsString()
   descripcion?: string;
 
+  // Mínimo 0.01 (no 0): sin un costo real no se puede calcular la
+  // rentabilidad del producto en los reportes de margen.
   @IsNumber()
-  @Min(0)
+  @Min(0.01)
   precioCompra!: number;
 
   @IsNumber()
-  @Min(0)
+  @Min(0.01)
   precioVenta!: number;
 
   @IsIn([0, 5, 19])

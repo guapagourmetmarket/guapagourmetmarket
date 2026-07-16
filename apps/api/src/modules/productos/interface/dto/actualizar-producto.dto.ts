@@ -33,14 +33,16 @@ export class ActualizarProductoDto {
   @IsString()
   descripcion?: string;
 
+  // Mínimo 0.01 (no 0): sin un costo real no se puede calcular la
+  // rentabilidad del producto en los reportes de margen.
   @IsOptional()
   @IsNumber()
-  @Min(0)
+  @Min(0.01)
   precioCompra?: number;
 
   @IsOptional()
   @IsNumber()
-  @Min(0)
+  @Min(0.01)
   precioVenta?: number;
 
   @IsOptional()
