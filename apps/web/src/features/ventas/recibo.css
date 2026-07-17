@@ -73,3 +73,54 @@
   color: var(--c-faint);
   font-family: var(--font-body);
 }
+
+.gg-recibo-compartir {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--c-line);
+}
+
+.gg-recibo-compartir-titulo {
+  margin: 0 0 8px;
+  font-size: 13px;
+  color: var(--c-muted);
+  text-align: center;
+}
+
+.gg-recibo-compartir-botones {
+  display: flex;
+  gap: 8px;
+}
+
+.gg-recibo-canal {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 6px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--c-sand);
+  background: var(--c-surface);
+  color: var(--c-sageDeep);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.gg-recibo-canal:hover {
+  background: var(--c-sageSoft);
+}
+
+.gg-recibo-canal--activo {
+  background: var(--c-sageDeep);
+  border-color: var(--c-sageDeep);
+  color: var(--c-onAccent);
+}
+
+.gg-recibo-compartir-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 12px;
+}
