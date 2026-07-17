@@ -1,0 +1,44 @@
+.gg-pedido-estado--confirmado {
+  background: var(--c-sageSoft);
+  color: var(--c-sageDeep);
+}
+
+.gg-pedido-estado--despachado {
+  background: var(--c-beige);
+  color: var(--c-muted);
+}
+
+.gg-pedido-web-item {
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.gg-pedido-web-items {
+  list-style: none;
+  margin: 4px 0 2px;
+  padding: 0;
+  font-size: 12.5px;
+  color: var(--c-muted);
+}
+
+.gg-pedido-web-boton-avanzar {
+  padding: 6px 12px;
+  border-radius: var(--radius-pill);
+  border: none;
+  background: var(--c-sageDeep);
+  color: var(--c-onAccent);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.gg-pedido-web-boton-avanzar:hover:not(:disabled) {
+  background: var(--c-sageDark);
+}
+
+.gg-pedido-web-boton-avanzar:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

@@ -973,6 +973,56 @@ export function eliminarPedido(id: string) {
   return api.delete<void>(`/pedidos/${id}`)
 }
 
+// ─── Pedidos web (pre-pedidos desde la tienda pública) ───────────────────
+
+export type EstadoPedidoWeb = 'pendiente' | 'confirmado' | 'despachado' | 'cancelado'
+
+export interface PedidoWebItem {
+  id: string
+  productoId: string | null
+  nombreProducto: string
+  cantidad: number
+  precioUnitario: number
+  subtotal: number
+}
+
+export interface PedidoWeb {
+  id: string
+  numero: number
+  clienteNombre: string
+  clienteTelefono: string
+  notas: string | null
+  valor: number
+  estado: EstadoPedidoWeb
+  items: PedidoWebItem[]
+  createdAt: string
+}
+
+export interface NuevoPedidoWebItem {
+  productoId: string
+  cantidad: number
+}
+
+export interface NuevoPedidoWeb {
+  clienteNombre: string
+  clienteTelefono: string
+  notas?: string
+  items: NuevoPedidoWebItem[]
+}
+
+/** Sin sesión: lo llama la tienda pública. */
+export function crearPedidoWebPublico(pedido: NuevoPedidoWeb) {
+  return api.post<PedidoWeb>('/pedidos-web', pedido)
+}
+
+export function obtenerPedidosWeb() {
+  return api.get<PedidoWeb[]>('/pedidos-web')
+}
+
+export function cambiarEstadoPedidoWeb(id: string, estado: EstadoPedidoWeb) {
+  return api.patch<PedidoWeb>(`/pedidos-web/${id}/estado`, { estado })
+}
+
 // ─── Cuentas abiertas ───────────────────────────────────────────────────
 
 export interface CuentaItem {

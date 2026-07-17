@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { registerSW } from 'virtual:pwa-register'
 import { applyBrand } from './theme/theme'
 import { CarritoProvider } from './lib/carrito'
+import { CarritoPublicoProvider } from './lib/carritoPublico'
 import { ConfirmProvider } from './lib/confirm'
 import { ThemeModeProvider, leerModoGuardado } from './lib/themeMode'
 import { iniciarSincronizacionAutomatica } from './lib/sync'
@@ -37,10 +38,12 @@ createRoot(document.getElementById('root')!).render(
       <ThemeModeProvider>
         <ConfirmProvider>
           <CarritoProvider>
-            <BrowserRouter>
-              <App />
-            </BrowserRouter>
-            <ActualizacionBanner />
+            <CarritoPublicoProvider>
+              <BrowserRouter>
+                <App />
+              </BrowserRouter>
+              <ActualizacionBanner />
+            </CarritoPublicoProvider>
           </CarritoProvider>
         </ConfirmProvider>
       </ThemeModeProvider>

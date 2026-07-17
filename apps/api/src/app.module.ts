@@ -15,6 +15,7 @@ import { ReportesModule } from './modules/reportes/reportes.module';
 import { CajaModule } from './modules/caja/caja.module';
 import { CuponesModule } from './modules/cupones/cupones.module';
 import { PedidosModule } from './modules/pedidos/pedidos.module';
+import { PedidosWebModule } from './modules/pedidos-web/pedidos-web.module';
 import { CuentasModule } from './modules/cuentas/cuentas.module';
 import { AuditoriaModule } from './modules/auditoria/auditoria.module';
 
@@ -35,6 +36,7 @@ import { AuditoriaModule } from './modules/auditoria/auditoria.module';
     CajaModule,
     CuponesModule,
     PedidosModule,
+    PedidosWebModule,
     CuentasModule,
   ],
   controllers: [AppController],

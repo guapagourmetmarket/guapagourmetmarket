@@ -14,6 +14,7 @@ import {
   obtenerCarteraClientes,
   obtenerCumpleanosDelMes,
   obtenerPedidos,
+  obtenerPedidosWeb,
   obtenerUsuarioSesion,
   type Rol,
 } from '../lib/api'
@@ -35,6 +36,7 @@ const ENLACES: { to: string; label: string; roles?: Rol[] }[] = [
   { to: '/ventas', label: 'Venta manual' },
   { to: '/cuentas', label: 'Cuentas' },
   { to: '/pedidos', label: 'Pedidos' },
+  { to: '/pedidos-web', label: 'Pedidos web' },
   { to: '/compras', label: 'Compras', roles: GERENCIAL },
   { to: '/proveedores', label: 'Proveedores', roles: GERENCIAL },
   { to: '/cupones', label: 'Cupones', roles: GERENCIAL },
@@ -123,10 +125,22 @@ export function AppHeader({ onCerrarSesion }: AppHeaderProps) {
     (p) => p.estado === 'pendiente' && p.fechaEntrega <= limitePedidosStr,
   )
 
+  // "Pedidos web" (pre-pedidos desde la tienda pública): se avisa mientras
+  // sigan en "pendiente" sin revisar, sin importar cuándo llegaron.
+  const { data: pedidosWeb } = useQuery({
+    queryKey: ['pedidos-web-resumen'],
+    queryFn: obtenerPedidosWeb,
+    staleTime: 60_000,
+  })
+  const pedidosWebPendientes = (pedidosWeb ?? []).filter((p) => p.estado === 'pendiente')
+
   const mensajesInternos = [
     `🏪 ${brand.name} · ${brand.contacto.direccion}`,
     pedidosProximos.length > 0
       ? `📦 ${pedidosProximos.length} pedido${pedidosProximos.length === 1 ? '' : 's'} por encargo próximo${pedidosProximos.length === 1 ? '' : 's'} a entregar`
+      : null,
+    pedidosWebPendientes.length > 0
+      ? `🛒 ${pedidosWebPendientes.length} pedido${pedidosWebPendientes.length === 1 ? '' : 's'} nuevo${pedidosWebPendientes.length === 1 ? '' : 's'} desde la tienda web`
       : null,
     cumpleanosHoy.length > 0
       ? `🎂 ¡Hoy cumple años ${cumpleanosHoy.map((c) => c.nombre).join(', ')}!`
@@ -216,6 +230,12 @@ export function AppHeader({ onCerrarSesion }: AppHeaderProps) {
                 <span
                   className="gg-header-alerta-punto gg-header-alerta-punto--clientes"
                   aria-label={`${pedidosProximos.length} pedidos por encargo próximos`}
+                />
+              )}
+              {enlace.to === '/pedidos-web' && pedidosWebPendientes.length > 0 && (
+                <span
+                  className="gg-header-alerta-punto gg-header-alerta-punto--clientes"
+                  aria-label={`${pedidosWebPendientes.length} pedidos web pendientes`}
                 />
               )}
             </NavLink>

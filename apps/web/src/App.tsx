@@ -13,12 +13,14 @@ import { ContabilidadScreen } from './features/contabilidad/ContabilidadScreen'
 import { GastosScreen } from './features/contabilidad/GastosScreen'
 import { CuponesScreen } from './features/cupones/CuponesScreen'
 import { PedidosScreen } from './features/pedidos/PedidosScreen'
+import { PedidosWebScreen } from './features/pedidos/PedidosWebScreen'
 import { CuentasScreen } from './features/cuentas/CuentasScreen'
 import { AuditoriaScreen } from './features/auditoria/AuditoriaScreen'
 import { DesignSystemScreen } from './features/design-system/DesignSystemScreen'
 import { ClientesScreen } from './features/clientes/ClientesScreen'
 import { EnlacesScreen } from './features/enlaces/EnlacesScreen'
 import { TiendaScreen } from './features/tienda/TiendaScreen'
+import { PedidoWebCheckoutScreen } from './features/tienda/PedidoWebCheckoutScreen'
 import { CajaScreen } from './features/caja/CajaScreen'
 import { PosTactilScreen } from './features/pos-tactil/PosTactilScreen'
 import {
@@ -59,6 +61,7 @@ function App() {
     <Routes>
       <Route path="/enlaces" element={<EnlacesScreen />} />
       <Route path="/tienda" element={<TiendaScreen />} />
+      <Route path="/tienda/pedido" element={<PedidoWebCheckoutScreen />} />
       <Route
         path="/login"
         element={
@@ -190,6 +193,16 @@ function App() {
         element={
           autenticado ? (
             <PedidosScreen onCerrarSesion={cerrarSesion} />
+          ) : (
+            <Navigate to="/login" replace />
+          )
+        }
+      />
+      <Route
+        path="/pedidos-web"
+        element={
+          autenticado ? (
+            <PedidosWebScreen onCerrarSesion={cerrarSesion} />
           ) : (
             <Navigate to="/login" replace />
           )

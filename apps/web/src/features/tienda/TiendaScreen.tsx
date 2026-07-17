@@ -1,9 +1,11 @@
 import { useMemo, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { Flame, Leaf, Search } from 'lucide-react'
+import { Link } from 'react-router-dom'
+import { Flame, Leaf, Search, ShoppingCart } from 'lucide-react'
 import { Card } from '../../components/Card'
 import { Marquee } from '../../components/Marquee'
 import { obtenerProductosPublico } from '../../lib/api'
+import { useCarritoPublico } from '../../lib/carritoPublico'
 import { brand } from '../../theme/theme'
 import '../../components/app-header.css'
 import '../productos/productos.css'
@@ -19,6 +21,7 @@ export function TiendaScreen() {
   const [busqueda, setBusqueda] = useState('')
   const [categoria, setCategoria] = useState<string | null>(null)
   const [soloDescuentos, setSoloDescuentos] = useState(false)
+  const carrito = useCarritoPublico()
 
   const { data: productos, isLoading, isError } = useQuery({
     queryKey: ['productos-publico'],
@@ -230,6 +233,15 @@ export function TiendaScreen() {
                       {producto.disponible ? 'Disponible' : 'Agotado'}
                     </span>
                   </div>
+                  <button
+                    type="button"
+                    className="gg-tienda-agregar-boton"
+                    disabled={!producto.disponible}
+                    onClick={() => carrito.agregarProducto(producto)}
+                  >
+                    <ShoppingCart size={15} />
+                    Agregar al pedido
+                  </button>
                 </div>
               </Card>
             ))}
@@ -240,6 +252,16 @@ export function TiendaScreen() {
       <footer className="gg-tienda-footer">
         <a href="/enlaces">← Ver todos nuestros enlaces (WhatsApp, redes, reseñas, cómo llegar)</a>
       </footer>
+
+      {carrito.lineas.length > 0 && (
+        <Link to="/tienda/pedido" className="gg-carrito-flotante">
+          <ShoppingCart size={18} />
+          <span>
+            {carrito.totalUnidades} producto{carrito.totalUnidades === 1 ? '' : 's'} · {formatoCOP.format(carrito.total)}
+          </span>
+          <span className="gg-carrito-flotante-cta">Ver pedido</span>
+        </Link>
+      )}
     </div>
   )
 }
