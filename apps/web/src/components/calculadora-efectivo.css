@@ -14,25 +14,54 @@
 
 .gg-calc-efectivo-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
-  gap: 8px;
+  grid-template-columns: repeat(auto-fill, minmax(78px, 1fr));
+  gap: 10px 8px;
+  transition: opacity 0.15s ease;
+}
+
+.gg-calc-efectivo-grid--inactiva {
+  opacity: 0.4;
+  pointer-events: none;
 }
 
 .gg-calc-efectivo-item {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
 }
 
-.gg-calc-efectivo-item label {
-  font-size: 11px;
-  color: var(--c-muted);
-  font-variant-numeric: tabular-nums;
+.gg-billete-icon {
+  flex-shrink: 0;
 }
 
 .gg-calc-efectivo-item input {
-  padding: 6px 8px;
+  width: 100%;
+  padding: 6px 4px;
   font-size: 13px;
+  text-align: center;
+}
+
+.gg-calc-efectivo-directo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--c-sand);
+}
+
+.gg-calc-efectivo-directo label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--c-sageDeep);
+  flex-shrink: 0;
+}
+
+.gg-calc-efectivo-directo input {
+  flex: 1;
+  min-width: 0;
 }
 
 .gg-calc-efectivo-resultado {

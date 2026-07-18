@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { BilleteIcon } from './BilleteIcon'
 import './calculadora-efectivo.css'
 
 // Billetes y monedas de Colombia, del más grande al más chico.
@@ -14,25 +15,38 @@ interface CalculadoraEfectivoProps {
   total: number
 }
 
-/** Calculadora de cambio: el cajero marca qué billetes/monedas recibió y se calcula cuánto debe devolver. */
+/**
+ * Calculadora de cambio: el cajero marca qué billetes/monedas recibió, o si
+ * es más rápido, escribe directo cuánto le pagaron en un solo campo — las
+ * dos formas calculan el mismo cambio a devolver.
+ */
 export function CalculadoraEfectivo({ total }: CalculadoraEfectivoProps) {
   const [cantidades, setCantidades] = useState<Record<number, string>>({})
+  const [montoDirecto, setMontoDirecto] = useState('')
 
-  const totalRecibido = DENOMINACIONES.reduce((acc, d) => acc + d * (Number(cantidades[d]) || 0), 0)
+  const totalItemizado = DENOMINACIONES.reduce((acc, d) => acc + d * (Number(cantidades[d]) || 0), 0)
+  const usaMontoDirecto = montoDirecto.trim() !== ''
+  const totalRecibido = usaMontoDirecto ? Number(montoDirecto) || 0 : totalItemizado
   const cambio = totalRecibido - total
-  const hayConteo = Object.values(cantidades).some((v) => Number(v) > 0)
+  const hayConteo = usaMontoDirecto || Object.values(cantidades).some((v) => Number(v) > 0)
 
-  function actualizar(denominacion: number, valor: string) {
+  function actualizarBillete(denominacion: number, valor: string) {
+    if (montoDirecto) setMontoDirecto('')
     setCantidades((prev) => ({ ...prev, [denominacion]: valor }))
   }
 
   return (
     <div className="gg-calc-efectivo">
       <p className="gg-calc-efectivo-titulo">¿Con qué billetes/monedas paga?</p>
-      <div className="gg-calc-efectivo-grid">
+      <div className={'gg-calc-efectivo-grid' + (usaMontoDirecto ? ' gg-calc-efectivo-grid--inactiva' : '')}>
         {DENOMINACIONES.map((d) => (
-          <div key={d} className="gg-calc-efectivo-item">
-            <label htmlFor={`efectivo-${d}`}>{formatoCOP.format(d)}</label>
+          <label
+            key={d}
+            className="gg-calc-efectivo-item"
+            htmlFor={`efectivo-${d}`}
+            aria-label={`Cantidad de billetes/monedas de ${formatoCOP.format(d)}`}
+          >
+            <BilleteIcon valor={d} />
             <input
               id={`efectivo-${d}`}
               className="gg-input"
@@ -41,11 +55,27 @@ export function CalculadoraEfectivo({ total }: CalculadoraEfectivoProps) {
               step="1"
               inputMode="numeric"
               value={cantidades[d] ?? ''}
-              onChange={(e) => actualizar(d, e.target.value)}
+              onChange={(e) => actualizarBillete(d, e.target.value)}
               placeholder="0"
+              disabled={usaMontoDirecto}
             />
-          </div>
+          </label>
         ))}
+      </div>
+
+      <div className="gg-calc-efectivo-directo">
+        <label htmlFor="efectivo-monto-directo">O escribe con cuánto paga</label>
+        <input
+          id="efectivo-monto-directo"
+          className="gg-input"
+          type="number"
+          min="0"
+          step="1"
+          inputMode="numeric"
+          value={montoDirecto}
+          onChange={(e) => setMontoDirecto(e.target.value)}
+          placeholder={String(total)}
+        />
       </div>
 
       {hayConteo && (
