@@ -35,6 +35,8 @@ export interface Producto {
   vendePorPeso?: boolean;
   descuentoPorcentaje?: number | null;
   precioOferta?: number | null;
+  promocionN?: number | null;
+  promocionM?: number | null;
   imagenUrl?: string;
   imagenes: ImagenProducto[];
   favoritoPos?: boolean;

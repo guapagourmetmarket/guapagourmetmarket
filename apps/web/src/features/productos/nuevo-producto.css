@@ -196,6 +196,21 @@
   color: var(--c-roseDeep);
 }
 
+.gg-nuevo-producto-nxm {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.gg-nuevo-producto-nxm input {
+  flex: 1;
+}
+
+.gg-nuevo-producto-nxm span {
+  color: var(--c-muted);
+  font-weight: 700;
+}
+
 @media (max-width: 560px) {
   .gg-nuevo-producto-grid {
     grid-template-columns: 1fr;

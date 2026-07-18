@@ -93,6 +93,8 @@ export class ProductosController {
       precioVenta: p.precioVenta,
       descuentoPorcentaje: p.descuentoPorcentaje,
       precioOferta: p.precioOferta,
+      promocionN: p.promocionN,
+      promocionM: p.promocionM,
       categoriaNombre: p.categoriaNombre,
       marcaNombre: p.marcaNombre,
       unidadMedida: p.unidadMedida,

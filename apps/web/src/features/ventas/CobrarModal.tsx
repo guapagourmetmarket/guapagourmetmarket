@@ -7,7 +7,7 @@ import { Input } from '../../components/Input'
 import { useCarrito } from '../../lib/carrito'
 import { ApiError, obtenerClientes, type MetodoPago, type Venta } from '../../lib/api'
 import { registrarVentaConSync } from '../../lib/sync'
-import { precioEfectivo } from '../../lib/precio'
+import { precioEfectivo, subtotalEfectivo } from '../../lib/precio'
 import { useDescuento } from './descuento'
 import { ControlCantidad } from './ControlCantidad'
 import { CuponInput } from './CuponInput'
@@ -93,11 +93,16 @@ export function CobrarModal({ onClose, onVentaRegistrada }: CobrarModalProps) {
                 {linea.producto.descuentoPorcentaje && (
                   <span className="gg-carrito-linea-oferta">-{linea.producto.descuentoPorcentaje}%</span>
                 )}
+                {linea.producto.promocionN && linea.producto.promocionM && (
+                  <span className="gg-carrito-linea-oferta">
+                    {linea.producto.promocionN}x{linea.producto.promocionM}
+                  </span>
+                )}
               </span>
             </div>
             <ControlCantidad linea={linea} />
             <span className="gg-carrito-linea-subtotal">
-              {formatoCOP.format(precioEfectivo(linea.producto) * linea.cantidad)}
+              {formatoCOP.format(subtotalEfectivo(linea.producto, linea.cantidad))}
             </span>
             <button
               type="button"

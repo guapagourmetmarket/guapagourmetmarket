@@ -8,7 +8,8 @@ const SELECT_BASE = `
   SELECT
     p.id, p.codigo_interno, p.codigo_barras, p.nombre, p.descripcion,
     p.precio_compra, p.costo_promedio, p.precio_venta, p.iva, p.unidad_medida, p.existencias,
-    p.stock_minimo, p.vende_por_peso, p.descuento_porcentaje, p.favorito_pos, p.activo,
+    p.stock_minimo, p.vende_por_peso, p.descuento_porcentaje, p.promocion_n, p.promocion_m,
+    p.favorito_pos, p.activo,
     p.ingredientes, p.info_nutricional, p.peso, p.peso_unidad,
     p.categoria_id, c.nombre AS categoria_nombre,
     p.marca_id, m.nombre AS marca_nombre,
@@ -40,6 +41,8 @@ const CAMPO_COLUMNA: Record<keyof CambiosProducto, string> = {
   stockMinimo: 'stock_minimo',
   vendePorPeso: 'vende_por_peso',
   descuentoPorcentaje: 'descuento_porcentaje',
+  promocionN: 'promocion_n',
+  promocionM: 'promocion_m',
   ingredientes: 'ingredientes',
   infoNutricional: 'info_nutricional',
   peso: 'peso',
@@ -72,6 +75,8 @@ function aProducto(row: QueryResultRow): Producto {
     vendePorPeso: row.vende_por_peso,
     descuentoPorcentaje,
     precioOferta: descuentoPorcentaje ? Math.round(precioVenta * (1 - descuentoPorcentaje / 100)) : null,
+    promocionN: row.promocion_n === null ? null : Number(row.promocion_n),
+    promocionM: row.promocion_m === null ? null : Number(row.promocion_m),
     favoritoPos: row.favorito_pos,
     imagenUrl: row.imagen_url,
     imagenes: row.imagenes ?? [],
@@ -116,8 +121,8 @@ export class ProductosRepositoryPg implements ProductosRepository {
         `INSERT INTO productos
           (codigo_interno, codigo_barras, nombre, descripcion, precio_compra, costo_promedio, precio_venta,
            iva, categoria_id, marca_id, unidad_medida, existencias, stock_minimo, vende_por_peso,
-           descuento_porcentaje, ingredientes, info_nutricional, peso, peso_unidad)
-         VALUES ($1,$2,$3,$4,$5,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18)
+           descuento_porcentaje, promocion_n, promocion_m, ingredientes, info_nutricional, peso, peso_unidad)
+         VALUES ($1,$2,$3,$4,$5,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20)
          RETURNING id`,
         [
           nuevo.codigoInterno,
@@ -134,6 +139,8 @@ export class ProductosRepositoryPg implements ProductosRepository {
           nuevo.stockMinimo ?? 0,
           nuevo.vendePorPeso ?? false,
           nuevo.descuentoPorcentaje ?? null,
+          nuevo.promocionN ?? null,
+          nuevo.promocionM ?? null,
           nuevo.ingredientes ?? null,
           nuevo.infoNutricional ? JSON.stringify(nuevo.infoNutricional) : null,
           nuevo.peso ?? null,
@@ -285,6 +292,11 @@ export class ProductosRepositoryPg implements ProductosRepository {
     const codigo = (err as { code?: string }).code;
     if (codigo === '23505') {
       return new ConflictException('Ya existe un producto con ese código interno o de barras.');
+    }
+    if (codigo === '23514') {
+      return new ConflictException(
+        'Un producto solo puede tener activa una promoción a la vez (% de descuento o lleva N paga M), y "paga" debe ser menor que "lleva".',
+      );
     }
     return err;
   }

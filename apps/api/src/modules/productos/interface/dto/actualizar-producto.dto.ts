@@ -2,6 +2,7 @@ import { Type } from 'class-transformer';
 import {
   IsBoolean,
   IsIn,
+  IsInt,
   IsNumber,
   IsOptional,
   IsString,
@@ -81,6 +82,16 @@ export class ActualizarProductoDto {
   @Min(0.01)
   @Max(100)
   descuentoPorcentaje?: number | null;
+
+  @IsOptional()
+  @IsInt()
+  @Min(2)
+  promocionN?: number | null;
+
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  promocionM?: number | null;
 
   @IsOptional()
   @IsString()

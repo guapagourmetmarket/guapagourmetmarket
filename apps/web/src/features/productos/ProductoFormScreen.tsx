@@ -75,7 +75,10 @@ export function ProductoFormScreen({ onCerrarSesion }: ProductoFormScreenProps) 
   const [existencias, setExistencias] = useState('0')
   const [stockMinimo, setStockMinimo] = useState('0')
   const [vendePorPeso, setVendePorPeso] = useState(false)
+  const [tipoPromocion, setTipoPromocion] = useState<'ninguna' | 'descuento' | 'nxm'>('ninguna')
   const [descuentoPorcentaje, setDescuentoPorcentaje] = useState('')
+  const [promocionN, setPromocionN] = useState('')
+  const [promocionM, setPromocionM] = useState('')
   const [ingredientes, setIngredientes] = useState('')
   const [peso, setPeso] = useState('')
   const [pesoUnidad, setPesoUnidad] = useState('g')
@@ -101,6 +104,15 @@ export function ProductoFormScreen({ onCerrarSesion }: ProductoFormScreenProps) 
     setVendePorPeso(productoExistente.vendePorPeso ?? false)
     setDescuentoPorcentaje(
       productoExistente.descuentoPorcentaje != null ? String(productoExistente.descuentoPorcentaje) : '',
+    )
+    setPromocionN(productoExistente.promocionN != null ? String(productoExistente.promocionN) : '')
+    setPromocionM(productoExistente.promocionM != null ? String(productoExistente.promocionM) : '')
+    setTipoPromocion(
+      productoExistente.promocionN != null
+        ? 'nxm'
+        : productoExistente.descuentoPorcentaje != null
+          ? 'descuento'
+          : 'ninguna',
     )
     setIngredientes(productoExistente.ingredientes ?? '')
     setPeso(productoExistente.peso != null ? String(productoExistente.peso) : '')
@@ -190,7 +202,11 @@ export function ProductoFormScreen({ onCerrarSesion }: ProductoFormScreenProps) 
       // null (no undefined) a propósito: así, si se borra el campo, se
       // manda explícitamente y se quita el descuento activo en vez de que
       // "campo vacío" simplemente no se envíe y la oferta se quede pegada.
-      descuentoPorcentaje: descuentoPorcentaje.trim() ? Number(descuentoPorcentaje) : null,
+      // Las dos promociones son excluyentes: solo se manda la que esté
+      // activa según el selector, la otra siempre va en null.
+      descuentoPorcentaje: tipoPromocion === 'descuento' && descuentoPorcentaje.trim() ? Number(descuentoPorcentaje) : null,
+      promocionN: tipoPromocion === 'nxm' && promocionN.trim() ? Number(promocionN) : null,
+      promocionM: tipoPromocion === 'nxm' && promocionM.trim() ? Number(promocionM) : null,
       ingredientes: ingredientes.trim() || undefined,
       infoNutricional: datosNutricion(),
       peso: peso.trim() ? Number(peso) : undefined,
@@ -232,6 +248,24 @@ export function ProductoFormScreen({ onCerrarSesion }: ProductoFormScreenProps) 
         'Escribe el precio de compra y el precio de venta (ambos mayores a $0): sin esos dos datos no se puede calcular la rentabilidad del producto.',
       )
       return
+    }
+
+    if (tipoPromocion === 'descuento' && !(Number(descuentoPorcentaje) > 0)) {
+      setError('Escribe el % de descuento de la oferta.')
+      return
+    }
+
+    if (tipoPromocion === 'nxm') {
+      const n = Number(promocionN)
+      const m = Number(promocionM)
+      if (!(n >= 2) || !(m >= 1)) {
+        setError('Completa "Lleva" y "Paga" de la promoción.')
+        return
+      }
+      if (m >= n) {
+        setError('En "Lleva N, paga M", M debe ser menor que N (si no, no es una promoción).')
+        return
+      }
     }
 
     mutacion.mutate()
@@ -469,31 +503,88 @@ export function ProductoFormScreen({ onCerrarSesion }: ProductoFormScreenProps) 
             </div>
 
             <div className="gg-field">
-              <label htmlFor="descuento-producto">% de descuento (oferta activa, opcional)</label>
-              <input
-                id="descuento-producto"
+              <label htmlFor="tipo-promocion">Promoción (opcional)</label>
+              <select
+                id="tipo-promocion"
                 className="gg-input"
-                type="number"
-                min="0.01"
-                max="100"
-                step="0.01"
-                value={descuentoPorcentaje}
-                onChange={(e) => setDescuentoPorcentaje(e.target.value)}
-                onKeyDown={bloquearEnter}
-                placeholder="Ej: 20 (vacío = sin oferta)"
-              />
-              {descuentoPorcentaje.trim() !== '' && Number(precioVenta) > 0 && (
-                <p className="gg-nuevo-producto-oferta-preview">
-                  Se verá en la tienda como{' '}
-                  <strong>
-                    {formatoCOP.format(
-                      Math.round(Number(precioVenta) * (1 - Number(descuentoPorcentaje) / 100)),
-                    )}
-                  </strong>{' '}
-                  (antes {formatoCOP.format(Number(precioVenta))})
-                </p>
-              )}
+                value={tipoPromocion}
+                onChange={(e) => setTipoPromocion(e.target.value as typeof tipoPromocion)}
+              >
+                <option value="ninguna">Sin promoción</option>
+                <option value="descuento">% de descuento</option>
+                <option value="nxm">Lleva N, paga M (ej. 3x2)</option>
+              </select>
             </div>
+
+            {tipoPromocion === 'descuento' && (
+              <div className="gg-field">
+                <label htmlFor="descuento-producto">% de descuento</label>
+                <input
+                  id="descuento-producto"
+                  className="gg-input"
+                  type="number"
+                  min="0.01"
+                  max="100"
+                  step="0.01"
+                  value={descuentoPorcentaje}
+                  onChange={(e) => setDescuentoPorcentaje(e.target.value)}
+                  onKeyDown={bloquearEnter}
+                  placeholder="Ej: 20"
+                />
+                {descuentoPorcentaje.trim() !== '' && Number(precioVenta) > 0 && (
+                  <p className="gg-nuevo-producto-oferta-preview">
+                    Se verá en la tienda como{' '}
+                    <strong>
+                      {formatoCOP.format(
+                        Math.round(Number(precioVenta) * (1 - Number(descuentoPorcentaje) / 100)),
+                      )}
+                    </strong>{' '}
+                    (antes {formatoCOP.format(Number(precioVenta))})
+                  </p>
+                )}
+              </div>
+            )}
+
+            {tipoPromocion === 'nxm' && (
+              <div className="gg-field">
+                <label htmlFor="promocion-n">Lleva / paga</label>
+                <div className="gg-nuevo-producto-nxm">
+                  <input
+                    id="promocion-n"
+                    className="gg-input"
+                    type="number"
+                    min="2"
+                    step="1"
+                    value={promocionN}
+                    onChange={(e) => setPromocionN(e.target.value)}
+                    onKeyDown={bloquearEnter}
+                    placeholder="Lleva (ej. 3)"
+                    aria-label="Lleva"
+                  />
+                  <span>x</span>
+                  <input
+                    id="promocion-m"
+                    className="gg-input"
+                    type="number"
+                    min="1"
+                    step="1"
+                    value={promocionM}
+                    onChange={(e) => setPromocionM(e.target.value)}
+                    onKeyDown={bloquearEnter}
+                    placeholder="Paga (ej. 2)"
+                    aria-label="Paga"
+                  />
+                </div>
+                {promocionN.trim() && promocionM.trim() && Number(precioVenta) > 0 && (
+                  <p className="gg-nuevo-producto-oferta-preview">
+                    Se verá en la tienda como <strong>{promocionN}x{promocionM}</strong> — llevando{' '}
+                    {promocionN} unidades se pagan {promocionM} (
+                    {formatoCOP.format(Number(precioVenta) * Number(promocionM))} en vez de{' '}
+                    {formatoCOP.format(Number(precioVenta) * Number(promocionN))}).
+                  </p>
+                )}
+              </div>
+            )}
 
             <div className="gg-nuevo-producto-grid">
               <Input

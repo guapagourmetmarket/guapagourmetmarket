@@ -1,6 +1,6 @@
 import { createContext, useContext, useMemo, useState, type PropsWithChildren } from 'react'
 import type { ProductoPublico } from './api'
-import { precioEfectivo } from './precio'
+import { subtotalEfectivo } from './precio'
 
 // Carrito aparte del interno (lib/carrito.tsx): la tienda pública solo
 // conoce `ProductoPublico` (sin costo, existencias exactas, etc.), así
@@ -53,7 +53,7 @@ export function CarritoPublicoProvider({ children }: PropsWithChildren) {
   }
 
   const total = useMemo(
-    () => lineas.reduce((acc, l) => acc + precioEfectivo(l.producto) * l.cantidad, 0),
+    () => lineas.reduce((acc, l) => acc + subtotalEfectivo(l.producto, l.cantidad), 0),
     [lineas],
   )
   const totalUnidades = useMemo(() => lineas.reduce((acc, l) => acc + l.cantidad, 0), [lineas])

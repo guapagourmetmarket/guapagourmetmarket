@@ -20,7 +20,7 @@ import {
   type Venta,
 } from '../../lib/api'
 import { registrarVentaConSync, sincronizarOutbox } from '../../lib/sync'
-import { precioEfectivo } from '../../lib/precio'
+import { precioEfectivo, subtotalEfectivo } from '../../lib/precio'
 import { useConfirm } from '../../lib/confirm'
 import { ReciboModal } from './ReciboModal'
 import { DevolucionModal } from './DevolucionModal'
@@ -262,11 +262,16 @@ export function VentaManualScreen({ onCerrarSesion }: VentaManualScreenProps) {
                         {linea.producto.descuentoPorcentaje && (
                           <span className="gg-carrito-linea-oferta">-{linea.producto.descuentoPorcentaje}%</span>
                         )}
+                        {linea.producto.promocionN && linea.producto.promocionM && (
+                          <span className="gg-carrito-linea-oferta">
+                            {linea.producto.promocionN}x{linea.producto.promocionM}
+                          </span>
+                        )}
                       </span>
                     </div>
                     <ControlCantidad linea={linea} />
                     <span className="gg-carrito-linea-subtotal">
-                      {formatoCOP.format(precioEfectivo(linea.producto) * linea.cantidad)}
+                      {formatoCOP.format(subtotalEfectivo(linea.producto, linea.cantidad))}
                     </span>
                     <button
                       type="button"

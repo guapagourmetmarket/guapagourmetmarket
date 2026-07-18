@@ -7,7 +7,7 @@ import { Button } from '../../components/Button'
 import { Input } from '../../components/Input'
 import { ApiError, crearPedidoWebPublico, type PedidoWeb } from '../../lib/api'
 import { useCarritoPublico } from '../../lib/carritoPublico'
-import { precioEfectivo } from '../../lib/precio'
+import { etiquetaPromocion, precioEfectivo, subtotalEfectivo } from '../../lib/precio'
 import { brand } from '../../theme/theme'
 import '../../components/app-header.css'
 import './tienda.css'
@@ -140,6 +140,9 @@ export function PedidoWebCheckoutScreen() {
                     <p className="gg-pedido-web-linea-nombre">{linea.producto.nombre}</p>
                     <p className="gg-pedido-web-linea-precio">
                       {formatoCOP.format(precioEfectivo(linea.producto))} c/u
+                      {etiquetaPromocion(linea.producto) && (
+                        <span className="gg-pedido-web-linea-promo"> · {etiquetaPromocion(linea.producto)}</span>
+                      )}
                     </p>
                   </div>
                   <div className="gg-pedido-web-cantidad">
@@ -152,7 +155,7 @@ export function PedidoWebCheckoutScreen() {
                     </button>
                   </div>
                   <span className="gg-pedido-web-subtotal">
-                    {formatoCOP.format(precioEfectivo(linea.producto) * linea.cantidad)}
+                    {formatoCOP.format(subtotalEfectivo(linea.producto, linea.cantidad))}
                   </span>
                 </div>
               ))}

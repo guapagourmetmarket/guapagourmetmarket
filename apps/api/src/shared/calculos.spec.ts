@@ -1,4 +1,11 @@
-import { diferenciaCaja, normalizarCodigoCupon, precioConDescuento, puntosGanados } from './calculos';
+import {
+  diferenciaCaja,
+  normalizarCodigoCupon,
+  precioConDescuento,
+  puntosGanados,
+  subtotalConPromocion,
+  unidadesAPagarNxM,
+} from './calculos';
 
 describe('precioConDescuento', () => {
   it('devuelve el precio de lista si no hay descuento', () => {
@@ -17,6 +24,54 @@ describe('precioConDescuento', () => {
 
   it('un descuento de 100% deja el precio en cero', () => {
     expect(precioConDescuento(10000, 100)).toBe(0);
+  });
+});
+
+describe('unidadesAPagarNxM', () => {
+  it('cobra M por cada grupo completo de N (3x2 con cantidad exacta)', () => {
+    expect(unidadesAPagarNxM(3, 3, 2)).toBe(2);
+    expect(unidadesAPagarNxM(6, 3, 2)).toBe(4);
+  });
+
+  it('lo que no completa un grupo se paga a precio de lista', () => {
+    // 5 unidades con 3x2: un grupo completo (paga 2) + 2 sueltas (pagan 2) = 4
+    expect(unidadesAPagarNxM(5, 3, 2)).toBe(4);
+  });
+
+  it('cantidad menor a N no aplica la promoción', () => {
+    expect(unidadesAPagarNxM(2, 3, 2)).toBe(2);
+  });
+
+  it('2x1 cobra la mitad redondeando hacia arriba en grupos completos', () => {
+    expect(unidadesAPagarNxM(4, 2, 1)).toBe(2);
+    expect(unidadesAPagarNxM(5, 2, 1)).toBe(3);
+  });
+});
+
+describe('subtotalConPromocion', () => {
+  it('sin promoción, es precio de lista por cantidad', () => {
+    expect(
+      subtotalConPromocion(10000, 3, { descuentoPorcentaje: null, promocionN: null, promocionM: null }),
+    ).toBe(30000);
+  });
+
+  it('aplica el % de descuento cuando no hay promoción N por M', () => {
+    expect(
+      subtotalConPromocion(10000, 2, { descuentoPorcentaje: 15, promocionN: null, promocionM: null }),
+    ).toBe(17000); // 8500 * 2
+  });
+
+  it('aplica la promoción N por M cuando está activa (3x2)', () => {
+    // 5 unidades de 10000 con 3x2: 4 unidades a pagar * 10000 = 40000
+    expect(
+      subtotalConPromocion(10000, 5, { descuentoPorcentaje: null, promocionN: 3, promocionM: 2 }),
+    ).toBe(40000);
+  });
+
+  it('la promoción N por M tiene prioridad si ambas llegaran a estar presentes', () => {
+    expect(
+      subtotalConPromocion(10000, 3, { descuentoPorcentaje: 15, promocionN: 3, promocionM: 2 }),
+    ).toBe(20000); // usa 3x2 (paga 2), no el 15%
   });
 });
 

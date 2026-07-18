@@ -3,7 +3,7 @@ import { Pool } from 'pg';
 import { PG_POOL } from '../../../database/database.module';
 import { Devolucion, NuevaDevolucion, NuevaVenta, Venta, VentaItem } from '../domain/venta.entity';
 import { VentasRepository } from '../domain/ventas.repository';
-import { precioConDescuento, puntosGanados } from '../../../shared/calculos';
+import { puntosGanados, subtotalConPromocion } from '../../../shared/calculos';
 
 const SELECT_VENTA = `
   SELECT id, numero, to_char(fecha, 'YYYY-MM-DD') AS fecha, cliente_id, cliente_nombre, descripcion,
@@ -87,7 +87,7 @@ export class VentasRepositoryPg implements VentasRepository {
       for (const item of venta.items) {
         const { rows } = await client.query(
           `SELECT nombre, precio_venta, iva, existencias, costo_promedio, unidad_medida,
-                  vende_por_peso, descuento_porcentaje
+                  vende_por_peso, descuento_porcentaje, promocion_n, promocion_m
            FROM productos WHERE id = $1 FOR UPDATE`,
           [item.productoId],
         );
@@ -101,20 +101,24 @@ export class VentasRepositoryPg implements VentasRepository {
             `Solo quedan ${producto.existencias} ${unidad} de "${producto.nombre}".`,
           );
         }
-        // Si el producto tiene una oferta activa, se cobra el precio ya
-        // rebajado — la promoción no es solo decorativa en la tienda pública.
+        // Si el producto tiene una oferta activa (% descuento o lleva N paga
+        // M), se cobra ya con la promoción aplicada — no es solo decorativa
+        // en la tienda pública.
         const precioLista = Number(producto.precio_venta);
-        const precioUnitario = precioConDescuento(
-          precioLista,
-          producto.descuento_porcentaje === null ? null : Number(producto.descuento_porcentaje),
-        );
+        const promocion = {
+          descuentoPorcentaje: producto.descuento_porcentaje === null ? null : Number(producto.descuento_porcentaje),
+          promocionN: producto.promocion_n === null ? null : Number(producto.promocion_n),
+          promocionM: producto.promocion_m === null ? null : Number(producto.promocion_m),
+        };
+        const subtotal = subtotalConPromocion(precioLista, item.cantidad, promocion);
+        const precioUnitario = item.cantidad > 0 ? Math.round(subtotal / item.cantidad) : precioLista;
         itemsConDatos.push({
           productoId: item.productoId,
           nombre: producto.nombre,
           cantidad: item.cantidad,
           precioUnitario,
           iva: producto.iva,
-          subtotal: precioUnitario * item.cantidad,
+          subtotal,
           existenciasPrevias: producto.existencias,
           costoPromedio: producto.costo_promedio === null ? null : Number(producto.costo_promedio),
         });

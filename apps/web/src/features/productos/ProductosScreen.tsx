@@ -8,6 +8,7 @@ import { SkeletonTarjetas } from '../../components/Skeleton'
 import { Button } from '../../components/Button'
 import { AppHeader } from '../../components/AppHeader'
 import { useCarrito } from '../../lib/carrito'
+import { etiquetaPromocion } from '../../lib/precio'
 import {
   ApiError,
   cambiarEstadoProducto,
@@ -113,14 +114,14 @@ export function ProductosScreen({ onCerrarSesion }: ProductosScreenProps) {
   }, [productos])
 
   const totalDescuentos = useMemo(
-    () => (productos ?? []).filter((p) => p.descuentoPorcentaje).length,
+    () => (productos ?? []).filter((p) => etiquetaPromocion(p)).length,
     [productos],
   )
 
   const productosFiltrados = useMemo(() => {
     if (!productos) return []
     let lista = productos
-    if (soloDescuentos) lista = lista.filter((p) => p.descuentoPorcentaje)
+    if (soloDescuentos) lista = lista.filter((p) => etiquetaPromocion(p))
     else if (categoriaId) lista = lista.filter((p) => p.categoriaId === categoriaId)
     const q = busqueda.trim().toLowerCase()
     if (q) {
@@ -313,6 +314,11 @@ export function ProductosScreen({ onCerrarSesion }: ProductosScreenProps) {
                   {producto.marcaNombre && <p className="gg-producto-marca">{producto.marcaNombre}</p>}
                   {producto.descuentoPorcentaje && (
                     <span className="gg-producto-oferta-badge">-{producto.descuentoPorcentaje}% OFERTA</span>
+                  )}
+                  {producto.promocionN && producto.promocionM && (
+                    <span className="gg-producto-oferta-badge">
+                      {producto.promocionN}x{producto.promocionM} OFERTA
+                    </span>
                   )}
                   <div className="gg-producto-footer">
                     {producto.descuentoPorcentaje ? (

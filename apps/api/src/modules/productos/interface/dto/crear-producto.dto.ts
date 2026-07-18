@@ -2,6 +2,7 @@ import { Type } from 'class-transformer';
 import {
   IsBoolean,
   IsIn,
+  IsInt,
   IsNumber,
   IsOptional,
   IsString,
@@ -75,6 +76,18 @@ export class CrearProductoDto {
   @Min(0.01)
   @Max(100)
   descuentoPorcentaje?: number | null;
+
+  // Promoción "lleva N, paga M" (ej. 3x2), excluyente con descuentoPorcentaje
+  // (el backend rechaza si llegan los dos a la vez). null = sin promoción.
+  @IsOptional()
+  @IsInt()
+  @Min(2)
+  promocionN?: number | null;
+
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  promocionM?: number | null;
 
   @IsOptional()
   @IsString()

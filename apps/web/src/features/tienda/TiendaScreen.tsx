@@ -6,6 +6,7 @@ import { Card } from '../../components/Card'
 import { Marquee } from '../../components/Marquee'
 import { obtenerProductosPublico } from '../../lib/api'
 import { useCarritoPublico } from '../../lib/carritoPublico'
+import { etiquetaPromocion } from '../../lib/precio'
 import { brand } from '../../theme/theme'
 import '../../components/app-header.css'
 import '../productos/productos.css'
@@ -33,13 +34,17 @@ export function TiendaScreen() {
     return [...new Set(productos.map((p) => p.categoriaNombre))].sort((a, b) => a.localeCompare(b, 'es'))
   }, [productos])
 
-  // Se arma sola con lo que tenga descuento activo: no hay que mantener
-  // esta sección a mano, basta con ponerle % de descuento a un producto.
+  // Se arma sola con lo que tenga una promoción activa (% descuento o
+  // lleva N paga M): no hay que mantener esta sección a mano, basta con
+  // configurar la oferta en el producto. Se ordena por % de ahorro real,
+  // para que las promociones más golosas salgan primero sin importar el tipo.
   const ofertas = useMemo(() => {
     if (!productos) return []
-    return [...productos]
-      .filter((p) => p.descuentoPorcentaje)
-      .sort((a, b) => (b.descuentoPorcentaje ?? 0) - (a.descuentoPorcentaje ?? 0))
+    const ahorro = (p: (typeof productos)[number]) =>
+      p.promocionN && p.promocionM
+        ? (1 - p.promocionM / p.promocionN) * 100
+        : (p.descuentoPorcentaje ?? 0)
+    return [...productos].filter((p) => etiquetaPromocion(p)).sort((a, b) => ahorro(b) - ahorro(a))
   }, [productos])
 
   const mensajesTienda = useMemo(
@@ -58,7 +63,7 @@ export function TiendaScreen() {
   const productosFiltrados = useMemo(() => {
     if (!productos) return []
     let lista = productos
-    if (soloDescuentos) lista = lista.filter((p) => p.descuentoPorcentaje)
+    if (soloDescuentos) lista = lista.filter((p) => etiquetaPromocion(p))
     else if (categoria) lista = lista.filter((p) => p.categoriaNombre === categoria)
     const q = busqueda.trim().toLowerCase()
     if (q) {
@@ -105,15 +110,28 @@ export function TiendaScreen() {
                     <Leaf size={28} strokeWidth={1.5} />
                   )}
                   <span className="gg-producto-oferta-badge gg-tienda-oferta-badge-flotante">
-                    -{producto.descuentoPorcentaje}%
+                    {producto.promocionN && producto.promocionM
+                      ? `${producto.promocionN}x${producto.promocionM}`
+                      : `-${producto.descuentoPorcentaje}%`}
                   </span>
                 </div>
                 <p className="gg-tienda-oferta-nombre">{producto.nombre}</p>
                 <div className="gg-tienda-oferta-precios">
-                  <span className="gg-producto-precio-tachado">{formatoCOP.format(producto.precioVenta)}</span>
-                  <span className="gg-tienda-oferta-precio-nuevo">
-                    {formatoCOP.format(producto.precioOferta ?? producto.precioVenta)}
-                  </span>
+                  {producto.promocionN && producto.promocionM ? (
+                    <span className="gg-tienda-oferta-precio-nuevo">
+                      {formatoCOP.format(producto.precioVenta)}{' '}
+                      <span className="gg-tienda-oferta-nxm-texto">
+                        · lleva {producto.promocionN}, paga {producto.promocionM}
+                      </span>
+                    </span>
+                  ) : (
+                    <>
+                      <span className="gg-producto-precio-tachado">{formatoCOP.format(producto.precioVenta)}</span>
+                      <span className="gg-tienda-oferta-precio-nuevo">
+                        {formatoCOP.format(producto.precioOferta ?? producto.precioVenta)}
+                      </span>
+                    </>
+                  )}
                 </div>
               </Card>
             ))}
@@ -217,6 +235,11 @@ export function TiendaScreen() {
                   {producto.marcaNombre && <p className="gg-producto-marca">{producto.marcaNombre}</p>}
                   {producto.descuentoPorcentaje && (
                     <span className="gg-producto-oferta-badge">-{producto.descuentoPorcentaje}% OFERTA</span>
+                  )}
+                  {producto.promocionN && producto.promocionM && (
+                    <span className="gg-producto-oferta-badge">
+                      {producto.promocionN}x{producto.promocionM} OFERTA
+                    </span>
                   )}
                   <div className="gg-producto-footer">
                     {producto.descuentoPorcentaje ? (

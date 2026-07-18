@@ -234,6 +234,8 @@ export interface ProductoPublico {
   precioVenta: number
   descuentoPorcentaje: number | null
   precioOferta: number | null
+  promocionN: number | null
+  promocionM: number | null
   categoriaNombre: string
   marcaNombre: string | null
   unidadMedida: string

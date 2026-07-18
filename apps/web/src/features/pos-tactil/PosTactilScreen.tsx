@@ -155,6 +155,11 @@ export function PosTactilScreen({ onCerrarSesion }: PosTactilScreenProps) {
                       {producto.descuentoPorcentaje && (
                         <span className="gg-tactil-oferta-badge">-{producto.descuentoPorcentaje}%</span>
                       )}
+                      {producto.promocionN && producto.promocionM && (
+                        <span className="gg-tactil-oferta-badge">
+                          {producto.promocionN}x{producto.promocionM}
+                        </span>
+                      )}
                     </span>
                   </div>
                   {producto.existencias === 0 && (
@@ -227,6 +232,11 @@ export function PosTactilScreen({ onCerrarSesion }: PosTactilScreenProps) {
                           </span>
                           {producto.descuentoPorcentaje && (
                             <span className="gg-tactil-oferta-badge">-{producto.descuentoPorcentaje}%</span>
+                          )}
+                          {producto.promocionN && producto.promocionM && (
+                            <span className="gg-tactil-oferta-badge">
+                              {producto.promocionN}x{producto.promocionM}
+                            </span>
                           )}
                         </div>
                       </button>

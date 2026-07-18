@@ -3,7 +3,7 @@ import { Pool } from 'pg';
 import { PG_POOL } from '../../../database/database.module';
 import { EstadoPedidoWeb, NuevoPedidoWeb, PedidoWeb } from '../domain/pedido-web.entity';
 import { PedidosWebRepository } from '../domain/pedidos-web.repository';
-import { precioConDescuento } from '../../../shared/calculos';
+import { subtotalConPromocion } from '../../../shared/calculos';
 
 const SELECT_PEDIDO_WEB = `
   SELECT
@@ -85,7 +85,8 @@ export class PedidosWebRepositoryPg implements PedidosWebRepository {
 
       for (const item of nuevo.items) {
         const { rows } = await client.query(
-          `SELECT nombre, precio_venta, descuento_porcentaje, activo FROM productos WHERE id = $1`,
+          `SELECT nombre, precio_venta, descuento_porcentaje, promocion_n, promocion_m, activo
+           FROM productos WHERE id = $1`,
           [item.productoId],
         );
         if (rows.length === 0 || !rows[0].activo) {
@@ -93,17 +94,21 @@ export class PedidosWebRepositoryPg implements PedidosWebRepository {
         }
         const producto = rows[0];
         // Igual que en una venta normal: si el producto tiene una oferta
-        // activa, el pre-pedido se cotiza con el precio ya rebajado.
-        const precioUnitario = precioConDescuento(
-          Number(producto.precio_venta),
-          producto.descuento_porcentaje === null ? null : Number(producto.descuento_porcentaje),
-        );
+        // activa (% descuento o lleva N paga M), el pre-pedido se cotiza ya
+        // con la promoción aplicada.
+        const precioLista = Number(producto.precio_venta);
+        const subtotal = subtotalConPromocion(precioLista, item.cantidad, {
+          descuentoPorcentaje: producto.descuento_porcentaje === null ? null : Number(producto.descuento_porcentaje),
+          promocionN: producto.promocion_n === null ? null : Number(producto.promocion_n),
+          promocionM: producto.promocion_m === null ? null : Number(producto.promocion_m),
+        });
+        const precioUnitario = item.cantidad > 0 ? Math.round(subtotal / item.cantidad) : precioLista;
         itemsConDatos.push({
           productoId: item.productoId,
           nombre: producto.nombre,
           cantidad: item.cantidad,
           precioUnitario,
-          subtotal: precioUnitario * item.cantidad,
+          subtotal,
         });
       }
 

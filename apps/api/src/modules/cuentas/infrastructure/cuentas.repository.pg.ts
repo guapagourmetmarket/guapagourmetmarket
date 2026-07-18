@@ -3,7 +3,7 @@ import { Pool } from 'pg';
 import { PG_POOL } from '../../../database/database.module';
 import { CuentaAbierta, CuentaItem, EstadoCuenta, NuevoCuentaItem } from '../domain/cuenta.entity';
 import { CuentasRepository } from '../domain/cuentas.repository';
-import { precioConDescuento } from '../../../shared/calculos';
+import { subtotalConPromocion } from '../../../shared/calculos';
 
 @Injectable()
 export class CuentasRepositoryPg implements CuentasRepository {
@@ -62,7 +62,8 @@ export class CuentasRepositoryPg implements CuentasRepository {
 
     if (item.productoId) {
       const { rows } = await this.pool.query(
-        `SELECT nombre, precio_venta, descuento_porcentaje FROM productos WHERE id = $1 AND activo = true`,
+        `SELECT nombre, precio_venta, descuento_porcentaje, promocion_n, promocion_m
+         FROM productos WHERE id = $1 AND activo = true`,
         [item.productoId],
       );
       if (rows.length === 0) {
@@ -70,10 +71,13 @@ export class CuentasRepositoryPg implements CuentasRepository {
       }
       const producto = rows[0];
       const precioLista = Number(producto.precio_venta);
-      const precioUnitario = precioConDescuento(
-        precioLista,
-        producto.descuento_porcentaje === null ? null : Number(producto.descuento_porcentaje),
-      );
+      const cantidad = item.cantidad;
+      const subtotal = subtotalConPromocion(precioLista, cantidad, {
+        descuentoPorcentaje: producto.descuento_porcentaje === null ? null : Number(producto.descuento_porcentaje),
+        promocionN: producto.promocion_n === null ? null : Number(producto.promocion_n),
+        promocionM: producto.promocion_m === null ? null : Number(producto.promocion_m),
+      });
+      const precioUnitario = cantidad > 0 ? Math.round(subtotal / cantidad) : precioLista;
       await this.pool.query(
         `INSERT INTO cuenta_items (cuenta_id, producto_id, nombre, cantidad, precio_unitario)
          VALUES ($1, $2, $3, $4, $5)`,
