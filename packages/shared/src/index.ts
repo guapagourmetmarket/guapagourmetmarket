@@ -45,6 +45,7 @@ export interface Producto {
   infoNutricional?: InfoNutricional;
   peso?: number;
   pesoUnidad?: string;
+  fechaVencimiento?: string | null;
 }
 
 export interface Categoria {

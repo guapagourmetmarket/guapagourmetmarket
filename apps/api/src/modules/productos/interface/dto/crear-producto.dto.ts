@@ -1,6 +1,7 @@
 import { Type } from 'class-transformer';
 import {
   IsBoolean,
+  IsDateString,
   IsIn,
   IsInt,
   IsNumber,
@@ -106,4 +107,11 @@ export class CrearProductoDto {
   @IsOptional()
   @IsString()
   pesoUnidad?: string;
+
+  // Vencimiento del producto en sí (no de un lote de compra): alimenta
+  // "Alertas" para productos que no pasan por el flujo de Compras. null =
+  // sin fecha (también sirve para quitar una ya puesta).
+  @IsOptional()
+  @IsDateString()
+  fechaVencimiento?: string | null;
 }

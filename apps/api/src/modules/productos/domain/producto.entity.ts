@@ -48,6 +48,8 @@ export interface Producto {
   infoNutricional: InfoNutricional | null;
   peso: number | null;
   pesoUnidad: string | null;
+  /** Vencimiento del producto en sí (no de un lote de compra) — alimenta "Alertas" sin pasar por Compras. */
+  fechaVencimiento: string | null;
 }
 
 export interface NuevoProducto {
@@ -71,6 +73,7 @@ export interface NuevoProducto {
   infoNutricional?: InfoNutricional;
   peso?: number;
   pesoUnidad?: string;
+  fechaVencimiento?: string | null;
 }
 
 export type CambiosProducto = Partial<NuevoProducto>;

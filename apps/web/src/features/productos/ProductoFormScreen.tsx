@@ -7,6 +7,7 @@ import { AppHeader } from '../../components/AppHeader'
 import { Card } from '../../components/Card'
 import { Button } from '../../components/Button'
 import { Input } from '../../components/Input'
+import { RecortarFotoModal } from '../../components/RecortarFotoModal'
 import {
   ApiError,
   actualizarProducto,
@@ -82,10 +83,17 @@ export function ProductoFormScreen({ onCerrarSesion }: ProductoFormScreenProps) 
   const [ingredientes, setIngredientes] = useState('')
   const [peso, setPeso] = useState('')
   const [pesoUnidad, setPesoUnidad] = useState('g')
+  const [fechaVencimiento, setFechaVencimiento] = useState('')
   const [nutricional, setNutricional] = useState<Record<string, string>>({})
   const [fotos, setFotos] = useState<File[]>([])
   const [fotosPreview, setFotosPreview] = useState<string[]>([])
   const [error, setError] = useState('')
+  const [tareaRecorte, setTareaRecorte] = useState<{
+    archivos: File[]
+    indice: number
+    resultados: File[]
+    onCompletado: (archivos: File[]) => void
+  } | null>(null)
 
   useEffect(() => {
     if (!productoExistente) return
@@ -117,6 +125,7 @@ export function ProductoFormScreen({ onCerrarSesion }: ProductoFormScreenProps) 
     setIngredientes(productoExistente.ingredientes ?? '')
     setPeso(productoExistente.peso != null ? String(productoExistente.peso) : '')
     setPesoUnidad(productoExistente.pesoUnidad ?? 'g')
+    setFechaVencimiento(productoExistente.fechaVencimiento ?? '')
     const infoPrevia = productoExistente.infoNutricional ?? {}
     setNutricional(
       Object.fromEntries(
@@ -130,12 +139,43 @@ export function ProductoFormScreen({ onCerrarSesion }: ProductoFormScreenProps) 
     )
   }, [productoExistente])
 
+  function iniciarRecorte(archivos: File[], onCompletado: (archivos: File[]) => void) {
+    if (archivos.length === 0) return
+    setTareaRecorte({ archivos, indice: 0, resultados: [], onCompletado })
+  }
+
+  function manejarRecorteListo(archivoRecortado: File) {
+    setTareaRecorte((tarea) => {
+      if (!tarea) return tarea
+      const resultados = [...tarea.resultados, archivoRecortado]
+      const siguiente = tarea.indice + 1
+      if (siguiente >= tarea.archivos.length) {
+        tarea.onCompletado(resultados)
+        return null
+      }
+      return { ...tarea, indice: siguiente, resultados }
+    })
+  }
+
+  function manejarRecorteCancelado() {
+    setTareaRecorte((tarea) => {
+      if (!tarea) return tarea
+      const siguiente = tarea.indice + 1
+      if (siguiente >= tarea.archivos.length) {
+        if (tarea.resultados.length > 0) tarea.onCompletado(tarea.resultados)
+        return null
+      }
+      return { ...tarea, indice: siguiente }
+    })
+  }
+
   function handleFotos(e: ChangeEvent<HTMLInputElement>) {
     const nuevos = Array.from(e.target.files ?? [])
-    if (nuevos.length === 0) return
-    setFotos((prev) => [...prev, ...nuevos])
-    setFotosPreview((prev) => [...prev, ...nuevos.map((a) => URL.createObjectURL(a))])
     e.target.value = ''
+    iniciarRecorte(nuevos, (recortados) => {
+      setFotos((prev) => [...prev, ...recortados])
+      setFotosPreview((prev) => [...prev, ...recortados.map((a) => URL.createObjectURL(a))])
+    })
   }
 
   function quitarFotoPendiente(indice: number) {
@@ -217,6 +257,9 @@ export function ProductoFormScreen({ onCerrarSesion }: ProductoFormScreenProps) 
       infoNutricional: datosNutricion(),
       peso: peso.trim() ? Number(peso) : undefined,
       pesoUnidad: peso.trim() ? pesoUnidad : undefined,
+      // null a propósito (no undefined): borrar la fecha quita la alerta ya
+      // activada en vez de dejarla pegada.
+      fechaVencimiento: fechaVencimiento.trim() || null,
     }
   }
 
@@ -333,8 +376,12 @@ export function ProductoFormScreen({ onCerrarSesion }: ProductoFormScreenProps) 
                       hidden
                       onChange={(e) => {
                         const archivo = e.target.files?.[0]
-                        if (archivo) mutacionSubirFoto.mutate({ productoId: id!, archivo })
                         e.target.value = ''
+                        if (archivo) {
+                          iniciarRecorte([archivo], (recortados) => {
+                            if (recortados[0]) mutacionSubirFoto.mutate({ productoId: id!, archivo: recortados[0] })
+                          })
+                        }
                       }}
                     />
                   </label>
@@ -535,6 +582,21 @@ export function ProductoFormScreen({ onCerrarSesion }: ProductoFormScreenProps) 
             </div>
 
             <div className="gg-field">
+              <label htmlFor="fecha-vencimiento-producto">Fecha de vencimiento (opcional)</label>
+              <input
+                id="fecha-vencimiento-producto"
+                className="gg-input"
+                type="date"
+                value={fechaVencimiento}
+                onChange={(e) => setFechaVencimiento(e.target.value)}
+                onKeyDown={bloquearEnter}
+              />
+              <p className="gg-foto-producto-ayuda">
+                Si la pones, este producto va a aparecer en "Alertas" cuando se acerque esa fecha.
+              </p>
+            </div>
+
+            <div className="gg-field">
               <label htmlFor="tipo-promocion">Promoción (opcional)</label>
               <select
                 id="tipo-promocion"
@@ -705,6 +767,14 @@ export function ProductoFormScreen({ onCerrarSesion }: ProductoFormScreenProps) 
           )}
         </Card>
       </main>
+
+      {tareaRecorte && (
+        <RecortarFotoModal
+          archivo={tareaRecorte.archivos[tareaRecorte.indice]}
+          onConfirmar={manejarRecorteListo}
+          onCancelar={manejarRecorteCancelado}
+        />
+      )}
     </div>
   )
 }

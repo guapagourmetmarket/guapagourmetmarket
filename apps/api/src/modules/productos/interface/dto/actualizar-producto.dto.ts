@@ -1,6 +1,7 @@
 import { Type } from 'class-transformer';
 import {
   IsBoolean,
+  IsDateString,
   IsIn,
   IsInt,
   IsNumber,
@@ -110,4 +111,8 @@ export class ActualizarProductoDto {
   @IsOptional()
   @IsString()
   pesoUnidad?: string;
+
+  @IsOptional()
+  @IsDateString()
+  fechaVencimiento?: string | null;
 }

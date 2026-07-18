@@ -105,15 +105,24 @@ export class InventarioRepositoryPg implements InventarioRepository {
       [diasVencimiento],
     );
 
-    return {
-      stockBajo: stockRows.map((r) => ({
-        productoId: r.id,
-        nombre: r.nombre,
-        categoriaNombre: r.categoria_nombre,
-        existencias: r.existencias,
-        stockMinimo: r.stock_minimo,
-      })),
-      porVencer: loteRows.map((r) => ({
+    // Vencimiento puesto directo en el producto (sin pasar por un lote de
+    // compra): mismo umbral de días, para que sirva también a quien no
+    // registra sus compras en el sistema.
+    const { rows: productoRows } = await this.pool.query(
+      `SELECT p.id AS producto_id, p.nombre AS producto_nombre,
+              to_char(p.fecha_vencimiento, 'YYYY-MM-DD') AS fecha_vencimiento,
+              p.existencias,
+              (p.fecha_vencimiento - current_date) AS dias_restantes
+       FROM productos p
+       WHERE p.activo = true
+         AND p.fecha_vencimiento IS NOT NULL
+         AND p.fecha_vencimiento <= current_date + ($1 || ' days')::interval
+       ORDER BY p.fecha_vencimiento ASC`,
+      [diasVencimiento],
+    );
+
+    const porVencer = [
+      ...loteRows.map((r) => ({
         loteId: r.lote_id,
         productoId: r.producto_id,
         productoNombre: r.producto_nombre,
@@ -122,6 +131,26 @@ export class InventarioRepositoryPg implements InventarioRepository {
         cantidadActual: r.cantidad_actual,
         diasRestantes: Number(r.dias_restantes),
       })),
+      ...productoRows.map((r) => ({
+        loteId: `producto-${r.producto_id}`,
+        productoId: r.producto_id,
+        productoNombre: r.producto_nombre,
+        codigoLote: null,
+        fechaVencimiento: r.fecha_vencimiento,
+        cantidadActual: r.existencias,
+        diasRestantes: Number(r.dias_restantes),
+      })),
+    ].sort((a, b) => a.fechaVencimiento.localeCompare(b.fechaVencimiento));
+
+    return {
+      stockBajo: stockRows.map((r) => ({
+        productoId: r.id,
+        nombre: r.nombre,
+        categoriaNombre: r.categoria_nombre,
+        existencias: r.existencias,
+        stockMinimo: r.stock_minimo,
+      })),
+      porVencer,
     };
   }
 }

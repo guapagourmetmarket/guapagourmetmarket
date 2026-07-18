@@ -1,0 +1,39 @@
+.gg-recortar-foto {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.gg-recortar-foto-lienzo {
+  position: relative;
+  width: 100%;
+  height: 320px;
+  background: #1a1a1a;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.gg-recortar-foto-zoom {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--c-muted);
+}
+
+.gg-recortar-foto-zoom input {
+  flex: 1;
+}
+
+.gg-recortar-foto-ayuda {
+  margin: 0;
+  font-size: 12.5px;
+  color: var(--c-muted);
+}
+
+.gg-recortar-foto-acciones {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}

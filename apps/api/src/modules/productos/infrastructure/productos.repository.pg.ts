@@ -11,6 +11,7 @@ const SELECT_BASE = `
     p.stock_minimo, p.vende_por_peso, p.descuento_porcentaje, p.promocion_n, p.promocion_m,
     p.favorito_pos, p.activo,
     p.ingredientes, p.info_nutricional, p.peso, p.peso_unidad,
+    to_char(p.fecha_vencimiento, 'YYYY-MM-DD') AS fecha_vencimiento,
     p.categoria_id, c.nombre AS categoria_nombre,
     p.marca_id, m.nombre AS marca_nombre,
     pi.url AS imagen_url,
@@ -47,6 +48,7 @@ const CAMPO_COLUMNA: Record<keyof CambiosProducto, string> = {
   infoNutricional: 'info_nutricional',
   peso: 'peso',
   pesoUnidad: 'peso_unidad',
+  fechaVencimiento: 'fecha_vencimiento',
 };
 
 const CAMPOS_JSON = new Set<keyof CambiosProducto>(['infoNutricional']);
@@ -85,6 +87,7 @@ function aProducto(row: QueryResultRow): Producto {
     infoNutricional: row.info_nutricional,
     peso: row.peso === null ? null : Number(row.peso),
     pesoUnidad: row.peso_unidad,
+    fechaVencimiento: row.fecha_vencimiento,
   };
 }
 
@@ -121,8 +124,9 @@ export class ProductosRepositoryPg implements ProductosRepository {
         `INSERT INTO productos
           (codigo_interno, codigo_barras, nombre, descripcion, precio_compra, costo_promedio, precio_venta,
            iva, categoria_id, marca_id, unidad_medida, existencias, stock_minimo, vende_por_peso,
-           descuento_porcentaje, promocion_n, promocion_m, ingredientes, info_nutricional, peso, peso_unidad)
-         VALUES ($1,$2,$3,$4,$5,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20)
+           descuento_porcentaje, promocion_n, promocion_m, ingredientes, info_nutricional, peso, peso_unidad,
+           fecha_vencimiento)
+         VALUES ($1,$2,$3,$4,$5,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21)
          RETURNING id`,
         [
           nuevo.codigoInterno,
@@ -145,6 +149,7 @@ export class ProductosRepositoryPg implements ProductosRepository {
           nuevo.infoNutricional ? JSON.stringify(nuevo.infoNutricional) : null,
           nuevo.peso ?? null,
           nuevo.pesoUnidad ?? null,
+          nuevo.fechaVencimiento ?? null,
         ],
       );
       return this.obtenerPorId(rows[0].id);
