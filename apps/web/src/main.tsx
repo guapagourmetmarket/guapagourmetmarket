@@ -24,9 +24,24 @@ iniciarSincronizacionAutomatica()
 // se reiniciaba de golpe mientras se estaba usando, y se sentía como
 // "saltos" random. Ahora solo avisa (ActualizacionBanner) y la persona
 // decide cuándo actualizar.
+//
+// El navegador solo revisa si hay una versión nueva del service worker en
+// momentos puntuales (ej. al cargar la página) y a veces lo posterga horas
+// si la pestaña se queda abierta todo el día (como pasa usando esto de
+// caja). Por eso se fuerza la revisión cada minuto y cada vez que se
+// vuelve a esta pestaña, para que el aviso de actualización aparezca
+// rápido después de publicar un cambio, en vez de quedarse pegado en una
+// versión vieja sin que se note.
 const actualizarSW = registerSW({
   onNeedRefresh() {
     notificarActualizacionDisponible(() => actualizarSW(true))
+  },
+  onRegisteredSW(_swUrl, registration) {
+    if (!registration) return
+    setInterval(() => registration.update(), 60_000)
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') registration.update()
+    })
   },
 })
 
