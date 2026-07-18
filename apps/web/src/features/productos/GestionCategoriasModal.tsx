@@ -160,7 +160,11 @@ export function GestionCategoriasModal({ onClose }: GestionCategoriasModalProps)
     queryClient.invalidateQueries({ queryKey: ['productos'] })
   }
 
-  const crearCategoriaMut = useMutation({ mutationFn: crearCategoria, onSuccess: invalidarTodo })
+  const crearCategoriaMut = useMutation({
+    mutationFn: crearCategoria,
+    onSuccess: invalidarTodo,
+    onError: (err) => window.alert(err instanceof ApiError ? err.message : 'No se pudo crear la categoría.'),
+  })
   const renombrarCategoriaMut = useMutation({
     mutationFn: ({ id, nombre }: { id: string; nombre: string }) => renombrarCategoria(id, nombre),
     onSuccess: invalidarTodo,
@@ -172,7 +176,11 @@ export function GestionCategoriasModal({ onClose }: GestionCategoriasModalProps)
     onError: (err) => window.alert(err instanceof ApiError ? err.message : 'No se pudo eliminar.'),
   })
 
-  const crearMarcaMut = useMutation({ mutationFn: crearMarca, onSuccess: invalidarTodo })
+  const crearMarcaMut = useMutation({
+    mutationFn: crearMarca,
+    onSuccess: invalidarTodo,
+    onError: (err) => window.alert(err instanceof ApiError ? err.message : 'No se pudo crear la marca.'),
+  })
   const renombrarMarcaMut = useMutation({
     mutationFn: ({ id, nombre }: { id: string; nombre: string }) => renombrarMarca(id, nombre),
     onSuccess: invalidarTodo,

@@ -8,6 +8,7 @@ import { Card } from '../../components/Card'
 import { useCarrito } from '../../lib/carrito'
 import { precioEfectivo } from '../../lib/precio'
 import { useConfirm } from '../../lib/confirm'
+import { useEscaneoCodigoBarras } from '../../lib/useEscaneoCodigoBarras'
 import {
   ApiError,
   cambiarEstadoProducto,
@@ -93,6 +94,22 @@ export function PosTactilScreen({ onCerrarSesion }: PosTactilScreenProps) {
     setBusqueda('')
   }
 
+  // El lector USB escribe el código rápido y termina en Enter: si coincide
+  // exacto con un producto, se agrega solo al carrito sin necesidad de
+  // tocar la pantalla — igual que en Venta manual.
+  function manejarEscaneo(codigo: string) {
+    const exacto = (productos ?? []).find(
+      (p) => p.activo !== false && (p.codigoBarras === codigo || p.codigoInterno === codigo),
+    )
+    if (exacto) {
+      agregarYLimpiar(exacto)
+      return
+    }
+    setBusqueda(codigo)
+  }
+
+  const { inputRef, handleKeyDown } = useEscaneoCodigoBarras(manejarEscaneo)
+
   async function handleEliminar(producto: Producto) {
     const confirmado = await confirmar(
       `¿Eliminar "${producto.nombre}" para siempre? Esta acción no se puede deshacer. Si prefieres poder recuperarlo más adelante, usa "Desactivar" en su lugar.`,
@@ -117,11 +134,13 @@ export function PosTactilScreen({ onCerrarSesion }: PosTactilScreenProps) {
         <div className="gg-tactil-buscar">
           <Search size={20} className="gg-tactil-buscar-icono" />
           <input
+            ref={inputRef}
             type="search"
             className="gg-tactil-buscar-input"
             placeholder="Buscar o escanear un producto…"
             value={busqueda}
             onChange={(e) => setBusqueda(e.target.value)}
+            onKeyDown={handleKeyDown}
             autoFocus
           />
         </div>
