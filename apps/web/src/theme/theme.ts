@@ -49,6 +49,10 @@ export const brand = {
     rose: "#E7B0A7",        // rosa empolvado del logo (acento cálido)
     roseSoft: "#F6E2DE",
     roseDeep: "#B6665B",    // texto sobre rosa / acentos
+    // Variante más oscura de roseDeep, solo para texto pequeño en mayúsculas
+    // (ej. la barra de navegación): roseDeep da 4.16:1 sobre blanco, por
+    // debajo del mínimo de accesibilidad (4.5:1) a ese tamaño; esta da 7.3:1.
+    roseInk: "#8B4038",
 
     // Superficies naturales
     cream: "#FBEBCF",       // fondo de la app
@@ -73,6 +77,11 @@ export const brand = {
     warningText: "#876424",
     danger: "#CB6149",      // stock bajo / error
     dangerHover: "#B34E38", // hover de botones de peligro (~12% más oscuro)
+    // Rojo vivo (más saturado que `danger`) solo para el puntico de alarma
+    // de la barra de navegación ("Alertas"): a propósito rompe la regla de
+    // "sin colores saturados" porque su trabajo es alarmar y resaltar, no
+    // decorar — pidió Paola que se viera "realmente rojo".
+    alerta: "#E5342A",
 
     // Texto de botones/insignias con fondo sólido de un color de marca
     // (sageDeep, roseDeep, danger, warning). En modo claro esos fondos son
@@ -109,6 +118,7 @@ export const darkColors = {
   rose: "#D9998D",
   roseSoft: "#3A2C29",
   roseDeep: "#E2A79C",
+  roseInk: "#E2A79C",
 
   cream: "#232922",
   beige: "#2E352A",
@@ -125,6 +135,7 @@ export const darkColors = {
   warningText: "#F0C878",
   danger: "#E28268",
   dangerHover: "#EC9782", // en oscuro el hover aclara en vez de oscurecer
+  alerta: "#FF5A4C",
 
   onAccent: "#232922",
 } as const;

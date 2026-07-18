@@ -153,12 +153,14 @@
   border-radius: var(--radius-md);
   border: none;
   background: var(--c-surface);
-  font-size: 11.5px;
+  font-size: 12.5px;
   font-family: inherit;
   font-weight: 800;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.03em;
   text-transform: uppercase;
-  color: var(--c-roseDeep);
+  /* roseDeep da solo 4.16:1 sobre blanco (por debajo del mínimo de 4.5:1
+     para texto pequeño) — roseInk sube eso a 7.3:1 sin cambiar el tono. */
+  color: var(--c-roseInk);
   text-decoration: none;
   cursor: pointer;
   text-align: left;
@@ -196,22 +198,32 @@
     0 7px 10px rgba(46, 51, 44, 0.24);
 }
 
+/* Rojo vivo (--c-alerta) a propósito, no el "danger" pastel del resto del
+   sistema: este puntico avisa de algo pendiente y pidió Paola que "se vea
+   realmente rojo y resalte". El aro blanco lo separa del fondo rosado de
+   la barra para que no se mimetice. */
 .gg-header-alerta-punto {
-  width: 7px;
-  height: 7px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
-  background: var(--c-danger);
-  box-shadow: 0 0 0 0 rgba(203, 97, 73, 0.55);
+  background: var(--c-alerta);
+  box-shadow:
+    0 0 0 2px var(--c-surface),
+    0 0 0 2px rgba(229, 52, 42, 0.55);
   animation: gg-pulso-punto 1.8s ease-in-out infinite;
 }
 
 @keyframes gg-pulso-punto {
   0%,
   100% {
-    box-shadow: 0 0 0 0 rgba(203, 97, 73, 0.55);
+    box-shadow:
+      0 0 0 2px var(--c-surface),
+      0 0 0 2px rgba(229, 52, 42, 0.55);
   }
   50% {
-    box-shadow: 0 0 0 5px rgba(203, 97, 73, 0);
+    box-shadow:
+      0 0 0 2px var(--c-surface),
+      0 0 0 7px rgba(229, 52, 42, 0);
   }
 }
 
