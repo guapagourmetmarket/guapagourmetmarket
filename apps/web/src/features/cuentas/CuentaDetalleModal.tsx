@@ -4,6 +4,7 @@ import { Loader2, Search, Trash2 } from 'lucide-react'
 import { Modal } from '../../components/Modal'
 import { Button } from '../../components/Button'
 import { Input } from '../../components/Input'
+import { CalculadoraEfectivo } from '../../components/CalculadoraEfectivo'
 import { useEscaneoCodigoBarras } from '../../lib/useEscaneoCodigoBarras'
 import { useConfirm } from '../../lib/confirm'
 import {
@@ -253,6 +254,9 @@ export function CuentaDetalleModal({ cuenta, onClose, onCerrada }: CuentaDetalle
             onChange={(e) => setDescuento(e.target.value)}
             placeholder="0"
           />
+          {metodoPago === 'efectivo' && (
+            <CalculadoraEfectivo total={cuenta.total - (Number(descuento) || 0)} />
+          )}
           <Button type="button" size="lg" disabled={mutacionCerrar.isPending} onClick={() => mutacionCerrar.mutate()}>
             {mutacionCerrar.isPending ? (
               <>

@@ -6,6 +6,7 @@ import { AppHeader } from '../../components/AppHeader'
 import { Card } from '../../components/Card'
 import { Button } from '../../components/Button'
 import { Input } from '../../components/Input'
+import { CalculadoraEfectivo } from '../../components/CalculadoraEfectivo'
 import { useEscaneoCodigoBarras } from '../../lib/useEscaneoCodigoBarras'
 import { useCarrito } from '../../lib/carrito'
 import { db } from '../../lib/db'
@@ -413,6 +414,8 @@ export function VentaManualScreen({ onCerrarSesion }: VentaManualScreenProps) {
                 <span>Total</span>
                 <span>{formatoCOP.format(descuento.total)}</span>
               </div>
+
+              {metodoPago === 'efectivo' && <CalculadoraEfectivo total={descuento.total} />}
 
               <Button type="submit" size="lg" disabled={mutacion.isPending}>
                 {mutacion.isPending ? (

@@ -4,6 +4,7 @@ import { Loader2, Sparkles, Trash2 } from 'lucide-react'
 import { Modal } from '../../components/Modal'
 import { Button } from '../../components/Button'
 import { Input } from '../../components/Input'
+import { CalculadoraEfectivo } from '../../components/CalculadoraEfectivo'
 import { useCarrito } from '../../lib/carrito'
 import { ApiError, obtenerClientes, type MetodoPago, type Venta } from '../../lib/api'
 import { registrarVentaConSync } from '../../lib/sync'
@@ -219,6 +220,8 @@ export function CobrarModal({ onClose, onVentaRegistrada }: CobrarModalProps) {
           <span>Total</span>
           <span>{formatoCOP.format(descuento.total)}</span>
         </div>
+
+        {metodoPago === 'efectivo' && <CalculadoraEfectivo total={descuento.total} />}
 
         <Button type="submit" size="lg" disabled={mutacion.isPending || carrito.lineas.length === 0}>
           {mutacion.isPending ? (
