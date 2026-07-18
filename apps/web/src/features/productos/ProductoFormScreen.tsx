@@ -83,8 +83,8 @@ export function ProductoFormScreen({ onCerrarSesion }: ProductoFormScreenProps) 
   const [peso, setPeso] = useState('')
   const [pesoUnidad, setPesoUnidad] = useState('g')
   const [nutricional, setNutricional] = useState<Record<string, string>>({})
-  const [foto, setFoto] = useState<File | null>(null)
-  const [fotoPreview, setFotoPreview] = useState<string | null>(null)
+  const [fotos, setFotos] = useState<File[]>([])
+  const [fotosPreview, setFotosPreview] = useState<string[]>([])
   const [error, setError] = useState('')
 
   useEffect(() => {
@@ -130,20 +130,26 @@ export function ProductoFormScreen({ onCerrarSesion }: ProductoFormScreenProps) 
     )
   }, [productoExistente])
 
-  function handleFoto(e: ChangeEvent<HTMLInputElement>) {
-    const archivo = e.target.files?.[0] ?? null
-    setFoto(archivo)
-    setFotoPreview(archivo ? URL.createObjectURL(archivo) : null)
+  function handleFotos(e: ChangeEvent<HTMLInputElement>) {
+    const nuevos = Array.from(e.target.files ?? [])
+    if (nuevos.length === 0) return
+    setFotos((prev) => [...prev, ...nuevos])
+    setFotosPreview((prev) => [...prev, ...nuevos.map((a) => URL.createObjectURL(a))])
+    e.target.value = ''
+  }
+
+  function quitarFotoPendiente(indice: number) {
+    setFotos((prev) => prev.filter((_, i) => i !== indice))
+    setFotosPreview((prev) => {
+      URL.revokeObjectURL(prev[indice])
+      return prev.filter((_, i) => i !== indice)
+    })
   }
 
   const mutacionSubirFoto = useMutation({
     mutationFn: ({ productoId, archivo }: { productoId: string; archivo: File }) =>
       subirImagenProducto(productoId, archivo),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['producto', id] })
-      setFoto(null)
-      setFotoPreview(null)
-    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['producto', id] }),
   })
 
   const mutacionImagenPrincipal = useMutation({
@@ -217,7 +223,11 @@ export function ProductoFormScreen({ onCerrarSesion }: ProductoFormScreenProps) 
   const mutacionCrear = useMutation({
     mutationFn: async () => crearProducto(await datosFormulario()),
     onSuccess: async (creado) => {
-      if (foto) await subirImagenProducto(creado.id, foto)
+      // Una por una y en orden: la primera que suba queda como principal
+      // (así lo decide el backend), en el mismo orden en que las agregó.
+      for (const archivo of fotos) {
+        await subirImagenProducto(creado.id, archivo)
+      }
       queryClient.invalidateQueries({ queryKey: ['productos'] })
       navigate('/productos')
     },
@@ -332,21 +342,43 @@ export function ProductoFormScreen({ onCerrarSesion }: ProductoFormScreenProps) 
                 {mutacionSubirFoto.isPending && <p className="gg-galeria-estado">Subiendo foto…</p>}
               </div>
             ) : (
-              <div className="gg-foto-producto">
-                <div className="gg-foto-producto-preview">
-                  {fotoPreview ? (
-                    <img src={fotoPreview} alt="Foto del producto" />
-                  ) : (
-                    <ImagePlus size={28} strokeWidth={1.5} />
-                  )}
-                </div>
-                <div>
-                  <label className="gg-foto-producto-boton">
-                    {fotoPreview ? 'Cambiar foto' : 'Agregar foto'}
-                    <input type="file" accept="image/jpeg,image/png,image/webp" onChange={handleFoto} hidden />
+              <div className="gg-galeria-producto">
+                <div className="gg-galeria-grid">
+                  {fotosPreview.map((url, i) => (
+                    <div key={url} className="gg-galeria-item">
+                      <img src={url} alt={`Foto ${i + 1} del producto`} />
+                      <div className="gg-galeria-item-acciones">
+                        {i === 0 && (
+                          <span className="gg-galeria-estrella gg-galeria-estrella--activa" title="Foto principal">
+                            <Star size={14} fill="currentColor" />
+                          </span>
+                        )}
+                        <button
+                          type="button"
+                          className="gg-galeria-borrar"
+                          title="Quitar foto"
+                          onClick={() => quitarFotoPendiente(i)}
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                  <label className="gg-galeria-agregar">
+                    <ImagePlus size={22} strokeWidth={1.5} />
+                    <span>Agregar foto{fotosPreview.length > 0 ? 's' : ''}</span>
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp"
+                      multiple
+                      onChange={handleFotos}
+                      hidden
+                    />
                   </label>
-                  <p className="gg-foto-producto-ayuda">Podrás agregar más fotos después de guardar.</p>
                 </div>
+                <p className="gg-foto-producto-ayuda">
+                  Puedes agregar varias fotos de una vez o de a una — la primera queda como principal.
+                </p>
               </div>
             )}
 
