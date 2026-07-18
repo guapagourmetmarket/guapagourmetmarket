@@ -4,7 +4,7 @@ import { Check, Tag, X } from 'lucide-react'
 import { validarCupon } from '../../lib/api'
 
 interface CuponInputProps {
-  onAplicar: (porcentaje: number) => void
+  onAplicar: (porcentaje: number, codigo: string) => void
   onQuitar: () => void
 }
 
@@ -22,8 +22,9 @@ export function CuponInput({ onAplicar, onQuitar }: CuponInputProps) {
     mutacion.mutate(codigo.trim(), {
       onSuccess: (resultado) => {
         if (resultado.valido && resultado.porcentaje) {
-          setAplicado({ codigo: codigo.trim().toUpperCase(), porcentaje: resultado.porcentaje })
-          onAplicar(resultado.porcentaje)
+          const codigoNormalizado = codigo.trim().toUpperCase()
+          setAplicado({ codigo: codigoNormalizado, porcentaje: resultado.porcentaje })
+          onAplicar(resultado.porcentaje, codigoNormalizado)
         }
       },
     })

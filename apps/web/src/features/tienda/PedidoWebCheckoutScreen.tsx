@@ -9,7 +9,9 @@ import { ApiError, crearPedidoWebPublico, type PedidoWeb } from '../../lib/api'
 import { useCarritoPublico } from '../../lib/carritoPublico'
 import { etiquetaPromocion, precioEfectivo, subtotalEfectivo } from '../../lib/precio'
 import { brand } from '../../theme/theme'
+import { CuponInput } from '../ventas/CuponInput'
 import '../../components/app-header.css'
+import '../ventas/ventas.css'
 import './tienda.css'
 
 const formatoCOP = new Intl.NumberFormat('es-CO', {
@@ -25,6 +27,9 @@ function textoWhatsApp(pedido: PedidoWeb) {
     '',
     ...pedido.items.map((i) => `${i.cantidad} x ${i.nombreProducto} — ${formatoCOP.format(i.subtotal)}`),
     '',
+    pedido.descuento > 0
+      ? `Descuento (${pedido.cuponCodigo}): -${formatoCOP.format(pedido.descuento)}`
+      : null,
     `Total: ${formatoCOP.format(pedido.valor)}`,
     pedido.notas ? `Notas: ${pedido.notas}` : null,
   ].filter((l): l is string => l !== null)
@@ -38,6 +43,10 @@ export function PedidoWebCheckoutScreen() {
   const [notas, setNotas] = useState('')
   const [error, setError] = useState('')
   const [pedidoConfirmado, setPedidoConfirmado] = useState<PedidoWeb | null>(null)
+  const [cupon, setCupon] = useState<{ codigo: string; porcentaje: number } | null>(null)
+
+  const descuento = cupon ? Math.round(carrito.total * (cupon.porcentaje / 100)) : 0
+  const totalConDescuento = carrito.total - descuento
 
   const mutacion = useMutation({
     mutationFn: crearPedidoWebPublico,
@@ -59,6 +68,7 @@ export function PedidoWebCheckoutScreen() {
       clienteTelefono: telefono.trim(),
       notas: notas.trim() || undefined,
       items: carrito.lineas.map((l) => ({ productoId: l.producto.id, cantidad: l.cantidad })),
+      cuponCodigo: cupon?.codigo,
     })
   }
 
@@ -83,6 +93,11 @@ export function PedidoWebCheckoutScreen() {
             <div className="gg-pedido-web-confirmacion">
               <CheckCircle2 size={40} className="gg-pedido-web-confirmacion-icono" />
               <h2>¡Pedido No. {pedidoConfirmado.numero} recibido!</h2>
+              {pedidoConfirmado.descuento > 0 && (
+                <p className="gg-cupon-aplicado" style={{ justifyContent: 'center' }}>
+                  Cupón {pedidoConfirmado.cuponCodigo} aplicado (-{formatoCOP.format(pedidoConfirmado.descuento)})
+                </p>
+              )}
               <p>
                 Te vamos a contactar al {pedidoConfirmado.clienteTelefono} para coordinar el pago y la
                 entrega. Si quieres, también nos lo puedes avisar directo por WhatsApp:
@@ -160,9 +175,27 @@ export function PedidoWebCheckoutScreen() {
                 </div>
               ))}
 
+              <CuponInput
+                onAplicar={(porcentaje, codigo) => setCupon({ codigo, porcentaje })}
+                onQuitar={() => setCupon(null)}
+              />
+
+              {descuento > 0 && (
+                <>
+                  <div className="gg-venta-subtotal">
+                    <span>Subtotal</span>
+                    <span>{formatoCOP.format(carrito.total)}</span>
+                  </div>
+                  <div className="gg-venta-subtotal">
+                    <span>Descuento</span>
+                    <span>−{formatoCOP.format(descuento)}</span>
+                  </div>
+                </>
+              )}
+
               <div className="gg-pedido-web-total">
                 <span>Total</span>
-                <span>{formatoCOP.format(carrito.total)}</span>
+                <span>{formatoCOP.format(totalConDescuento)}</span>
               </div>
             </Card>
 

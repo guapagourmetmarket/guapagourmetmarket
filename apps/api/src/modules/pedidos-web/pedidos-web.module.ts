@@ -6,9 +6,10 @@ import { ListarPedidosWebUseCase } from './application/listar-pedidos-web.use-ca
 import { CambiarEstadoPedidoWebUseCase } from './application/cambiar-estado-pedido-web.use-case';
 import { PedidosWebRepositoryPg } from './infrastructure/pedidos-web.repository.pg';
 import { PEDIDOS_WEB_REPOSITORY } from './domain/pedidos-web.repository';
+import { CuponesModule } from '../cupones/cupones.module';
 
 @Module({
-  imports: [PassportModule],
+  imports: [PassportModule, CuponesModule],
   controllers: [PedidosWebController],
   providers: [
     CrearPedidoWebUseCase,

@@ -7,8 +7,8 @@ import { subtotalConPromocion } from '../../../shared/calculos';
 
 const SELECT_PEDIDO_WEB = `
   SELECT
-    p.id, p.numero, p.cliente_nombre, p.cliente_telefono, p.notas, p.valor, p.estado,
-    p.created_at,
+    p.id, p.numero, p.cliente_nombre, p.cliente_telefono, p.notas, p.valor,
+    p.descuento, p.cupon_codigo, p.estado, p.created_at,
     COALESCE(
       (SELECT json_agg(json_build_object(
                 'id', i.id,
@@ -31,6 +31,8 @@ function aPedidoWeb(row: {
   cliente_telefono: string;
   notas: string | null;
   valor: string | number;
+  descuento: string | number | null;
+  cupon_codigo: string | null;
   estado: EstadoPedidoWeb;
   created_at: Date;
   items: {
@@ -49,6 +51,8 @@ function aPedidoWeb(row: {
     clienteTelefono: row.cliente_telefono,
     notas: row.notas,
     valor: Number(row.valor),
+    descuento: Number(row.descuento ?? 0),
+    cuponCodigo: row.cupon_codigo,
     estado: row.estado,
     createdAt: row.created_at.toISOString(),
     items: row.items.map((i) => ({
@@ -112,13 +116,23 @@ export class PedidosWebRepositoryPg implements PedidosWebRepository {
         });
       }
 
-      const valor = itemsConDatos.reduce((acc, i) => acc + i.subtotal, 0);
+      const subtotal = itemsConDatos.reduce((acc, i) => acc + i.subtotal, 0);
+      const descuento = Math.round(subtotal * ((nuevo.descuentoPorcentaje ?? 0) / 100));
+      const valor = subtotal - descuento;
 
       const { rows: pedidoRows } = await client.query(
-        `INSERT INTO pedidos_web (cliente_nombre, cliente_telefono, notas, valor)
-         VALUES ($1, $2, $3, $4)
-         RETURNING id, numero, cliente_nombre, cliente_telefono, notas, valor, estado, created_at`,
-        [nuevo.clienteNombre, nuevo.clienteTelefono, nuevo.notas ?? null, valor],
+        `INSERT INTO pedidos_web (cliente_nombre, cliente_telefono, notas, valor, descuento, cupon_codigo)
+         VALUES ($1, $2, $3, $4, $5, $6)
+         RETURNING id, numero, cliente_nombre, cliente_telefono, notas, valor, descuento, cupon_codigo,
+                   estado, created_at`,
+        [
+          nuevo.clienteNombre,
+          nuevo.clienteTelefono,
+          nuevo.notas ?? null,
+          valor,
+          descuento,
+          nuevo.cuponCodigo ?? null,
+        ],
       );
       const pedido = pedidoRows[0];
 
@@ -149,6 +163,8 @@ export class PedidosWebRepositoryPg implements PedidosWebRepository {
         clienteTelefono: pedido.cliente_telefono,
         notas: pedido.notas,
         valor: Number(pedido.valor),
+        descuento: Number(pedido.descuento ?? 0),
+        cuponCodigo: pedido.cupon_codigo,
         estado: pedido.estado,
         createdAt: pedido.created_at.toISOString(),
         items,

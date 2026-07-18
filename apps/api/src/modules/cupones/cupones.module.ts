@@ -20,5 +20,6 @@ import { CUPONES_REPOSITORY } from './domain/cupones.repository';
     ValidarCuponUseCase,
     { provide: CUPONES_REPOSITORY, useClass: CuponesRepositoryPg },
   ],
+  exports: [CUPONES_REPOSITORY],
 })
 export class CuponesModule {}

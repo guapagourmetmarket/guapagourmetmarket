@@ -995,6 +995,8 @@ export interface PedidoWeb {
   clienteTelefono: string
   notas: string | null
   valor: number
+  descuento: number
+  cuponCodigo: string | null
   estado: EstadoPedidoWeb
   items: PedidoWebItem[]
   createdAt: string
@@ -1010,6 +1012,7 @@ export interface NuevoPedidoWeb {
   clienteTelefono: string
   notas?: string
   items: NuevoPedidoWebItem[]
+  cuponCodigo?: string
 }
 
 /** Sin sesión: lo llama la tienda pública. */

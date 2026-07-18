@@ -34,6 +34,10 @@ export class CrearPedidoWebDto {
   @IsString()
   notas?: string;
 
+  @IsOptional()
+  @IsString()
+  cuponCodigo?: string;
+
   @IsArray()
   @ArrayMinSize(1)
   @ArrayMaxSize(50)

@@ -17,7 +17,6 @@ interface RequestConUsuario extends Request {
 }
 
 @Controller('cupones')
-@UseGuards(JwtAuthGuard)
 export class CuponesController {
   constructor(
     private readonly listarCuponesUseCase: ListarCuponesUseCase,
@@ -27,29 +26,31 @@ export class CuponesController {
     private readonly validarCuponUseCase: ValidarCuponUseCase,
   ) {}
 
-  // Cualquier rol autenticado puede validar un código al cobrar (el
-  // cajero no necesariamente puede administrar cupones, pero sí usarlos).
+  // Sin guardia a propósito: lo llama tanto el POS interno (cualquier rol
+  // autenticado) como la tienda pública (sin sesión, al aplicar un cupón en
+  // el checkout). Solo confirma si un código existe y está activo, no
+  // expone nada sensible.
   @Post('validar')
   validar(@Body() dto: ValidarCuponDto) {
     return this.validarCuponUseCase.ejecutar(dto.codigo);
   }
 
   @Get()
-  @UseGuards(RolesGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('administrador', 'contador', 'supervisor')
   listar() {
     return this.listarCuponesUseCase.ejecutar();
   }
 
   @Post()
-  @UseGuards(RolesGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('administrador', 'contador', 'supervisor')
   crear(@Body() dto: CrearCuponDto) {
     return this.crearCuponUseCase.ejecutar(dto);
   }
 
   @Patch(':id/estado')
-  @UseGuards(RolesGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('administrador', 'contador', 'supervisor')
   cambiarEstado(@Param('id') id: string, @Body() dto: CambiarEstadoCuponDto) {
     return this.cambiarEstadoCuponUseCase.ejecutar(id, dto.activo);
@@ -57,7 +58,7 @@ export class CuponesController {
 
   @Delete(':id')
   @HttpCode(204)
-  @UseGuards(RolesGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('administrador', 'contador', 'supervisor')
   eliminar(@Param('id') id: string, @Req() req: RequestConUsuario) {
     return this.eliminarCuponUseCase.ejecutar(id, req.user.id);
