@@ -170,20 +170,51 @@
   z-index: 50;
 }
 
+/* El modal ya no crece sin límite con el contenido (la calculadora de
+   efectivo, por ejemplo, lo hace bastante alto): se limita a la altura de
+   la pantalla y solo el cuerpo interno hace scroll, con el título y el
+   botón de cerrar siempre visibles arriba. */
 .gg-modal {
   background: var(--c-surface);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-pop);
   max-width: 480px;
   width: 100%;
-  padding: 24px;
+  max-height: calc(100vh - 32px);
+  display: flex;
+  flex-direction: column;
 }
 
 .gg-modal-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 16px;
+  padding: 24px 24px 16px;
+  flex-shrink: 0;
+}
+
+.gg-modal-body {
+  padding: 0 24px 24px;
+  overflow-y: auto;
+}
+
+@media (max-width: 480px) {
+  .gg-modal-overlay {
+    padding: 8px;
+  }
+
+  .gg-modal {
+    max-height: calc(100vh - 16px);
+    border-radius: var(--radius-md);
+  }
+
+  .gg-modal-header {
+    padding: 16px 16px 12px;
+  }
+
+  .gg-modal-body {
+    padding: 0 16px 16px;
+  }
 }
 
 .gg-modal-close {

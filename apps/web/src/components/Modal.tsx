@@ -17,7 +17,7 @@ export function Modal({ title, onClose, children }: ModalProps) {
             <X size={20} />
           </button>
         </div>
-        {children}
+        <div className="gg-modal-body">{children}</div>
       </div>
     </div>
   )
