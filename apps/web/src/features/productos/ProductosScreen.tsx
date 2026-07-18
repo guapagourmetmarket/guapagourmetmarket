@@ -7,6 +7,7 @@ import { Card } from '../../components/Card'
 import { SkeletonTarjetas } from '../../components/Skeleton'
 import { Button } from '../../components/Button'
 import { AppHeader } from '../../components/AppHeader'
+import { DetalleProductoModal } from '../../components/DetalleProductoModal'
 import { useCarrito } from '../../lib/carrito'
 import { etiquetaPromocion } from '../../lib/precio'
 import {
@@ -55,6 +56,7 @@ export function ProductosScreen({ onCerrarSesion }: ProductosScreenProps) {
   const [generandoCatalogo, setGenerandoCatalogo] = useState(false)
   const [gestionandoCategorias, setGestionandoCategorias] = useState(false)
   const [etiquetaProducto, setEtiquetaProducto] = useState<Producto | null>(null)
+  const [detalleProducto, setDetalleProducto] = useState<Producto | null>(null)
 
   const { data: negocio } = useQuery({ queryKey: ['negocio'], queryFn: obtenerNegocio })
 
@@ -298,55 +300,61 @@ export function ProductosScreen({ onCerrarSesion }: ProductosScreenProps) {
                 key={producto.id}
                 className={'gg-producto-card' + (producto.activo === false ? ' gg-producto-card--inactivo' : '')}
               >
-                <div className="gg-producto-imagen">
-                  {producto.imagenUrl ? (
-                    <img src={producto.imagenUrl} alt={producto.nombre} />
-                  ) : (
-                    <Leaf size={32} strokeWidth={1.5} />
-                  )}
-                  {producto.activo === false && (
-                    <span className="gg-producto-badge-inactivo">Desactivado</span>
-                  )}
-                </div>
-                <div className="gg-producto-info">
-                  <p className="gg-producto-categoria">{producto.categoriaNombre}</p>
-                  <h2 className="gg-producto-nombre">{producto.nombre}</h2>
-                  {producto.marcaNombre && <p className="gg-producto-marca">{producto.marcaNombre}</p>}
-                  {producto.descuentoPorcentaje && (
-                    <span className="gg-producto-oferta-badge">-{producto.descuentoPorcentaje}% OFERTA</span>
-                  )}
-                  {producto.promocionN && producto.promocionM && (
-                    <span className="gg-producto-oferta-badge">
-                      {producto.promocionN}x{producto.promocionM} OFERTA
-                    </span>
-                  )}
-                  <div className="gg-producto-footer">
-                    {producto.descuentoPorcentaje ? (
-                      <span className="gg-producto-precio">
-                        <span className="gg-producto-precio-tachado">
-                          {formatoCOP.format(producto.precioVenta)}
-                        </span>{' '}
-                        {formatoCOP.format(producto.precioOferta ?? producto.precioVenta)}
-                      </span>
+                <div
+                  className="gg-producto-clicable"
+                  onClick={() => setDetalleProducto(producto)}
+                  title="Ver foto y descripción completas"
+                >
+                  <div className="gg-producto-imagen">
+                    {producto.imagenUrl ? (
+                      <img src={producto.imagenUrl} alt={producto.nombre} />
                     ) : (
-                      <span className="gg-producto-precio">{formatoCOP.format(producto.precioVenta)}</span>
+                      <Leaf size={32} strokeWidth={1.5} />
                     )}
-                    <span
-                      className={
-                        'gg-producto-stock' +
-                        (producto.existencias === 0
-                          ? ' gg-producto-stock--agotado'
-                          : producto.existencias <= (producto.stockMinimo ?? 0)
-                            ? ' gg-producto-stock--bajo'
-                            : '')
-                      }
-                    >
-                      {producto.existencias === 0
-                        ? 'Agotado'
-                        : producto.vendePorPeso
-                          ? `${producto.existencias} ${producto.unidadMedida} en stock`
-                          : `${producto.existencias} en stock`}
-                    </span>
+                    {producto.activo === false && (
+                      <span className="gg-producto-badge-inactivo">Desactivado</span>
+                    )}
+                  </div>
+                  <div className="gg-producto-info">
+                    <p className="gg-producto-categoria">{producto.categoriaNombre}</p>
+                    <h2 className="gg-producto-nombre">{producto.nombre}</h2>
+                    {producto.marcaNombre && <p className="gg-producto-marca">{producto.marcaNombre}</p>}
+                    {producto.descuentoPorcentaje && (
+                      <span className="gg-producto-oferta-badge">-{producto.descuentoPorcentaje}% OFERTA</span>
+                    )}
+                    {producto.promocionN && producto.promocionM && (
+                      <span className="gg-producto-oferta-badge">
+                        {producto.promocionN}x{producto.promocionM} OFERTA
+                      </span>
+                    )}
+                    <div className="gg-producto-footer">
+                      {producto.descuentoPorcentaje ? (
+                        <span className="gg-producto-precio">
+                          <span className="gg-producto-precio-tachado">
+                            {formatoCOP.format(producto.precioVenta)}
+                          </span>{' '}
+                          {formatoCOP.format(producto.precioOferta ?? producto.precioVenta)}
+                        </span>
+                      ) : (
+                        <span className="gg-producto-precio">{formatoCOP.format(producto.precioVenta)}</span>
+                      )}
+                      <span
+                        className={
+                          'gg-producto-stock' +
+                          (producto.existencias === 0
+                            ? ' gg-producto-stock--agotado'
+                            : producto.existencias <= (producto.stockMinimo ?? 0)
+                              ? ' gg-producto-stock--bajo'
+                              : '')
+                        }
+                      >
+                        {producto.existencias === 0
+                          ? 'Agotado'
+                          : producto.vendePorPeso
+                            ? `${producto.existencias} ${producto.unidadMedida} en stock`
+                            : `${producto.existencias} en stock`}
+                      </span>
+                    </div>
                   </div>
                 </div>
                 <div className="gg-producto-acciones">
@@ -464,6 +472,21 @@ export function ProductosScreen({ onCerrarSesion }: ProductosScreenProps) {
       )}
       {etiquetaProducto && (
         <EtiquetaModal producto={etiquetaProducto} onClose={() => setEtiquetaProducto(null)} />
+      )}
+      {detalleProducto && (
+        <DetalleProductoModal
+          producto={detalleProducto}
+          onClose={() => setDetalleProducto(null)}
+          onAgregar={
+            detalleProducto.existencias > 0 && detalleProducto.activo !== false
+              ? () => {
+                  carrito.agregarProducto(detalleProducto)
+                  setDetalleProducto(null)
+                }
+              : undefined
+          }
+          textoAgregar="Agregar al carrito"
+        />
       )}
     </div>
   )

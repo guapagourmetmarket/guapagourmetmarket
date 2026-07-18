@@ -4,7 +4,8 @@ import { Link } from 'react-router-dom'
 import { Flame, Leaf, Search, ShoppingCart } from 'lucide-react'
 import { Card } from '../../components/Card'
 import { Marquee } from '../../components/Marquee'
-import { obtenerProductosPublico } from '../../lib/api'
+import { DetalleProductoModal } from '../../components/DetalleProductoModal'
+import { obtenerProductosPublico, type ProductoPublico } from '../../lib/api'
 import { useCarritoPublico } from '../../lib/carritoPublico'
 import { etiquetaPromocion } from '../../lib/precio'
 import { brand } from '../../theme/theme'
@@ -22,6 +23,7 @@ export function TiendaScreen() {
   const [busqueda, setBusqueda] = useState('')
   const [categoria, setCategoria] = useState<string | null>(null)
   const [soloDescuentos, setSoloDescuentos] = useState(false)
+  const [detalleProducto, setDetalleProducto] = useState<ProductoPublico | null>(null)
   const carrito = useCarritoPublico()
 
   const { data: productos, isLoading, isError } = useQuery({
@@ -222,50 +224,56 @@ export function TiendaScreen() {
           <div className="gg-productos-grid">
             {productosFiltrados.map((producto) => (
               <Card key={producto.id} className="gg-producto-card">
-                <div className="gg-producto-imagen">
-                  {producto.imagenUrl ? (
-                    <img src={producto.imagenUrl} alt={producto.nombre} />
-                  ) : (
-                    <Leaf size={32} strokeWidth={1.5} />
-                  )}
-                </div>
-                <div className="gg-producto-info">
-                  <p className="gg-producto-categoria">{producto.categoriaNombre}</p>
-                  <h2 className="gg-producto-nombre">{producto.nombre}</h2>
-                  {producto.marcaNombre && <p className="gg-producto-marca">{producto.marcaNombre}</p>}
-                  {producto.descuentoPorcentaje && (
-                    <span className="gg-producto-oferta-badge">-{producto.descuentoPorcentaje}% OFERTA</span>
-                  )}
-                  {producto.promocionN && producto.promocionM && (
-                    <span className="gg-producto-oferta-badge">
-                      {producto.promocionN}x{producto.promocionM} OFERTA
-                    </span>
-                  )}
-                  <div className="gg-producto-footer">
-                    {producto.descuentoPorcentaje ? (
-                      <span className="gg-producto-precio">
-                        <span className="gg-producto-precio-tachado">
-                          {formatoCOP.format(producto.precioVenta)}
-                        </span>{' '}
-                        {formatoCOP.format(producto.precioOferta ?? producto.precioVenta)}
-                      </span>
+                <div
+                  className="gg-producto-clicable"
+                  onClick={() => setDetalleProducto(producto)}
+                  title="Ver foto y descripción"
+                >
+                  <div className="gg-producto-imagen">
+                    {producto.imagenUrl ? (
+                      <img src={producto.imagenUrl} alt={producto.nombre} />
                     ) : (
-                      <span className="gg-producto-precio">{formatoCOP.format(producto.precioVenta)}</span>
+                      <Leaf size={32} strokeWidth={1.5} />
                     )}
-                    <span className={'gg-producto-stock' + (producto.disponible ? '' : ' gg-producto-stock--agotado')}>
-                      {producto.disponible ? 'Disponible' : 'Agotado'}
-                    </span>
                   </div>
-                  <button
-                    type="button"
-                    className="gg-tienda-agregar-boton"
-                    disabled={!producto.disponible}
-                    onClick={() => carrito.agregarProducto(producto)}
-                  >
-                    <ShoppingCart size={15} />
-                    Agregar al pedido
-                  </button>
+                  <div className="gg-producto-info">
+                    <p className="gg-producto-categoria">{producto.categoriaNombre}</p>
+                    <h2 className="gg-producto-nombre">{producto.nombre}</h2>
+                    {producto.marcaNombre && <p className="gg-producto-marca">{producto.marcaNombre}</p>}
+                    {producto.descuentoPorcentaje && (
+                      <span className="gg-producto-oferta-badge">-{producto.descuentoPorcentaje}% OFERTA</span>
+                    )}
+                    {producto.promocionN && producto.promocionM && (
+                      <span className="gg-producto-oferta-badge">
+                        {producto.promocionN}x{producto.promocionM} OFERTA
+                      </span>
+                    )}
+                    <div className="gg-producto-footer">
+                      {producto.descuentoPorcentaje ? (
+                        <span className="gg-producto-precio">
+                          <span className="gg-producto-precio-tachado">
+                            {formatoCOP.format(producto.precioVenta)}
+                          </span>{' '}
+                          {formatoCOP.format(producto.precioOferta ?? producto.precioVenta)}
+                        </span>
+                      ) : (
+                        <span className="gg-producto-precio">{formatoCOP.format(producto.precioVenta)}</span>
+                      )}
+                      <span className={'gg-producto-stock' + (producto.disponible ? '' : ' gg-producto-stock--agotado')}>
+                        {producto.disponible ? 'Disponible' : 'Agotado'}
+                      </span>
+                    </div>
+                  </div>
                 </div>
+                <button
+                  type="button"
+                  className="gg-tienda-agregar-boton"
+                  disabled={!producto.disponible}
+                  onClick={() => carrito.agregarProducto(producto)}
+                >
+                  <ShoppingCart size={15} />
+                  Agregar al pedido
+                </button>
               </Card>
             ))}
           </div>
@@ -284,6 +292,22 @@ export function TiendaScreen() {
           </span>
           <span className="gg-carrito-flotante-cta">Ver pedido</span>
         </Link>
+      )}
+
+      {detalleProducto && (
+        <DetalleProductoModal
+          producto={detalleProducto}
+          onClose={() => setDetalleProducto(null)}
+          onAgregar={
+            detalleProducto.disponible
+              ? () => {
+                  carrito.agregarProducto(detalleProducto)
+                  setDetalleProducto(null)
+                }
+              : undefined
+          }
+          textoAgregar="Agregar al pedido"
+        />
       )}
     </div>
   )

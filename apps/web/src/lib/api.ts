@@ -1,4 +1,4 @@
-import type { Categoria, Marca, Producto } from '@guapa/shared'
+import type { Categoria, ImagenProducto, Marca, Producto } from '@guapa/shared'
 import { buscarProductosCache, cachearProductos, obtenerProductosCache } from './db'
 
 // Si no se fija VITE_API_URL, se asume que la API vive en el mismo host desde
@@ -240,6 +240,7 @@ export interface ProductoPublico {
   marcaNombre: string | null
   unidadMedida: string
   imagenUrl: string | null
+  imagenes: ImagenProducto[]
   disponible: boolean
 }
 

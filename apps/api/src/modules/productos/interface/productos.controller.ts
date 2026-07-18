@@ -99,6 +99,7 @@ export class ProductosController {
       marcaNombre: p.marcaNombre,
       unidadMedida: p.unidadMedida,
       imagenUrl: p.imagenUrl,
+      imagenes: p.imagenes,
       disponible: p.existencias > 0,
     }));
   }

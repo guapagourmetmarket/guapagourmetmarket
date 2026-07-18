@@ -57,7 +57,7 @@
 
 .gg-tienda-oferta-imagen {
   position: relative;
-  height: 90px;
+  aspect-ratio: 1 / 1;
   border-radius: var(--radius-md);
   background: var(--c-sageSoft);
   color: var(--c-sageDeep);
@@ -65,6 +65,7 @@
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  cursor: pointer;
 }
 
 .gg-tienda-oferta-imagen img {
