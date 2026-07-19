@@ -129,9 +129,10 @@ export function PedidoWebCheckoutScreen() {
                 <span>{formatoCOP.format(pedidoConfirmado.valor)}</span>
               </div>
               <p>
-                Dale <strong>Enviar</strong> en WhatsApp para contactarte con {brand.name} y coordinar
-                el envío y el método de pago. El valor del domicilio y la forma de pago se coordinan
-                directamente con nosotros — no se cobra nada en este momento.
+                ¡Gracias por tu compra! Solo dale <strong>Enviar</strong> al mensaje de WhatsApp que se
+                va a abrir, para que podamos saludarte y coordinar contigo el envío y la forma de pago.
+                El valor del domicilio y el método de pago los conversamos directamente por ahí —
+                tranquilo, todavía no se te cobra nada.
               </p>
               <a
                 href={`https://wa.me/${whatsappNegocio}?text=${encodeURIComponent(textoWhatsApp(pedidoConfirmado))}`}
