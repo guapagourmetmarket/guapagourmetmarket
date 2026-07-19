@@ -101,6 +101,10 @@ export class ProductosController {
       imagenUrl: p.imagenUrl,
       imagenes: p.imagenes,
       disponible: p.existencias > 0,
+      ingredientes: p.ingredientes,
+      infoNutricional: p.infoNutricional,
+      peso: p.peso,
+      pesoUnidad: p.pesoUnidad,
     }));
   }
 

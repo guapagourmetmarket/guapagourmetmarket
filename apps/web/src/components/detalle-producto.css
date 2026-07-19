@@ -101,3 +101,37 @@
   color: var(--c-faint);
   font-style: italic;
 }
+
+.gg-detalle-producto-dato {
+  margin: 4px 0 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--c-muted);
+}
+
+.gg-detalle-producto-dato strong {
+  color: var(--c-ink);
+}
+
+.gg-detalle-producto-nutricional {
+  margin-top: 6px;
+  padding-top: 10px;
+  border-top: 1px solid var(--c-line);
+}
+
+.gg-detalle-producto-dato-titulo {
+  margin: 0 0 6px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: var(--c-muted);
+}
+
+.gg-detalle-producto-nutricional-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 4px 12px;
+  font-size: 13px;
+  color: var(--c-ink);
+}

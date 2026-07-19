@@ -1,4 +1,4 @@
-import type { Categoria, ImagenProducto, Marca, Producto } from '@guapa/shared'
+import type { Categoria, ImagenProducto, InfoNutricional, Marca, Producto } from '@guapa/shared'
 import { buscarProductosCache, cachearProductos, obtenerProductosCache } from './db'
 
 // Si no se fija VITE_API_URL, se asume que la API vive en el mismo host desde
@@ -242,6 +242,10 @@ export interface ProductoPublico {
   imagenUrl: string | null
   imagenes: ImagenProducto[]
   disponible: boolean
+  ingredientes: string | null
+  infoNutricional: InfoNutricional | null
+  peso: number | null
+  pesoUnidad: string | null
 }
 
 export function obtenerProductosPublico() {

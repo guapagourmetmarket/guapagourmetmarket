@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Leaf } from 'lucide-react'
+import type { InfoNutricional } from '@guapa/shared'
 import { Modal } from './Modal'
 import { Button } from './Button'
 import { precioEfectivo, etiquetaPromocion } from '../lib/precio'
@@ -9,6 +10,15 @@ interface FotoProducto {
   id: string
   url: string
 }
+
+const ETIQUETAS_NUTRICIONALES: { clave: keyof InfoNutricional; label: string }[] = [
+  { clave: 'calorias', label: 'Calorías' },
+  { clave: 'proteinaG', label: 'Proteína (g)' },
+  { clave: 'grasaG', label: 'Grasa (g)' },
+  { clave: 'carbohidratosG', label: 'Carbohidratos (g)' },
+  { clave: 'azucaresG', label: 'Azúcares (g)' },
+  { clave: 'sodioMg', label: 'Sodio (mg)' },
+]
 
 // Estructura mínima que necesita esta vista: tanto el producto interno
 // (Producto, con galería) como el de la tienda pública (ProductoPublico)
@@ -26,6 +36,12 @@ interface ProductoParaDetalle {
   promocionM?: number | null
   imagenUrl?: string | null
   imagenes?: FotoProducto[]
+  ingredientes?: string | null
+  infoNutricional?: InfoNutricional | null
+  peso?: number | null
+  pesoUnidad?: string | null
+  unidadMedida?: string
+  vendePorPeso?: boolean
 }
 
 interface DetalleProductoModalProps {
@@ -101,6 +117,33 @@ export function DetalleProductoModal({ producto, onClose, onAgregar, textoAgrega
           >
             {producto.descripcion || 'Este producto todavía no tiene descripción.'}
           </p>
+
+          {producto.peso != null && (
+            <p className="gg-detalle-producto-dato">
+              <strong>Contenido:</strong> {producto.peso} {producto.pesoUnidad ?? ''}
+            </p>
+          )}
+
+          {producto.ingredientes && (
+            <p className="gg-detalle-producto-dato">
+              <strong>Ingredientes:</strong> {producto.ingredientes}
+            </p>
+          )}
+
+          {producto.infoNutricional && (
+            <div className="gg-detalle-producto-nutricional">
+              <p className="gg-detalle-producto-dato-titulo">Información nutricional</p>
+              <div className="gg-detalle-producto-nutricional-grid">
+                {ETIQUETAS_NUTRICIONALES.filter(({ clave }) => producto.infoNutricional![clave] != null).map(
+                  ({ clave, label }) => (
+                    <span key={clave}>
+                      {label}: {producto.infoNutricional![clave]}
+                    </span>
+                  ),
+                )}
+              </div>
+            </div>
+          )}
         </div>
 
         {onAgregar && (
