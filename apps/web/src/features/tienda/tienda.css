@@ -296,3 +296,24 @@
   color: var(--c-muted);
   font-size: 14px;
 }
+
+.gg-pedido-web-confirmacion .gg-pedido-web-confirmacion-subtitulo {
+  text-align: left;
+  font-weight: 700;
+  color: var(--c-ink);
+  margin: 0 0 8px;
+}
+
+.gg-pedido-web-confirmacion .gg-carrito-lista {
+  text-align: left;
+  margin-bottom: 12px;
+}
+
+.gg-pedido-web-confirmacion .gg-pedido-web-total {
+  margin-bottom: 20px;
+}
+
+.gg-pedido-web-confirmacion .gg-pedido-web-recibo-ayuda {
+  margin: 8px 0 16px;
+  font-size: 12px;
+}

@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { useMutation } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
-import { CheckCircle2, Leaf, MessageCircle, ShoppingBag } from 'lucide-react'
+import { CheckCircle2, Download, Leaf, MessageCircle, ShoppingBag } from 'lucide-react'
 import { Card } from '../../components/Card'
 import { Button } from '../../components/Button'
 import { Input } from '../../components/Input'
@@ -10,6 +10,7 @@ import { useCarritoPublico } from '../../lib/carritoPublico'
 import { etiquetaPromocion, precioEfectivo, subtotalEfectivo } from '../../lib/precio'
 import { brand } from '../../theme/theme'
 import { CuponInput } from '../ventas/CuponInput'
+import { descargarImagenPedido } from './generarReciboImagen'
 import '../../components/app-header.css'
 import '../ventas/ventas.css'
 import './tienda.css'
@@ -110,10 +111,27 @@ export function PedidoWebCheckoutScreen() {
                   Cupón {pedidoConfirmado.cuponCodigo} aplicado (-{formatoCOP.format(pedidoConfirmado.descuento)})
                 </p>
               )}
+              <p className="gg-pedido-web-confirmacion-subtitulo">Estos son los productos de tu pedido:</p>
+              <ul className="gg-carrito-lista">
+                {pedidoConfirmado.items.map((item) => (
+                  <li key={item.id} className="gg-carrito-linea">
+                    <div className="gg-carrito-linea-info">
+                      <span className="gg-carrito-linea-nombre">
+                        {item.cantidad} x {item.nombreProducto}
+                      </span>
+                    </div>
+                    <span className="gg-carrito-linea-subtotal">{formatoCOP.format(item.subtotal)}</span>
+                  </li>
+                ))}
+              </ul>
+              <div className="gg-pedido-web-total">
+                <span>Total</span>
+                <span>{formatoCOP.format(pedidoConfirmado.valor)}</span>
+              </div>
               <p>
-                Tu pedido ya quedó guardado. Para que te contactemos lo más rápido posible al{' '}
-                {pedidoConfirmado.clienteTelefono}, avísanos por WhatsApp — al tocar el botón se abre
-                WhatsApp con el mensaje ya escrito, solo falta que le des <strong>Enviar</strong>.
+                Dale <strong>Enviar</strong> en WhatsApp para contactarte con {brand.name} y coordinar
+                el envío y el método de pago. El valor del domicilio y la forma de pago se coordinan
+                directamente con nosotros — no se cobra nada en este momento.
               </p>
               <a
                 href={`https://wa.me/${whatsappNegocio}?text=${encodeURIComponent(textoWhatsApp(pedidoConfirmado))}`}
@@ -125,6 +143,20 @@ export function PedidoWebCheckoutScreen() {
                   Avisar por WhatsApp
                 </Button>
               </a>
+              <div style={{ marginTop: 8 }}>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  style={{ width: '100%' }}
+                  onClick={() => descargarImagenPedido(pedidoConfirmado)}
+                >
+                  <Download size={18} />
+                  Descargar recibo
+                </Button>
+              </div>
+              <p className="gg-pedido-web-recibo-ayuda">
+                Si prefieres, descarga el recibo y adjúntalo en el chat de WhatsApp que ya se abrió.
+              </p>
               <div style={{ marginTop: 12 }}>
                 <Link to="/tienda">
                   <Button type="button" variant="secondary" style={{ width: '100%' }}>
