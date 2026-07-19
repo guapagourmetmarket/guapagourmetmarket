@@ -317,3 +317,21 @@
   margin: 8px 0 16px;
   font-size: 12px;
 }
+
+.gg-tienda-escanear-boton {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: var(--radius-pill);
+  background: var(--c-sageDeep);
+  color: var(--c-onAccent);
+  font-weight: 600;
+  font-size: 14px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.gg-tienda-escanear-boton:hover {
+  opacity: 0.92;
+}

@@ -21,6 +21,7 @@ import { ClientesScreen } from './features/clientes/ClientesScreen'
 import { EnlacesScreen } from './features/enlaces/EnlacesScreen'
 import { TiendaScreen } from './features/tienda/TiendaScreen'
 import { PedidoWebCheckoutScreen } from './features/tienda/PedidoWebCheckoutScreen'
+import { EscanearProductoScreen } from './features/tienda/EscanearProductoScreen'
 import { CajaScreen } from './features/caja/CajaScreen'
 import { PosTactilScreen } from './features/pos-tactil/PosTactilScreen'
 import {
@@ -61,6 +62,7 @@ function App() {
     <Routes>
       <Route path="/enlaces" element={<EnlacesScreen />} />
       <Route path="/tienda" element={<TiendaScreen />} />
+      <Route path="/tienda/escanear" element={<EscanearProductoScreen />} />
       <Route path="/tienda/pedido" element={<PedidoWebCheckoutScreen />} />
       <Route
         path="/login"

@@ -242,6 +242,7 @@ export interface ProductoPublico {
   imagenUrl: string | null
   imagenes: ImagenProducto[]
   disponible: boolean
+  codigoBarras: string | null
   ingredientes: string | null
   infoNutricional: InfoNutricional | null
   peso: number | null

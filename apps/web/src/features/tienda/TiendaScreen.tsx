@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
-import { Flame, Leaf, Search, ShoppingCart } from 'lucide-react'
+import { Flame, Leaf, ScanLine, Search, ShoppingCart } from 'lucide-react'
 import { Card } from '../../components/Card'
 import { Marquee } from '../../components/Marquee'
 import { DetalleProductoModal } from '../../components/DetalleProductoModal'
@@ -155,6 +155,10 @@ export function TiendaScreen() {
               aria-label="Buscar productos"
             />
           </div>
+          <Link to="/tienda/escanear" className="gg-tienda-escanear-boton">
+            <ScanLine size={18} />
+            Escanear producto
+          </Link>
         </div>
 
         <div className="gg-productos-filtros">

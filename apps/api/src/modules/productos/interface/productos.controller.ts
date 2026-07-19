@@ -101,6 +101,10 @@ export class ProductosController {
       imagenUrl: p.imagenUrl,
       imagenes: p.imagenes,
       disponible: p.existencias > 0,
+      // El código de barras sí se expone (a diferencia del código interno):
+      // es el mismo número impreso en el empaque que la persona ya tiene en
+      // la mano al escanearlo, así que no revela nada que no sea público.
+      codigoBarras: p.codigoBarras ?? null,
       ingredientes: p.ingredientes,
       infoNutricional: p.infoNutricional,
       peso: p.peso,
