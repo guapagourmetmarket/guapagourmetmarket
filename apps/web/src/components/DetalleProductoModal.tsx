@@ -109,14 +109,7 @@ export function DetalleProductoModal({ producto, onClose, onAgregar, textoAgrega
             ) : null}
             <span>{formatoCOP.format(precio)}</span>
           </div>
-          <p
-            className={
-              'gg-detalle-producto-descripcion' +
-              (producto.descripcion ? '' : ' gg-detalle-producto-descripcion--vacia')
-            }
-          >
-            {producto.descripcion || 'Este producto todavía no tiene descripción.'}
-          </p>
+          {producto.descripcion && <p className="gg-detalle-producto-descripcion">{producto.descripcion}</p>}
 
           {producto.peso != null && (
             <p className="gg-detalle-producto-dato">

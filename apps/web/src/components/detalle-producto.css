@@ -97,11 +97,6 @@
   white-space: pre-line;
 }
 
-.gg-detalle-producto-descripcion--vacia {
-  color: var(--c-faint);
-  font-style: italic;
-}
-
 .gg-detalle-producto-dato {
   margin: 4px 0 0;
   font-size: 13px;
