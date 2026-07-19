@@ -20,9 +20,19 @@ const formatoCOP = new Intl.NumberFormat('es-CO', {
   maximumFractionDigits: 0,
 })
 
+function formatoFechaHora(iso: string) {
+  return new Date(iso).toLocaleString('es-CO', { dateStyle: 'medium', timeStyle: 'short' })
+}
+
+// Mismo contenido que el recibo de venta (negocio, número, items, total),
+// pero en texto plano con el *negrita*/_cursiva_ que WhatsApp sí entiende.
 function textoWhatsApp(pedido: PedidoWeb) {
   const lineas = [
-    `Pedido No. ${pedido.numero} — ${brand.name}`,
+    `*${brand.name}*`,
+    brand.contacto.direccion,
+    '',
+    `*Pedido No. ${pedido.numero}*`,
+    formatoFechaHora(pedido.createdAt),
     `Cliente: ${pedido.clienteNombre} · ${pedido.clienteTelefono}`,
     '',
     ...pedido.items.map((i) => `${i.cantidad} x ${i.nombreProducto} — ${formatoCOP.format(i.subtotal)}`),
@@ -30,8 +40,10 @@ function textoWhatsApp(pedido: PedidoWeb) {
     pedido.descuento > 0
       ? `Descuento (${pedido.cuponCodigo}): -${formatoCOP.format(pedido.descuento)}`
       : null,
-    `Total: ${formatoCOP.format(pedido.valor)}`,
+    `*Total: ${formatoCOP.format(pedido.valor)}*`,
     pedido.notas ? `Notas: ${pedido.notas}` : null,
+    '',
+    '_Este pedido ya quedó guardado en el sistema — te escribo para coordinar el pago y la entrega._',
   ].filter((l): l is string => l !== null)
   return lineas.join('\n')
 }
@@ -99,8 +111,9 @@ export function PedidoWebCheckoutScreen() {
                 </p>
               )}
               <p>
-                Te vamos a contactar al {pedidoConfirmado.clienteTelefono} para coordinar el pago y la
-                entrega. Si quieres, también nos lo puedes avisar directo por WhatsApp:
+                Tu pedido ya quedó guardado. Para que te contactemos lo más rápido posible al{' '}
+                {pedidoConfirmado.clienteTelefono}, avísanos por WhatsApp — al tocar el botón se abre
+                WhatsApp con el mensaje ya escrito, solo falta que le des <strong>Enviar</strong>.
               </p>
               <a
                 href={`https://wa.me/${whatsappNegocio}?text=${encodeURIComponent(textoWhatsApp(pedidoConfirmado))}`}
