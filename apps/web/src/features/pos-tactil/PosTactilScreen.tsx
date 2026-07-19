@@ -1,10 +1,11 @@
 import { useMemo, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
-import { Leaf, Minus, Pencil, Power, Search, ShoppingCart, Star, Trash2 } from 'lucide-react'
+import { ChevronDown, ChevronUp, Leaf, Minus, Pencil, Power, Search, ShoppingCart, Star, Trash2 } from 'lucide-react'
 import type { Producto } from '@guapa/shared'
 import { AppHeader } from '../../components/AppHeader'
 import { Card } from '../../components/Card'
+import { Button } from '../../components/Button'
 import { useCarrito } from '../../lib/carrito'
 import { precioEfectivo } from '../../lib/precio'
 import { useConfirm } from '../../lib/confirm'
@@ -18,6 +19,8 @@ import {
 } from '../../lib/api'
 import { CobrarModal } from '../ventas/CobrarModal'
 import { ReciboModal } from '../ventas/ReciboModal'
+import { LineaCarritoItem } from '../ventas/LineaCarritoItem'
+import '../ventas/ventas.css'
 import { obtenerNegocio, type Venta } from '../../lib/api'
 import '../productos/productos.css'
 import './pos-tactil.css'
@@ -45,6 +48,7 @@ export function PosTactilScreen({ onCerrarSesion }: PosTactilScreenProps) {
   const [busqueda, setBusqueda] = useState('')
   const [cobrando, setCobrando] = useState(false)
   const [reciboVenta, setReciboVenta] = useState<Venta | null>(null)
+  const [ticketAbierto, setTicketAbierto] = useState(true)
 
   const mutacionEstado = useMutation({
     mutationFn: ({ id, activo }: { id: string; activo: boolean }) => cambiarEstadoProducto(id, activo),
@@ -324,14 +328,41 @@ export function PosTactilScreen({ onCerrarSesion }: PosTactilScreenProps) {
       </main>
 
       {carrito.lineas.length > 0 && (
-        <button type="button" className="gg-carrito-flotante" onClick={() => setCobrando(true)}>
-          <ShoppingCart size={18} />
-          <span>
-            {carrito.lineas.length} producto{carrito.lineas.length === 1 ? '' : 's'} en el
-            carrito · {formatoCOP.format(carrito.total)}
-          </span>
-          <span className="gg-carrito-flotante-cta">Cobrar</span>
-        </button>
+        <div className="gg-tactil-ticket">
+          {ticketAbierto && (
+            <div className="gg-tactil-ticket-cuerpo">
+              <div className="gg-tactil-ticket-header">
+                <span>Cuenta actual</span>
+                <span>
+                  {carrito.lineas.reduce((acc, l) => acc + l.cantidad, 0)} und. ·{' '}
+                  {carrito.lineas.length} producto{carrito.lineas.length === 1 ? '' : 's'}
+                </span>
+              </div>
+              <ul className="gg-carrito-lista gg-tactil-ticket-lista">
+                {carrito.lineas.map((linea) => (
+                  <LineaCarritoItem key={linea.producto.id} linea={linea} />
+                ))}
+              </ul>
+            </div>
+          )}
+          <div className="gg-tactil-ticket-footer">
+            <button
+              type="button"
+              className="gg-tactil-ticket-barra"
+              onClick={() => setTicketAbierto((v) => !v)}
+            >
+              <ShoppingCart size={18} />
+              <span>
+                {carrito.lineas.length} producto{carrito.lineas.length === 1 ? '' : 's'} ·{' '}
+                {formatoCOP.format(carrito.total)}
+              </span>
+              {ticketAbierto ? <ChevronDown size={16} /> : <ChevronUp size={16} />}
+            </button>
+            <Button type="button" className="gg-tactil-ticket-cobrar" onClick={() => setCobrando(true)}>
+              Cobrar
+            </Button>
+          </div>
+        </div>
       )}
 
       {cobrando && (

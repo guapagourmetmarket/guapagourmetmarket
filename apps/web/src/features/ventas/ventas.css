@@ -186,6 +186,25 @@
   border-radius: var(--radius-md);
 }
 
+.gg-carrito-linea-imagen {
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  border-radius: var(--radius-sm);
+  background: var(--c-sageSoft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--c-muted);
+  overflow: hidden;
+}
+
+.gg-carrito-linea-imagen img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 .gg-carrito-linea-info {
   flex: 1;
   min-width: 0;

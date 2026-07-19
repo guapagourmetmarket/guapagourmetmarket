@@ -75,7 +75,7 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   gap: 16px;
-  padding-bottom: 90px;
+  padding-bottom: 260px;
 }
 
 .gg-tactil-tile {
@@ -242,7 +242,7 @@
   flex-direction: column;
   gap: 8px;
   max-width: 480px;
-  padding-bottom: 90px;
+  padding-bottom: 260px;
 }
 
 .gg-tactil-resultado {
@@ -299,4 +299,88 @@
   color: var(--c-sageDeep);
   font-weight: 700;
   font-variant-numeric: tabular-nums;
+}
+
+/* Cuenta en vivo: se ve mientras se escanea/toca, como en la caja de un
+   supermercado — no hay que abrir "Cobrar" para saber qué lleva la venta. */
+.gg-tactil-ticket {
+  position: fixed;
+  left: 50%;
+  bottom: 20px;
+  transform: translateX(-50%);
+  width: min(94vw, 440px);
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  background: var(--c-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-pop);
+  overflow: hidden;
+}
+
+.gg-tactil-ticket-cuerpo {
+  display: flex;
+  flex-direction: column;
+  padding: 12px 14px 0;
+  max-height: 42vh;
+}
+
+.gg-tactil-ticket-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--c-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  padding-bottom: 8px;
+}
+
+.gg-tactil-ticket-lista {
+  overflow-y: auto;
+  margin-bottom: 0;
+  padding-bottom: 10px;
+}
+
+.gg-tactil-ticket-footer {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+  padding: 10px;
+  border-top: 1px solid var(--c-line);
+}
+
+.gg-tactil-ticket-barra {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: none;
+  background: var(--c-sageSoft);
+  color: var(--c-sageDeep);
+  border-radius: var(--radius-pill);
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.gg-tactil-ticket-barra span {
+  flex: 1;
+  text-align: left;
+}
+
+.gg-tactil-ticket-cobrar {
+  flex-shrink: 0;
+}
+
+@media (max-width: 640px) {
+  .gg-tactil-ticket {
+    left: 16px;
+    right: 16px;
+    transform: none;
+    width: auto;
+  }
 }

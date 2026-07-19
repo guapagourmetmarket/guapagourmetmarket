@@ -1,7 +1,7 @@
 import { useMemo, useState, type FormEvent } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useLiveQuery } from 'dexie-react-hooks'
-import { Ban, Loader2, ReceiptText, Search, Sparkles, Trash2 } from 'lucide-react'
+import { Ban, Loader2, ReceiptText, Search, Sparkles } from 'lucide-react'
 import { AppHeader } from '../../components/AppHeader'
 import { Card } from '../../components/Card'
 import { Button } from '../../components/Button'
@@ -21,13 +21,12 @@ import {
   type Venta,
 } from '../../lib/api'
 import { registrarVentaConSync, sincronizarOutbox } from '../../lib/sync'
-import { precioEfectivo, subtotalEfectivo } from '../../lib/precio'
 import { useConfirm } from '../../lib/confirm'
 import { ReciboModal } from './ReciboModal'
 import { DevolucionModal } from './DevolucionModal'
 import { useDescuento } from './descuento'
 import { CuponInput } from './CuponInput'
-import { ControlCantidad } from './ControlCantidad'
+import { LineaCarritoItem } from './LineaCarritoItem'
 import './ventas.css'
 
 interface VentaManualScreenProps {
@@ -249,40 +248,7 @@ export function VentaManualScreen({ onCerrarSesion }: VentaManualScreenProps) {
             {carrito.lineas.length > 0 && (
               <ul className="gg-carrito-lista">
                 {carrito.lineas.map((linea) => (
-                  <li key={linea.producto.id} className="gg-carrito-linea">
-                    <div className="gg-carrito-linea-info">
-                      <span className="gg-carrito-linea-nombre">{linea.producto.nombre}</span>
-                      <span className="gg-carrito-linea-precio">
-                        {linea.producto.descuentoPorcentaje && (
-                          <span className="gg-carrito-linea-precio-tachado">
-                            {formatoCOP.format(linea.producto.precioVenta)}
-                          </span>
-                        )}
-                        {formatoCOP.format(precioEfectivo(linea.producto))}{' '}
-                        {linea.producto.vendePorPeso ? `/ ${linea.producto.unidadMedida}` : 'c/u'}
-                        {linea.producto.descuentoPorcentaje && (
-                          <span className="gg-carrito-linea-oferta">-{linea.producto.descuentoPorcentaje}%</span>
-                        )}
-                        {linea.producto.promocionN && linea.producto.promocionM && (
-                          <span className="gg-carrito-linea-oferta">
-                            {linea.producto.promocionN}x{linea.producto.promocionM}
-                          </span>
-                        )}
-                      </span>
-                    </div>
-                    <ControlCantidad linea={linea} />
-                    <span className="gg-carrito-linea-subtotal">
-                      {formatoCOP.format(subtotalEfectivo(linea.producto, linea.cantidad))}
-                    </span>
-                    <button
-                      type="button"
-                      className="gg-carrito-linea-quitar"
-                      onClick={() => carrito.quitarLinea(linea.producto.id)}
-                      aria-label="Quitar producto"
-                    >
-                      <Trash2 size={16} />
-                    </button>
-                  </li>
+                  <LineaCarritoItem key={linea.producto.id} linea={linea} />
                 ))}
               </ul>
             )}
