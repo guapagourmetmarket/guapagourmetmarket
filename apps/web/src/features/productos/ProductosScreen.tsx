@@ -23,6 +23,7 @@ import {
   type Venta,
 } from '../../lib/api'
 import { CobrarModal } from '../ventas/CobrarModal'
+import { CuentaViva } from '../ventas/CuentaViva'
 import { useConfirm } from '../../lib/confirm'
 import { ReciboModal } from '../ventas/ReciboModal'
 import { ImportarModal } from './ImportarModal'
@@ -447,16 +448,7 @@ export function ProductosScreen({ onCerrarSesion }: ProductosScreenProps) {
         )}
       </main>
 
-      {carrito.lineas.length > 0 && (
-        <button type="button" className="gg-carrito-flotante" onClick={() => setCobrando(true)}>
-          <ShoppingCart size={18} />
-          <span>
-            {carrito.lineas.length} producto{carrito.lineas.length === 1 ? '' : 's'} en el
-            carrito · {formatoCOP.format(carrito.total)}
-          </span>
-          <span className="gg-carrito-flotante-cta">Cobrar</span>
-        </button>
-      )}
+      <CuentaViva onCobrar={() => setCobrando(true)} />
 
       {cobrando && (
         <CobrarModal

@@ -85,6 +85,8 @@ export function RecortarFotoModal({ archivo, aspecto = 4 / 3, onConfirmar, onCan
             image={urlImagen}
             crop={crop}
             zoom={zoom}
+            minZoom={0.5}
+            maxZoom={3}
             aspect={aspecto}
             onCropChange={setCrop}
             onZoomChange={setZoom}
@@ -96,7 +98,7 @@ export function RecortarFotoModal({ archivo, aspecto = 4 / 3, onConfirmar, onCan
           Zoom
           <input
             type="range"
-            min={1}
+            min={0.5}
             max={3}
             step={0.05}
             value={zoom}
@@ -105,8 +107,8 @@ export function RecortarFotoModal({ archivo, aspecto = 4 / 3, onConfirmar, onCan
         </label>
 
         <p className="gg-recortar-foto-ayuda">
-          Arrastra la foto para moverla y usa el zoom para acercar o alejar — así eliges qué parte se
-          ve en la tarjeta del producto.
+          Arrastra la foto para moverla en cualquier dirección y usa el zoom para acercarla o
+          alejarla — así eliges qué parte se ve en la tarjeta del producto.
         </p>
 
         {error && <p className="gg-field-error">{error}</p>}
