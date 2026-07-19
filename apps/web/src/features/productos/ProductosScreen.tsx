@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
-import { Barcode, Copy, Download, FileText, Flame, Leaf, Pencil, Plus, Power, Settings, ShoppingCart, Search, Star, Trash2, Upload } from 'lucide-react'
+import { Barcode, Copy, Download, FileText, Flame, Leaf, Pencil, Plus, Power, ScanLine, Settings, ShoppingCart, Search, Star, Trash2, Upload } from 'lucide-react'
 import type { Producto } from '@guapa/shared'
 import { Card } from '../../components/Card'
 import { SkeletonTarjetas } from '../../components/Skeleton'
@@ -26,6 +26,7 @@ import { CobrarModal } from '../ventas/CobrarModal'
 import { useConfirm } from '../../lib/confirm'
 import { ReciboModal } from '../ventas/ReciboModal'
 import { ImportarModal } from './ImportarModal'
+import { EscanearProductoModal } from './EscanearProductoModal'
 import { GestionCategoriasModal } from './GestionCategoriasModal'
 import { EtiquetaModal } from './EtiquetaModal'
 import './productos.css'
@@ -57,6 +58,7 @@ export function ProductosScreen({ onCerrarSesion }: ProductosScreenProps) {
   const [gestionandoCategorias, setGestionandoCategorias] = useState(false)
   const [etiquetaProducto, setEtiquetaProducto] = useState<Producto | null>(null)
   const [detalleProducto, setDetalleProducto] = useState<Producto | null>(null)
+  const [escaneando, setEscaneando] = useState(false)
 
   const { data: negocio } = useQuery({ queryKey: ['negocio'], queryFn: obtenerNegocio })
 
@@ -190,6 +192,10 @@ export function ProductosScreen({ onCerrarSesion }: ProductosScreenProps) {
             <Button type="button" variant="secondary" onClick={() => setImportando(true)}>
               <Upload size={18} />
               Importar
+            </Button>
+            <Button type="button" variant="secondary" onClick={() => setEscaneando(true)}>
+              <ScanLine size={18} />
+              Escanear
             </Button>
             <Button
               type="button"
@@ -467,6 +473,16 @@ export function ProductosScreen({ onCerrarSesion }: ProductosScreenProps) {
       )}
 
       {importando && <ImportarModal onClose={() => setImportando(false)} />}
+      {escaneando && (
+        <EscanearProductoModal
+          productos={productos ?? []}
+          onClose={() => setEscaneando(false)}
+          onEncontrado={(producto) => {
+            setEscaneando(false)
+            setDetalleProducto(producto)
+          }}
+        />
+      )}
       {gestionandoCategorias && (
         <GestionCategoriasModal onClose={() => setGestionandoCategorias(false)} />
       )}
