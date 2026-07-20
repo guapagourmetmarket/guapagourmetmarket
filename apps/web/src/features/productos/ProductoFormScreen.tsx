@@ -49,6 +49,19 @@ function bloquearEnter(e: KeyboardEvent<HTMLInputElement>) {
   if (e.key === 'Enter') e.preventDefault()
 }
 
+// Misma fórmula que usa el reporte de márgenes: rentabilidad sobre el
+// precio de venta, no sobre el costo — así el número coincide en toda
+// la app.
+function calcularRentabilidad(compra: number, venta: number): string {
+  if (compra <= 0 || venta <= 0) return ''
+  return (((venta - compra) / venta) * 100).toFixed(1)
+}
+
+function calcularPrecioVentaDesdeRentabilidad(compra: number, rentabilidadPct: number): string {
+  if (compra <= 0 || Number.isNaN(rentabilidadPct) || rentabilidadPct >= 100) return ''
+  return String(Math.round(compra / (1 - rentabilidadPct / 100)))
+}
+
 export function ProductoFormScreen({ onCerrarSesion }: ProductoFormScreenProps) {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
@@ -72,6 +85,7 @@ export function ProductoFormScreen({ onCerrarSesion }: ProductoFormScreenProps) 
   const [unidadMedida, setUnidadMedida] = useState('unidad')
   const [precioCompra, setPrecioCompra] = useState('')
   const [precioVenta, setPrecioVenta] = useState('')
+  const [rentabilidad, setRentabilidad] = useState('')
   const [iva, setIva] = useState<(typeof IVAS)[number]>(0)
   const [existencias, setExistencias] = useState('0')
   const [stockMinimo, setStockMinimo] = useState('0')
@@ -106,6 +120,7 @@ export function ProductoFormScreen({ onCerrarSesion }: ProductoFormScreenProps) 
     setUnidadMedida(productoExistente.unidadMedida)
     setPrecioCompra(String(productoExistente.precioCompra))
     setPrecioVenta(String(productoExistente.precioVenta))
+    setRentabilidad(calcularRentabilidad(productoExistente.precioCompra, productoExistente.precioVenta))
     setIva(productoExistente.iva)
     setExistencias(String(productoExistente.existencias))
     setStockMinimo(String(productoExistente.stockMinimo ?? 0))
@@ -176,6 +191,34 @@ export function ProductoFormScreen({ onCerrarSesion }: ProductoFormScreenProps) 
       setFotos((prev) => [...prev, ...recortados])
       setFotosPreview((prev) => [...prev, ...recortados.map((a) => URL.createObjectURL(a))])
     })
+  }
+
+  // Precio de compra, precio de venta y rentabilidad quedan enlazados: se
+  // puede escribir cualquiera de las dos formas — compra + venta (la
+  // rentabilidad se calcula sola) o compra + la rentabilidad que se quiere
+  // ganar (el precio de venta se calcula solo).
+  function handlePrecioCompra(valor: string) {
+    setPrecioCompra(valor)
+    const compraNum = Number(valor) || 0
+    const ventaNum = Number(precioVenta) || 0
+    if (compraNum > 0 && ventaNum > 0) setRentabilidad(calcularRentabilidad(compraNum, ventaNum))
+  }
+
+  function handlePrecioVenta(valor: string) {
+    setPrecioVenta(valor)
+    const compraNum = Number(precioCompra) || 0
+    const ventaNum = Number(valor) || 0
+    if (compraNum > 0 && ventaNum > 0) setRentabilidad(calcularRentabilidad(compraNum, ventaNum))
+  }
+
+  function handleRentabilidad(valor: string) {
+    setRentabilidad(valor)
+    const compraNum = Number(precioCompra) || 0
+    const rentNum = Number(valor)
+    if (compraNum > 0 && valor.trim() !== '' && !Number.isNaN(rentNum)) {
+      const ventaCalculada = calcularPrecioVentaDesdeRentabilidad(compraNum, rentNum)
+      if (ventaCalculada) setPrecioVenta(ventaCalculada)
+    }
   }
 
   function quitarFotoPendiente(indice: number) {
@@ -508,7 +551,7 @@ export function ProductoFormScreen({ onCerrarSesion }: ProductoFormScreenProps) 
                 type="number"
                 min="0"
                 value={precioCompra}
-                onChange={(e) => setPrecioCompra(e.target.value)}
+                onChange={(e) => handlePrecioCompra(e.target.value)}
                 onKeyDown={bloquearEnter}
                 placeholder="0"
               />
@@ -517,10 +560,28 @@ export function ProductoFormScreen({ onCerrarSesion }: ProductoFormScreenProps) 
                 type="number"
                 min="0"
                 value={precioVenta}
-                onChange={(e) => setPrecioVenta(e.target.value)}
+                onChange={(e) => handlePrecioVenta(e.target.value)}
                 onKeyDown={bloquearEnter}
                 placeholder="0"
               />
+            </div>
+
+            <div className="gg-field">
+              <label htmlFor="rentabilidad-producto">Rentabilidad (%)</label>
+              <input
+                id="rentabilidad-producto"
+                className="gg-input"
+                type="number"
+                step="0.1"
+                value={rentabilidad}
+                onChange={(e) => handleRentabilidad(e.target.value)}
+                onKeyDown={bloquearEnter}
+                placeholder="Ej: 35"
+              />
+              <p className="gg-foto-producto-ayuda">
+                Se calcula sola con el precio de compra y de venta. O escribe aquí la rentabilidad
+                que quieres ganar y el precio de venta se completa solo.
+              </p>
             </div>
 
             <div className="gg-nuevo-producto-grid">
