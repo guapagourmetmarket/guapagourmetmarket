@@ -73,8 +73,11 @@
 
 .gg-tactil-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 16px;
+  /* auto-fit (no auto-fill): con pocos productos en pantalla, los botones
+     se estiran para llenar el ancho en vez de quedar chiquitos con
+     columnas fantasma vacías al lado — se nota mucho en monitores grandes. */
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 18px;
   padding-bottom: 260px;
 }
 

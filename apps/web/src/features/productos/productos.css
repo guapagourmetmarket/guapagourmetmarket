@@ -163,8 +163,12 @@
 
 .gg-productos-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 16px;
+  /* auto-fit (no auto-fill): si hay pocos productos en la vista, las
+     tarjetas se estiran para llenar el ancho en vez de quedar chiquitas
+     con columnas fantasma vacías al lado — esto se nota mucho en
+     monitores grandes. */
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 18px;
 }
 
 .gg-producto-card {
