@@ -151,9 +151,17 @@ export function ProductosTabla({
   const ordenados = useMemo(() => {
     const copia = [...productos]
     copia.sort((a, b) => {
-      const va = valorDeCampo(a, ordenPor)
-      const vb = valorDeCampo(b, ordenPor)
-      const cmp = typeof va === 'string' ? va.localeCompare(vb as string) : va - (vb as number)
+      let cmp: number
+      if (ordenPor === 'codigoInterno') {
+        // "numeric: true" compara los números escritos adentro del texto por
+        // su valor (2 antes que 11), no letra por letra (que pondría "11"
+        // antes que "2" al comparar el primer caracter).
+        cmp = a.codigoInterno.localeCompare(b.codigoInterno, 'es', { numeric: true })
+      } else {
+        const va = valorDeCampo(a, ordenPor)
+        const vb = valorDeCampo(b, ordenPor)
+        cmp = typeof va === 'string' ? va.localeCompare(vb as string) : va - (vb as number)
+      }
       return ascendente ? cmp : -cmp
     })
     return copia
