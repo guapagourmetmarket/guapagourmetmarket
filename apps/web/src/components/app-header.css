@@ -43,11 +43,26 @@
   }
 }
 
+.gg-header-marca-compacta-texto {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
 .gg-header-marca-nombre-compacta {
   font-weight: 700;
   color: var(--c-sageDeep);
-  font-size: 14px;
+  font-size: 19px;
   line-height: 1.15;
+  white-space: nowrap;
+}
+
+.gg-header-marca-autora-compacta {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--c-muted);
   white-space: nowrap;
 }
 
@@ -162,20 +177,24 @@
 .gg-header-fila-nav {
   display: flex;
   align-items: center;
-  flex-wrap: wrap;
-  gap: 10px;
+  flex-wrap: nowrap;
+  gap: 14px;
   padding: 8px 20px;
   background: linear-gradient(180deg, var(--c-roseSoft) 0%, var(--c-rose) 130%);
   border-bottom: 1px solid var(--c-line);
 }
 
+/* El menú en una sola línea, siempre — si no cabe todo, se desliza en vez
+   de pasar a una segunda fila y comerse más alto de pantalla. */
 .gg-header-nav {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 6px;
-  justify-content: flex-start;
   flex: 1 1 auto;
   min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  padding-bottom: 2px;
 }
 
 /* Efecto "botón 3D": una sombra sólida abajo simula el filo del botón;
@@ -184,15 +203,17 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 6px 12px;
+  padding: 6px 11px;
+  flex-shrink: 0;
   border-radius: var(--radius-md);
   border: none;
   background: var(--c-surface);
-  font-size: 11px;
+  font-size: 10.5px;
   font-family: inherit;
   font-weight: 800;
   letter-spacing: 0.02em;
   text-transform: uppercase;
+  white-space: nowrap;
   /* roseDeep da solo 4.16:1 sobre blanco (por debajo del mínimo de 4.5:1
      para texto pequeño) — roseInk sube eso a 7.3:1 sin cambiar el tono. */
   color: var(--c-roseInk);

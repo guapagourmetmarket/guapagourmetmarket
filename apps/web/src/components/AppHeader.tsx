@@ -165,8 +165,11 @@ export function AppHeader({ onCerrarSesion }: AppHeaderProps) {
 
       <div className="gg-header-fila-nav">
         <div className="gg-header-marca-compacta">
-          <img src={brand.logo.hi} alt={brand.name} width={36} height={36} />
-          <span className="font-display gg-header-marca-nombre-compacta">{brand.name}</span>
+          <img src={brand.logo.hi} alt={brand.name} width={56} height={56} />
+          <div className="gg-header-marca-compacta-texto">
+            <span className="font-display gg-header-marca-nombre-compacta">{brand.name}</span>
+            <span className="gg-header-marca-autora-compacta">by {brand.creator}</span>
+          </div>
         </div>
 
         <nav className="gg-header-nav">
