@@ -10,6 +10,10 @@
    información es para la tienda pública, no hace falta verla en cada
    pantalla mientras se trabaja. */
 .gg-header-marca-compacta {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
   display: flex;
   align-items: center;
   gap: 8px;
@@ -171,15 +175,16 @@
   color: #fff;
 }
 
-/* Fila única: marca + navegación + acciones, en botones en relieve sobre
-   un fondo rosado pastel, a pedido de Paola ("dale vida") — compactada
-   para no comerse la pantalla antes de llegar al contenido. */
-/* Fila 1: marca + acciones de la cuenta, siempre en una sola línea (son
-   pocos elementos, nunca hace falta que pase a una segunda fila). */
+/* Fila 1: marca + acciones de la cuenta. El logo/nombre queda centrado de
+   verdad (no solo "empujado" entre los otros elementos) con position:
+   absolute, para que mantenga su protagonismo sin importar cuánto ocupen
+   "Mi cuenta"/"Cerrar sesión" al lado. */
 .gg-header-fila-marca {
+  position: relative;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
+  min-height: 60px;
   gap: 14px;
   padding: 6px 20px;
   background: var(--c-sageSoft);
@@ -475,7 +480,15 @@
 
 @media (max-width: 900px) {
   .gg-header-fila-marca {
+    justify-content: space-between;
     padding: 8px 16px;
+  }
+  /* En pantallas angostas no hay espacio para centrar el logo/nombre sin
+     que choque con el botón de menú — vuelve al flujo normal, pegado a la
+     izquierda, con el botón de menú a la derecha. */
+  .gg-header-marca-compacta {
+    position: static;
+    transform: none;
   }
   .gg-header-fila-nav,
   .gg-header-acciones {
