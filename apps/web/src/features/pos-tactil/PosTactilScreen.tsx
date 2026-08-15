@@ -6,6 +6,7 @@ import type { Producto } from '@guapa/shared'
 import { AppHeader } from '../../components/AppHeader'
 import { Card } from '../../components/Card'
 import { useCarrito } from '../../lib/carrito'
+import { AgregarProductoLibre } from '../ventas/AgregarProductoLibre'
 import { precioEfectivo } from '../../lib/precio'
 import { useConfirm } from '../../lib/confirm'
 import { useEscaneoCodigoBarras } from '../../lib/useEscaneoCodigoBarras'
@@ -152,6 +153,13 @@ export function PosTactilScreen({ onCerrarSesion }: PosTactilScreenProps) {
             {resultadosBusqueda.length === 0 ? (
               <Card className="gg-tactil-estado">
                 <p>No encontramos productos con esa búsqueda.</p>
+                <AgregarProductoLibre
+                  nombreInicial={busqueda.trim()}
+                  onAgregar={(nombre, precio) => {
+                    carrito.agregarLineaLibre(nombre, precio)
+                    setBusqueda('')
+                  }}
+                />
               </Card>
             ) : (
               resultadosBusqueda.map((producto) => (

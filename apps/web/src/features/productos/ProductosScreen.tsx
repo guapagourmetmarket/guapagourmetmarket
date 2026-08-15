@@ -473,6 +473,10 @@ export function ProductosScreen({ onCerrarSesion }: ProductosScreenProps) {
             setEscaneando(false)
             setDetalleProducto(producto)
           }}
+          onAgregarLibre={(nombre, precio) => {
+            setEscaneando(false)
+            carrito.agregarLineaLibre(nombre, precio)
+          }}
         />
       )}
       {gestionandoCategorias && (

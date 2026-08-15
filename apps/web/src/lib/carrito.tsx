@@ -10,11 +10,20 @@ export interface LineaCarrito {
 interface CarritoContextValue {
   lineas: LineaCarrito[]
   agregarProducto: (producto: Producto) => void
+  /** Para un producto que aún no está en el catálogo: se agrega a la cuenta solo con nombre y precio. */
+  agregarLineaLibre: (nombre: string, precio: number) => void
   cambiarCantidad: (productoId: string, delta: number) => void
   establecerCantidad: (productoId: string, cantidad: number) => void
   quitarLinea: (productoId: string) => void
   vaciar: () => void
   total: number
+}
+
+const PREFIJO_LINEA_LIBRE = 'libre-'
+
+/** Una línea del carrito es "libre" cuando no corresponde a un producto real del catálogo. */
+export function esLineaLibre(producto: Pick<Producto, 'id'>): boolean {
+  return producto.id.startsWith(PREFIJO_LINEA_LIBRE)
 }
 
 const CarritoContext = createContext<CarritoContextValue | null>(null)
@@ -32,6 +41,24 @@ export function CarritoProvider({ children }: PropsWithChildren) {
       }
       return [...prev, { producto, cantidad: 1 }]
     })
+  }
+
+  function agregarLineaLibre(nombre: string, precio: number) {
+    const producto: Producto = {
+      id: `${PREFIJO_LINEA_LIBRE}${crypto.randomUUID()}`,
+      codigoInterno: '',
+      nombre,
+      precioCompra: 0,
+      precioVenta: precio,
+      iva: 0,
+      categoriaId: '',
+      categoriaNombre: 'Producto nuevo',
+      unidadMedida: 'unidad',
+      existencias: Infinity,
+      imagenes: [],
+      activo: true,
+    }
+    setLineas((prev) => [...prev, { producto, cantidad: 1 }])
   }
 
   function cambiarCantidad(productoId: string, delta: number) {
@@ -67,7 +94,16 @@ export function CarritoProvider({ children }: PropsWithChildren) {
 
   return (
     <CarritoContext.Provider
-      value={{ lineas, agregarProducto, cambiarCantidad, establecerCantidad, quitarLinea, vaciar, total }}
+      value={{
+        lineas,
+        agregarProducto,
+        agregarLineaLibre,
+        cambiarCantidad,
+        establecerCantidad,
+        quitarLinea,
+        vaciar,
+        total,
+      }}
     >
       {children}
     </CarritoContext.Provider>

@@ -2,7 +2,8 @@ export type MetodoPago = 'efectivo' | 'tarjeta' | 'transferencia' | 'nequi' | 'd
 
 export interface VentaItem {
   id: string;
-  productoId: string;
+  /** null cuando es una línea libre (nombre + precio escritos a mano, sin producto en el catálogo). */
+  productoId: string | null;
   nombreProducto: string;
   cantidad: number;
   precioUnitario: number;
@@ -42,10 +43,9 @@ export interface Venta {
   items: VentaItem[];
 }
 
-export interface NuevoVentaItem {
-  productoId: string;
-  cantidad: number;
-}
+export type NuevoVentaItem =
+  | { productoId: string; cantidad: number }
+  | { nombre: string; precioUnitario: number; cantidad: number };
 
 export interface NuevaVenta {
   fecha?: string;

@@ -12,20 +12,35 @@ async function construirVentaLocal(venta: NuevaVenta): Promise<Venta> {
   const items: VentaItem[] = []
   let totalItems = 0
   for (const item of venta.items) {
-    const producto = await db.productos.get(item.productoId)
-    const precioUnitario = producto?.precioVenta ?? 0
-    const subtotal = precioUnitario * item.cantidad
-    totalItems += subtotal
-    items.push({
-      id: crypto.randomUUID(),
-      productoId: item.productoId,
-      nombreProducto: producto?.nombre ?? 'Producto',
-      cantidad: item.cantidad,
-      precioUnitario,
-      iva: producto?.iva ?? 0,
-      subtotal,
-      cantidadDevuelta: 0,
-    })
+    if ('productoId' in item) {
+      const producto = await db.productos.get(item.productoId)
+      const precioUnitario = producto?.precioVenta ?? 0
+      const subtotal = precioUnitario * item.cantidad
+      totalItems += subtotal
+      items.push({
+        id: crypto.randomUUID(),
+        productoId: item.productoId,
+        nombreProducto: producto?.nombre ?? 'Producto',
+        cantidad: item.cantidad,
+        precioUnitario,
+        iva: producto?.iva ?? 0,
+        subtotal,
+        cantidadDevuelta: 0,
+      })
+    } else {
+      const subtotal = item.precioUnitario * item.cantidad
+      totalItems += subtotal
+      items.push({
+        id: crypto.randomUUID(),
+        productoId: null,
+        nombreProducto: item.nombre,
+        cantidad: item.cantidad,
+        precioUnitario: item.precioUnitario,
+        iva: 0,
+        subtotal,
+        cantidadDevuelta: 0,
+      })
+    }
   }
 
   const subtotal = totalItems + (venta.valorLibre ?? 0)

@@ -74,7 +74,7 @@ export class VentasRepositoryPg implements VentasRepository {
       }
 
       const itemsConDatos: {
-        productoId: string;
+        productoId: string | null;
         nombre: string;
         cantidad: number;
         precioUnitario: number;
@@ -85,6 +85,29 @@ export class VentasRepositoryPg implements VentasRepository {
       }[] = [];
 
       for (const item of venta.items) {
+        if (!('productoId' in item) || !item.productoId) {
+          // Línea libre: el cajero la escribió a mano (nombre + precio) para
+          // un producto que aún no está en el catálogo. No descuenta stock
+          // ni genera movimiento de kardex, porque no hay producto real.
+          if (!('nombre' in item) || !item.nombre?.trim() || item.precioUnitario == null) {
+            throw new BadRequestException(
+              'Cada producto de la venta debe tener un ID válido, o un nombre y un precio.',
+            );
+          }
+          const precioUnitario = Math.round(item.precioUnitario);
+          itemsConDatos.push({
+            productoId: null,
+            nombre: item.nombre.trim(),
+            cantidad: item.cantidad,
+            precioUnitario,
+            iva: 0,
+            subtotal: Math.round(precioUnitario * item.cantidad),
+            existenciasPrevias: 0,
+            costoPromedio: null,
+          });
+          continue;
+        }
+
         const { rows } = await client.query(
           `SELECT nombre, precio_venta, iva, existencias, costo_promedio, unidad_medida,
                   vende_por_peso, descuento_porcentaje, promocion_n, promocion_m
@@ -188,23 +211,25 @@ export class VentasRepositoryPg implements VentasRepository {
             item.subtotal,
           ],
         );
-        await client.query(
-          `UPDATE productos SET existencias = existencias - $1, updated_at = now() WHERE id = $2`,
-          [item.cantidad, item.productoId],
-        );
-        await client.query(
-          `INSERT INTO movimientos_inventario
-            (producto_id, tipo, cantidad, costo_unitario, saldo_cantidad, referencia_tipo, referencia_id, registrado_por)
-           VALUES ($1, 'salida', $2, $3, $4, 'venta', $5, $6)`,
-          [
-            item.productoId,
-            -item.cantidad,
-            item.costoPromedio,
-            item.existenciasPrevias - item.cantidad,
-            ventaRow.id,
-            venta.registradoPor,
-          ],
-        );
+        if (item.productoId) {
+          await client.query(
+            `UPDATE productos SET existencias = existencias - $1, updated_at = now() WHERE id = $2`,
+            [item.cantidad, item.productoId],
+          );
+          await client.query(
+            `INSERT INTO movimientos_inventario
+              (producto_id, tipo, cantidad, costo_unitario, saldo_cantidad, referencia_tipo, referencia_id, registrado_por)
+             VALUES ($1, 'salida', $2, $3, $4, 'venta', $5, $6)`,
+            [
+              item.productoId,
+              -item.cantidad,
+              item.costoPromedio,
+              item.existenciasPrevias - item.cantidad,
+              ventaRow.id,
+              venta.registradoPor,
+            ],
+          );
+        }
         const r = itemRows[0];
         items.push({
           id: r.id,
@@ -270,6 +295,9 @@ export class VentasRepositoryPg implements VentasRepository {
         [id],
       );
       for (const item of itemRows) {
+        // Una línea libre (sin producto_id) nunca descontó stock real, así
+        // que tampoco hay nada que reponerle al anular.
+        if (!item.producto_id) continue;
         // Si parte de este item ya se había devuelto antes, esa parte del
         // stock ya está repuesta — solo se repone lo que falta, para no
         // sumarla dos veces.
@@ -387,25 +415,28 @@ export class VentasRepositoryPg implements VentasRepository {
         [devolucion.cantidad, ventaItemId],
       );
 
-      const { rows: prodRows } = await client.query(
-        `UPDATE productos SET existencias = existencias + $1, updated_at = now()
-         WHERE id = $2 RETURNING existencias`,
-        [devolucion.cantidad, item.producto_id],
-      );
+      // Una línea libre (sin producto_id) no tiene stock real que reponer.
+      if (item.producto_id) {
+        const { rows: prodRows } = await client.query(
+          `UPDATE productos SET existencias = existencias + $1, updated_at = now()
+           WHERE id = $2 RETURNING existencias`,
+          [devolucion.cantidad, item.producto_id],
+        );
 
-      await client.query(
-        `INSERT INTO movimientos_inventario
-          (producto_id, tipo, cantidad, saldo_cantidad, referencia_tipo, referencia_id, motivo, registrado_por)
-         VALUES ($1, 'entrada', $2, $3, 'devolucion', $4, $5, $6)`,
-        [
-          item.producto_id,
-          devolucion.cantidad,
-          prodRows[0].existencias,
-          ventaItemId,
-          devolucion.motivo ?? null,
-          devolucion.registradoPor,
-        ],
-      );
+        await client.query(
+          `INSERT INTO movimientos_inventario
+            (producto_id, tipo, cantidad, saldo_cantidad, referencia_tipo, referencia_id, motivo, registrado_por)
+           VALUES ($1, 'entrada', $2, $3, 'devolucion', $4, $5, $6)`,
+          [
+            item.producto_id,
+            devolucion.cantidad,
+            prodRows[0].existencias,
+            ventaItemId,
+            devolucion.motivo ?? null,
+            devolucion.registradoPor,
+          ],
+        );
+      }
 
       const { rows: devRows } = await client.query(
         `INSERT INTO devoluciones (venta_item_id, cantidad, valor, motivo, registrado_por)

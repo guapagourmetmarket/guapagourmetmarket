@@ -51,7 +51,11 @@ export class VentasController {
       fiado: dto.fiado,
       fechaVencimientoPago: dto.fechaVencimientoPago,
       registradoPor: req.user.id,
-      items: dto.items.map((i) => ({ productoId: i.productoId, cantidad: i.cantidad })),
+      items: dto.items.map((i) =>
+        i.productoId
+          ? { productoId: i.productoId, cantidad: i.cantidad }
+          : { nombre: i.nombre ?? '', precioUnitario: i.precioUnitario ?? 0, cantidad: i.cantidad },
+      ),
     });
   }
 

@@ -4,12 +4,14 @@ import type { Producto } from '@guapa/shared'
 import { Modal } from '../../components/Modal'
 import { Button } from '../../components/Button'
 import { EscanearCamara, type EscanearCamaraHandle } from '../../components/EscanearCamara'
+import { AgregarProductoLibre } from '../ventas/AgregarProductoLibre'
 import { precioEfectivo } from '../../lib/precio'
 import './escanear-producto-modal.css'
 
 interface EscanearProductoModalProps {
   productos: Producto[]
   onEncontrado: (producto: Producto) => void
+  onAgregarLibre: (nombre: string, precio: number) => void
   onClose: () => void
 }
 
@@ -25,7 +27,12 @@ const formatoCOP = new Intl.NumberFormat('es-CO', {
  * deja buscar por nombre, para los productos que no tienen código de
  * barras/QR y por eso no se pueden escanear.
  */
-export function EscanearProductoModal({ productos, onEncontrado, onClose }: EscanearProductoModalProps) {
+export function EscanearProductoModal({
+  productos,
+  onEncontrado,
+  onAgregarLibre,
+  onClose,
+}: EscanearProductoModalProps) {
   const camaraRef = useRef<EscanearCamaraHandle>(null)
   const [codigoSinMatch, setCodigoSinMatch] = useState('')
   const [busqueda, setBusqueda] = useState('')
@@ -113,6 +120,14 @@ export function EscanearProductoModal({ productos, onEncontrado, onClose }: Esca
           ))}
         </ul>
       )}
+
+      <AgregarProductoLibre
+        nombreInicial={resultadosBusqueda.length === 0 ? busqueda.trim() : ''}
+        onAgregar={(nombre, precio) => {
+          setBusqueda('')
+          onAgregarLibre(nombre, precio)
+        }}
+      />
     </Modal>
   )
 }

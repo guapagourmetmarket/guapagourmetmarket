@@ -5,7 +5,7 @@ import { Modal } from '../../components/Modal'
 import { Button } from '../../components/Button'
 import { Input } from '../../components/Input'
 import { CalculadoraEfectivo } from '../../components/CalculadoraEfectivo'
-import { useCarrito } from '../../lib/carrito'
+import { esLineaLibre, useCarrito } from '../../lib/carrito'
 import { ApiError, obtenerClientes, type MetodoPago, type Venta } from '../../lib/api'
 import { registrarVentaConSync } from '../../lib/sync'
 import { useDescuento } from './descuento'
@@ -71,7 +71,11 @@ export function CobrarModal({ onClose, onVentaRegistrada }: CobrarModalProps) {
       metodoPago,
       fiado: clienteSeleccionado ? fiado : undefined,
       fechaVencimientoPago: clienteSeleccionado && fiado ? fechaVencimientoPago || undefined : undefined,
-      items: carrito.lineas.map((l) => ({ productoId: l.producto.id, cantidad: l.cantidad })),
+      items: carrito.lineas.map((l) =>
+        esLineaLibre(l.producto)
+          ? { nombre: l.producto.nombre, precioUnitario: l.producto.precioVenta, cantidad: l.cantidad }
+          : { productoId: l.producto.id, cantidad: l.cantidad },
+      ),
     })
   }
 

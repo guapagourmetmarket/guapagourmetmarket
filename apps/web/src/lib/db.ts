@@ -1,6 +1,6 @@
 import Dexie, { type Table } from 'dexie'
 import type { Producto } from '@guapa/shared'
-import type { NuevaVenta } from './api'
+import type { NuevaVenta, NuevoVentaItem } from './api'
 
 export interface VentaPendiente {
   id: string
@@ -47,9 +47,10 @@ export async function buscarProductosCache(q: string): Promise<Producto[]> {
 }
 
 /** Descuenta existencias en la caché local para que la siguiente venta offline vea el stock real. */
-export async function descontarStockCache(items: { productoId: string; cantidad: number }[]) {
+export async function descontarStockCache(items: NuevoVentaItem[]) {
   await db.transaction('rw', db.productos, async () => {
     for (const item of items) {
+      if (!('productoId' in item)) continue // línea libre: no tiene stock real que descontar
       const producto = await db.productos.get(item.productoId)
       if (producto) {
         await db.productos.update(item.productoId, {

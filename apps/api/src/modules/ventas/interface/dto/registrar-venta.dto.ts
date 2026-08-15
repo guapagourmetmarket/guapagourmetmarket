@@ -25,8 +25,22 @@ const METODOS_PAGO: MetodoPago[] = [
 ];
 
 export class VentaItemDto {
+  // Ninguno de los dos es obligatorio a nivel de decorador: o viene
+  // productoId (producto real del catálogo), o vienen nombre+precioUnitario
+  // (línea libre, escrita a mano). El repositorio valida que venga uno u otro.
+  @IsOptional()
   @IsUUID()
-  productoId!: string;
+  productoId?: string;
+
+  @IsOptional()
+  @IsString()
+  @MinLength(1)
+  nombre?: string;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  precioUnitario?: number;
 
   // Decimal para poder vender por peso (ej. 0.350 kg); en productos que se
   // venden por unidad, el front sigue mandando enteros.
