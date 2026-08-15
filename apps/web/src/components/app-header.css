@@ -174,27 +174,30 @@
 /* Fila única: marca + navegación + acciones, en botones en relieve sobre
    un fondo rosado pastel, a pedido de Paola ("dale vida") — compactada
    para no comerse la pantalla antes de llegar al contenido. */
-.gg-header-fila-nav {
+/* Fila 1: marca + acciones de la cuenta, siempre en una sola línea (son
+   pocos elementos, nunca hace falta que pase a una segunda fila). */
+.gg-header-fila-marca {
   display: flex;
   align-items: center;
-  flex-wrap: nowrap;
+  justify-content: space-between;
   gap: 14px;
-  padding: 8px 20px;
+  padding: 6px 20px;
+  background: var(--c-sageSoft);
+  border-bottom: 1px solid var(--c-line);
+}
+
+/* Fila 2: navegación, sola. Se acomoda en una o dos líneas delgadas según
+   el ancho — nunca con barra de desplazamiento, a pedido de Paola. */
+.gg-header-fila-nav {
+  padding: 6px 20px;
   background: linear-gradient(180deg, var(--c-roseSoft) 0%, var(--c-rose) 130%);
   border-bottom: 1px solid var(--c-line);
 }
 
-/* El menú en una sola línea, siempre — si no cabe todo, se desliza en vez
-   de pasar a una segunda fila y comerse más alto de pantalla. */
 .gg-header-nav {
   display: flex;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   gap: 6px;
-  flex: 1 1 auto;
-  min-width: 0;
-  overflow-x: auto;
-  scrollbar-width: thin;
-  padding-bottom: 2px;
 }
 
 /* Efecto "botón 3D": una sombra sólida abajo simula el filo del botón;
@@ -471,11 +474,10 @@
 }
 
 @media (max-width: 900px) {
-  .gg-header-fila-nav {
+  .gg-header-fila-marca {
     padding: 8px 16px;
-    justify-content: space-between;
   }
-  .gg-header-nav,
+  .gg-header-fila-nav,
   .gg-header-acciones {
     display: none;
   }

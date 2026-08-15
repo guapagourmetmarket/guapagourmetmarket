@@ -163,15 +163,38 @@ export function AppHeader({ onCerrarSesion }: AppHeaderProps) {
       <EstadoConexion />
       <Marquee items={mensajesInternos} className="gg-marquee--interna" />
 
-      <div className="gg-header-fila-nav">
+      <div className="gg-header-fila-marca">
         <div className="gg-header-marca-compacta">
-          <img src={brand.logo.hi} alt={brand.name} width={56} height={56} />
+          <img src={brand.logo.hi} alt={brand.name} width={52} height={52} />
           <div className="gg-header-marca-compacta-texto">
             <span className="font-display gg-header-marca-nombre-compacta">{brand.name}</span>
             <span className="gg-header-marca-autora-compacta">by {brand.creator}</span>
           </div>
         </div>
 
+        <div className="gg-header-acciones">
+          <Button variant="ghost" onClick={() => setMiCuentaAbierta(true)}>
+            <UserCircle size={18} />
+            Mi cuenta
+          </Button>
+          <Button variant="ghost" onClick={onCerrarSesion}>
+            <LogOut size={18} />
+            Cerrar sesión
+          </Button>
+        </div>
+
+        <button
+          type="button"
+          className="gg-header-menu-boton"
+          onClick={() => setMenuAbierto((abierto) => !abierto)}
+          aria-label={menuAbierto ? 'Cerrar menú' : 'Abrir menú'}
+          aria-expanded={menuAbierto}
+        >
+          {menuAbierto ? <X size={22} /> : <Menu size={22} />}
+        </button>
+      </div>
+
+      <div className="gg-header-fila-nav">
         <nav className="gg-header-nav">
           {enlacesVisibles.map((enlace) => (
             <NavLink key={enlace.to} to={enlace.to} className={claseLink}>
@@ -214,27 +237,6 @@ export function AppHeader({ onCerrarSesion }: AppHeaderProps) {
             </NavLink>
           ))}
         </nav>
-
-        <div className="gg-header-acciones">
-          <Button variant="ghost" onClick={() => setMiCuentaAbierta(true)}>
-            <UserCircle size={18} />
-            Mi cuenta
-          </Button>
-          <Button variant="ghost" onClick={onCerrarSesion}>
-            <LogOut size={18} />
-            Cerrar sesión
-          </Button>
-        </div>
-
-        <button
-          type="button"
-          className="gg-header-menu-boton"
-          onClick={() => setMenuAbierto((abierto) => !abierto)}
-          aria-label={menuAbierto ? 'Cerrar menú' : 'Abrir menú'}
-          aria-expanded={menuAbierto}
-        >
-          {menuAbierto ? <X size={22} /> : <Menu size={22} />}
-        </button>
       </div>
 
       {menuAbierto && (

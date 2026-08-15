@@ -6,7 +6,7 @@
 
 .gg-productos-main {
   flex: 1;
-  padding: 24px;
+  padding: 18px 24px 24px;
   max-width: 1200px;
   width: 100%;
   margin: 0 auto;
@@ -17,12 +17,12 @@
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
-  margin-bottom: 24px;
+  gap: 12px;
+  margin-bottom: 14px;
 }
 
 .gg-productos-title {
-  font-size: 24px;
+  font-size: 19px;
   font-weight: 600;
   margin: 0;
   color: var(--c-ink);
@@ -31,7 +31,15 @@
 .gg-productos-toolbar-acciones {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 8px;
+}
+
+/* Botones de acción de la barra: más chicos que el tamaño estándar de
+   `Button` — acá son varios seguidos y no hace falta que se vean tan
+   grandes como, por ejemplo, "Cobrar" en el POS. */
+.gg-productos-toolbar-acciones .gg-button {
+  padding: 8px 14px;
+  font-size: 13px;
 }
 
 .gg-search {
@@ -68,8 +76,8 @@
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 20px;
+  gap: 10px;
+  margin-bottom: 14px;
 }
 
 .gg-categorias-chips {
