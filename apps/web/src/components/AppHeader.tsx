@@ -1,11 +1,10 @@
 import { useState } from 'react'
 import { NavLink } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
-import { LogOut, Menu, Phone, UserCircle, X } from 'lucide-react'
+import { LogOut, Menu, UserCircle, X } from 'lucide-react'
 import { Button } from './Button'
 import { MiCuentaModal } from './MiCuentaModal'
 import { EstadoConexion } from './EstadoConexion'
-import { InstagramIcon, TikTokIcon } from './SocialIcons'
 import { Marquee } from './Marquee'
 import { brand } from '../theme/theme'
 import {
@@ -163,42 +162,13 @@ export function AppHeader({ onCerrarSesion }: AppHeaderProps) {
     <header className="gg-header">
       <EstadoConexion />
       <Marquee items={mensajesInternos} className="gg-marquee--interna" />
-      <div className="gg-header-marca">
-        <div className="gg-header-marca-fila">
-          <img src={brand.logo.hi} alt={brand.name} width={96} height={96} />
-          <span className="font-display gg-header-marca-nombre">{brand.name}</span>
-        </div>
-        <span className="gg-header-marca-autora">by {brand.creator}</span>
-
-        <div className="gg-header-contacto">
-          <span className="gg-header-contacto-direccion">{brand.contacto.direccion}</span>
-          <a className="gg-header-contacto-item" href={brand.contacto.telefonoHref}>
-            <span className="gg-header-insignia gg-header-insignia--tel">
-              <Phone size={10} />
-            </span>
-            {brand.contacto.telefono}
-          </a>
-          <a
-            className="gg-header-contacto-item"
-            href={brand.contacto.instagramHref}
-            target="_blank"
-            rel="noreferrer"
-          >
-            <span className="gg-header-insignia gg-header-insignia--ig">
-              <InstagramIcon size={10} />
-            </span>
-            {brand.contacto.instagram}
-          </a>
-          <a className="gg-header-contacto-item" href={brand.contacto.tiktokHref} target="_blank" rel="noreferrer">
-            <span className="gg-header-insignia gg-header-insignia--tt">
-              <TikTokIcon size={10} />
-            </span>
-            {brand.contacto.tiktok}
-          </a>
-        </div>
-      </div>
 
       <div className="gg-header-fila-nav">
+        <div className="gg-header-marca-compacta">
+          <img src={brand.logo.hi} alt={brand.name} width={36} height={36} />
+          <span className="font-display gg-header-marca-nombre-compacta">{brand.name}</span>
+        </div>
+
         <nav className="gg-header-nav">
           {enlacesVisibles.map((enlace) => (
             <NavLink key={enlace.to} to={enlace.to} className={claseLink}>
