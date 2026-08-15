@@ -148,18 +148,19 @@ export function PosTactilScreen({ onCerrarSesion }: PosTactilScreenProps) {
           />
         </div>
 
+        <AgregarProductoLibre
+          nombreInicial={busqueda.trim()}
+          onAgregar={(nombre, precio) => {
+            carrito.agregarLineaLibre(nombre, precio)
+            setBusqueda('')
+          }}
+        />
+
         {busqueda.trim() !== '' ? (
           <div className="gg-tactil-resultados">
             {resultadosBusqueda.length === 0 ? (
               <Card className="gg-tactil-estado">
                 <p>No encontramos productos con esa búsqueda.</p>
-                <AgregarProductoLibre
-                  nombreInicial={busqueda.trim()}
-                  onAgregar={(nombre, precio) => {
-                    carrito.agregarLineaLibre(nombre, precio)
-                    setBusqueda('')
-                  }}
-                />
               </Card>
             ) : (
               resultadosBusqueda.map((producto) => (
