@@ -94,7 +94,10 @@
 .gg-galeria-item {
   position: relative;
   width: 100%;
-  aspect-ratio: 1;
+  /* Misma proporción con la que se recorta la foto (RecortarFotoModal) y
+     con la que se ve en las tarjetas de Productos — si no coinciden, lo
+     que se encuadra ahí no es lo que termina mostrándose acá. */
+  aspect-ratio: 4 / 3;
   border-radius: var(--radius-md);
   overflow: hidden;
   background: var(--c-sageSoft);
@@ -115,6 +118,7 @@
 }
 
 .gg-galeria-estrella,
+.gg-galeria-editar,
 .gg-galeria-borrar {
   display: flex;
   align-items: center;
@@ -128,12 +132,35 @@
   cursor: pointer;
 }
 
+.gg-galeria-estrella:disabled,
+.gg-galeria-editar:disabled,
+.gg-galeria-borrar:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
 .gg-galeria-estrella--activa {
   color: #c9a227;
 }
 
+.gg-galeria-editar:hover {
+  color: var(--c-sageDeep);
+}
+
 .gg-galeria-borrar:hover {
   color: var(--c-danger);
+}
+
+.gg-galeria-item-cargando {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(20, 20, 20, 0.55);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
 }
 
 .gg-galeria-agregar {
@@ -142,7 +169,7 @@
   align-items: center;
   justify-content: center;
   gap: 4px;
-  aspect-ratio: 1;
+  aspect-ratio: 4 / 3;
   border: 1px dashed var(--c-sand);
   border-radius: var(--radius-md);
   color: var(--c-sageDeep);

@@ -1,8 +1,8 @@
 import { useEffect, useState, type ChangeEvent, type FormEvent, type KeyboardEvent } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useNavigate, useParams } from 'react-router-dom'
-import { ImagePlus, ScanBarcode, Star, Trash2 } from 'lucide-react'
-import type { InfoNutricional } from '@guapa/shared'
+import { Crop, ImagePlus, ScanBarcode, Star, Trash2 } from 'lucide-react'
+import type { ImagenProducto, InfoNutricional } from '@guapa/shared'
 import { AppHeader } from '../../components/AppHeader'
 import { Card } from '../../components/Card'
 import { Button } from '../../components/Button'
@@ -108,6 +108,7 @@ export function ProductoFormScreen({ onCerrarSesion }: ProductoFormScreenProps) 
     resultados: File[]
     onCompletado: (archivos: File[]) => void
   } | null>(null)
+  const [editandoImagenId, setEditandoImagenId] = useState<string | null>(null)
 
   useEffect(() => {
     if (!productoExistente) return
@@ -227,6 +228,41 @@ export function ProductoFormScreen({ onCerrarSesion }: ProductoFormScreenProps) 
       URL.revokeObjectURL(prev[indice])
       return prev.filter((_, i) => i !== indice)
     })
+  }
+
+  // Reencuadrar una foto que ya está subida: se descarga, se abre el mismo
+  // recortador, y al confirmar se sube como reemplazo (subir la nueva,
+  // borrar la vieja, y si la vieja era la principal, la nueva pasa a serlo).
+  async function editarImagenExistente(img: ImagenProducto) {
+    setEditandoImagenId(img.id)
+    try {
+      const respuesta = await fetch(img.url)
+      if (!respuesta.ok) throw new Error('No se pudo descargar la foto.')
+      const blob = await respuesta.blob()
+      const extension = (blob.type.split('/')[1] || 'jpg').replace('jpeg', 'jpg')
+      const archivo = new File([blob], `foto.${extension}`, { type: blob.type || 'image/jpeg' })
+      iniciarRecorte([archivo], async (recortados) => {
+        const recortado = recortados[0]
+        if (!recortado) {
+          setEditandoImagenId(null)
+          return
+        }
+        try {
+          const idsAntes = new Set(imagenes.map((i) => i.id))
+          const actualizado = await mutacionSubirFoto.mutateAsync({ productoId: id!, archivo: recortado })
+          const nueva = actualizado.imagenes.find((i) => !idsAntes.has(i.id))
+          await mutacionEliminarImagen.mutateAsync(img.id)
+          if (img.esPrincipal && nueva) await mutacionImagenPrincipal.mutateAsync(nueva.id)
+        } catch {
+          window.alert('No pudimos guardar la foto recortada. Intenta de nuevo.')
+        } finally {
+          setEditandoImagenId(null)
+        }
+      })
+    } catch {
+      window.alert('No pudimos cargar esa foto para editarla. Intenta de nuevo.')
+      setEditandoImagenId(null)
+    }
   }
 
   const mutacionSubirFoto = useMutation({
@@ -390,19 +426,33 @@ export function ProductoFormScreen({ onCerrarSesion }: ProductoFormScreenProps) 
                   {imagenes.map((img) => (
                     <div key={img.id} className="gg-galeria-item">
                       <img src={img.url} alt={nombre} />
+                      {editandoImagenId === img.id && (
+                        <div className="gg-galeria-item-cargando">Editando…</div>
+                      )}
                       <div className="gg-galeria-item-acciones">
                         <button
                           type="button"
                           className={img.esPrincipal ? 'gg-galeria-estrella gg-galeria-estrella--activa' : 'gg-galeria-estrella'}
                           title={img.esPrincipal ? 'Foto principal' : 'Hacer principal'}
+                          disabled={editandoImagenId === img.id}
                           onClick={() => mutacionImagenPrincipal.mutate(img.id)}
                         >
                           <Star size={14} fill={img.esPrincipal ? 'currentColor' : 'none'} />
                         </button>
                         <button
                           type="button"
+                          className="gg-galeria-editar"
+                          title="Editar encuadre de la foto"
+                          disabled={editandoImagenId === img.id}
+                          onClick={() => editarImagenExistente(img)}
+                        >
+                          <Crop size={14} />
+                        </button>
+                        <button
+                          type="button"
                           className="gg-galeria-borrar"
                           title="Eliminar foto"
+                          disabled={editandoImagenId === img.id}
                           onClick={() => mutacionEliminarImagen.mutate(img.id)}
                         >
                           <Trash2 size={14} />
