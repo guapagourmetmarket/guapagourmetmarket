@@ -530,6 +530,12 @@
   white-space: nowrap;
 }
 
+.gg-tabla-codigo-input {
+  width: 90px;
+  padding: 6px 8px;
+  font-variant-numeric: tabular-nums;
+}
+
 .gg-tabla-nombre {
   font-weight: 600;
   min-width: 180px;

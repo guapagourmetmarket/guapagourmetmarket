@@ -54,9 +54,50 @@ function CeldaPrecioCompra({ producto, onGuardar, guardando }: CeldaPrecioCompra
   )
 }
 
-type Campo = 'nombre' | 'marcaNombre' | 'categoriaNombre' | 'precioCompra' | 'precioVenta' | 'existencias'
+interface CeldaCodigoInternoProps {
+  producto: Producto
+  onGuardar: (id: string, codigoInterno: string) => void
+  guardando: boolean
+}
+
+function CeldaCodigoInterno({ producto, onGuardar, guardando }: CeldaCodigoInternoProps) {
+  const [valor, setValor] = useState(producto.codigoInterno)
+
+  function confirmar() {
+    const nuevo = valor.trim()
+    if (!nuevo) {
+      setValor(producto.codigoInterno)
+      return
+    }
+    if (nuevo !== producto.codigoInterno) onGuardar(producto.id, nuevo)
+  }
+
+  return (
+    <input
+      type="text"
+      className="gg-input gg-tabla-codigo-input"
+      value={valor}
+      disabled={guardando}
+      onChange={(e) => setValor(e.target.value)}
+      onBlur={confirmar}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter') e.currentTarget.blur()
+      }}
+    />
+  )
+}
+
+type Campo =
+  | 'codigoInterno'
+  | 'nombre'
+  | 'marcaNombre'
+  | 'categoriaNombre'
+  | 'precioCompra'
+  | 'precioVenta'
+  | 'existencias'
 
 const COLUMNAS: { campo: Campo; etiqueta: string }[] = [
+  { campo: 'codigoInterno', etiqueta: 'Código interno' },
   { campo: 'nombre', etiqueta: 'Nombre' },
   { campo: 'marcaNombre', etiqueta: 'Marca' },
   { campo: 'categoriaNombre', etiqueta: 'Categoría' },
@@ -65,9 +106,11 @@ const COLUMNAS: { campo: Campo; etiqueta: string }[] = [
   { campo: 'existencias', etiqueta: 'Disponibilidad' },
 ]
 
+const CAMPOS_TEXTO = new Set<Campo>(['codigoInterno', 'nombre', 'marcaNombre', 'categoriaNombre'])
+
 function valorDeCampo(producto: Producto, campo: Campo): string | number {
   const v = producto[campo]
-  if (campo === 'nombre' || campo === 'marcaNombre' || campo === 'categoriaNombre') {
+  if (CAMPOS_TEXTO.has(campo)) {
     return (v as string | undefined)?.toLowerCase() ?? ''
   }
   return (v as number | undefined) ?? 0
@@ -77,6 +120,7 @@ interface ProductosTablaProps {
   productos: Producto[]
   guardandoId: string | null
   onGuardarPrecioCompra: (id: string, precioCompra: number) => void
+  onGuardarCodigoInterno: (id: string, codigoInterno: string) => void
 }
 
 /**
@@ -86,7 +130,12 @@ interface ProductosTablaProps {
  * ficha. Por defecto ordena de menor a mayor precio de compra, para que los
  * que quedaron en $0/$1 "de afán" queden primero.
  */
-export function ProductosTabla({ productos, guardandoId, onGuardarPrecioCompra }: ProductosTablaProps) {
+export function ProductosTabla({
+  productos,
+  guardandoId,
+  onGuardarPrecioCompra,
+  onGuardarCodigoInterno,
+}: ProductosTablaProps) {
   const [ordenPor, setOrdenPor] = useState<Campo>('precioCompra')
   const [ascendente, setAscendente] = useState(true)
 
@@ -116,7 +165,6 @@ export function ProductosTabla({ productos, guardandoId, onGuardarPrecioCompra }
         <thead>
           <tr>
             <th></th>
-            <th>Código interno</th>
             {COLUMNAS.map(({ campo, etiqueta }) => (
               <th key={campo}>
                 <button type="button" className="gg-tabla-orden-boton" onClick={() => ordenarPor(campo)}>
@@ -144,7 +192,13 @@ export function ProductosTabla({ productos, guardandoId, onGuardarPrecioCompra }
                   )}
                 </div>
               </td>
-              <td className="gg-tabla-codigo">{producto.codigoInterno}</td>
+              <td className="gg-tabla-codigo">
+                <CeldaCodigoInterno
+                  producto={producto}
+                  guardando={guardandoId === producto.id}
+                  onGuardar={onGuardarCodigoInterno}
+                />
+              </td>
               <td className="gg-tabla-nombre">{producto.nombre}</td>
               <td className="gg-tabla-marca">{producto.marcaNombre ?? '—'}</td>
               <td className="gg-tabla-categoria">{producto.categoriaNombre}</td>

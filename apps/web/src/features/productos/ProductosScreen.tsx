@@ -126,6 +126,22 @@ export function ProductosScreen({ onCerrarSesion }: ProductosScreenProps) {
     },
   })
 
+  const mutacionCodigoInterno = useMutation({
+    mutationFn: ({ id, codigoInterno }: { id: string; codigoInterno: string }) =>
+      actualizarProducto(id, { codigoInterno }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['productos'] }),
+    onError: (err) => {
+      window.alert(
+        err instanceof ApiError ? err.message : 'No pudimos guardar el código interno. Intenta de nuevo.',
+      )
+    },
+  })
+
+  const guardandoIdTabla =
+    (mutacionPrecioCompra.isPending ? mutacionPrecioCompra.variables?.id : null) ??
+    (mutacionCodigoInterno.isPending ? mutacionCodigoInterno.variables?.id : null) ??
+    null
+
   const categorias = useMemo(() => {
     if (!productos) return []
     const mapa = new Map<string, string>()
@@ -344,8 +360,9 @@ export function ProductosScreen({ onCerrarSesion }: ProductosScreenProps) {
         {!isLoading && !isError && productosFiltrados.length > 0 && vista === 'lista' && (
           <ProductosTabla
             productos={productosFiltrados}
-            guardandoId={mutacionPrecioCompra.isPending ? mutacionPrecioCompra.variables?.id ?? null : null}
+            guardandoId={guardandoIdTabla}
             onGuardarPrecioCompra={(id, precioCompra) => mutacionPrecioCompra.mutate({ id, precioCompra })}
+            onGuardarCodigoInterno={(id, codigoInterno) => mutacionCodigoInterno.mutate({ id, codigoInterno })}
           />
         )}
 
