@@ -137,6 +137,10 @@
   gap: 16px;
 }
 
+.gg-toggle-precio-sospechoso {
+  color: #b45309;
+}
+
 .gg-gestion-categorias-boton {
   display: flex;
   align-items: center;
@@ -444,4 +448,104 @@
     text-align: center;
     flex-wrap: wrap;
   }
+}
+
+.gg-tabla-productos-wrap {
+  overflow-x: auto;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--c-sand);
+  background: var(--c-surface);
+}
+
+.gg-tabla-productos {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13.5px;
+}
+
+.gg-tabla-productos th {
+  text-align: left;
+  padding: 10px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--c-muted);
+  border-bottom: 1px solid var(--c-sand);
+  white-space: nowrap;
+}
+
+.gg-tabla-productos td {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--c-beige);
+  vertical-align: middle;
+  color: var(--c-ink);
+}
+
+.gg-tabla-productos tr:last-child td {
+  border-bottom: none;
+}
+
+.gg-tabla-fila--inactivo {
+  opacity: 0.5;
+}
+
+.gg-tabla-imagen {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  background: var(--c-sageSoft);
+  color: var(--c-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.gg-tabla-imagen img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.gg-tabla-codigo {
+  font-variant-numeric: tabular-nums;
+  color: var(--c-muted);
+  white-space: nowrap;
+}
+
+.gg-tabla-nombre {
+  font-weight: 600;
+  min-width: 180px;
+}
+
+.gg-tabla-categoria {
+  color: var(--c-muted);
+  white-space: nowrap;
+}
+
+.gg-tabla-precio-venta,
+.gg-tabla-existencias {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.gg-tabla-precio-compra {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.gg-tabla-precio-compra-alerta {
+  color: #b45309;
+  flex-shrink: 0;
+}
+
+.gg-tabla-precio-compra-input {
+  width: 90px;
+  padding: 6px 8px;
+  font-variant-numeric: tabular-nums;
+}
+
+.gg-tabla-precio-compra--sospechoso .gg-tabla-precio-compra-input {
+  border-color: #b45309;
+  background: #fef3e2;
 }

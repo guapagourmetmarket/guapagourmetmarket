@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
-import { Barcode, Copy, Download, FileText, Flame, Leaf, Pencil, Plus, Power, ScanLine, Settings, ShoppingCart, Search, Star, Trash2, Upload } from 'lucide-react'
+import { AlertTriangle, Barcode, Copy, Download, FileText, Flame, LayoutGrid, Leaf, List, Pencil, Plus, Power, ScanLine, Settings, ShoppingCart, Search, Star, Trash2, Upload } from 'lucide-react'
 import type { Producto } from '@guapa/shared'
 import { Card } from '../../components/Card'
 import { SkeletonTarjetas } from '../../components/Skeleton'
@@ -12,6 +12,7 @@ import { useCarrito } from '../../lib/carrito'
 import { etiquetaPromocion } from '../../lib/precio'
 import {
   ApiError,
+  actualizarProducto,
   cambiarEstadoProducto,
   cambiarFavoritoProducto,
   descargarCatalogoPdf,
@@ -30,6 +31,7 @@ import { ImportarModal } from './ImportarModal'
 import { EscanearProductoModal } from './EscanearProductoModal'
 import { GestionCategoriasModal } from './GestionCategoriasModal'
 import { EtiquetaModal } from './EtiquetaModal'
+import { ProductosTabla } from './ProductosTabla'
 import './productos.css'
 
 interface ProductosScreenProps {
@@ -60,6 +62,8 @@ export function ProductosScreen({ onCerrarSesion }: ProductosScreenProps) {
   const [etiquetaProducto, setEtiquetaProducto] = useState<Producto | null>(null)
   const [detalleProducto, setDetalleProducto] = useState<Producto | null>(null)
   const [escaneando, setEscaneando] = useState(false)
+  const [vista, setVista] = useState<'cuadricula' | 'lista'>('cuadricula')
+  const [soloPrecioCompraSospechoso, setSoloPrecioCompraSospechoso] = useState(false)
 
   const { data: negocio } = useQuery({ queryKey: ['negocio'], queryFn: obtenerNegocio })
 
@@ -111,6 +115,17 @@ export function ProductosScreen({ onCerrarSesion }: ProductosScreenProps) {
     },
   })
 
+  const mutacionPrecioCompra = useMutation({
+    mutationFn: ({ id, precioCompra }: { id: string; precioCompra: number }) =>
+      actualizarProducto(id, { precioCompra }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['productos'] }),
+    onError: (err) => {
+      window.alert(
+        err instanceof ApiError ? err.message : 'No pudimos guardar el precio de compra. Intenta de nuevo.',
+      )
+    },
+  })
+
   const categorias = useMemo(() => {
     if (!productos) return []
     const mapa = new Map<string, string>()
@@ -136,8 +151,14 @@ export function ProductosScreen({ onCerrarSesion }: ProductosScreenProps) {
           .some((campo) => campo!.toLowerCase().includes(q)),
       )
     }
+    if (soloPrecioCompraSospechoso) lista = lista.filter((p) => p.precioCompra <= 1)
     return lista
-  }, [productos, busqueda, categoriaId, soloDescuentos])
+  }, [productos, busqueda, categoriaId, soloDescuentos, soloPrecioCompraSospechoso])
+
+  const totalPrecioCompraSospechoso = useMemo(
+    () => (productos ?? []).filter((p) => p.precioCompra <= 1).length,
+    [productos],
+  )
 
   async function handleDesactivar(id: string, nombre: string) {
     const confirmado = await confirmar(
@@ -174,6 +195,15 @@ export function ProductosScreen({ onCerrarSesion }: ProductosScreenProps) {
             />
           </div>
           <div className="gg-productos-toolbar-acciones">
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={() => setVista((v) => (v === 'cuadricula' ? 'lista' : 'cuadricula'))}
+              title={vista === 'cuadricula' ? 'Ver como lista' : 'Ver como cuadrícula'}
+            >
+              {vista === 'cuadricula' ? <List size={18} /> : <LayoutGrid size={18} />}
+              {vista === 'cuadricula' ? 'Ver como lista' : 'Ver como cuadrícula'}
+            </Button>
             <Button
               type="button"
               variant="secondary"
@@ -279,6 +309,17 @@ export function ProductosScreen({ onCerrarSesion }: ProductosScreenProps) {
               />
               Mostrar desactivados
             </label>
+            {totalPrecioCompraSospechoso > 0 && (
+              <label className="gg-toggle-desactivados gg-toggle-precio-sospechoso">
+                <input
+                  type="checkbox"
+                  checked={soloPrecioCompraSospechoso}
+                  onChange={(e) => setSoloPrecioCompraSospechoso(e.target.checked)}
+                />
+                <AlertTriangle size={13} />
+                Sin precio de compra real ({totalPrecioCompraSospechoso})
+              </label>
+            )}
           </div>
         </div>
 
@@ -300,7 +341,15 @@ export function ProductosScreen({ onCerrarSesion }: ProductosScreenProps) {
           </Card>
         )}
 
-        {!isLoading && !isError && productosFiltrados.length > 0 && (
+        {!isLoading && !isError && productosFiltrados.length > 0 && vista === 'lista' && (
+          <ProductosTabla
+            productos={productosFiltrados}
+            guardandoId={mutacionPrecioCompra.isPending ? mutacionPrecioCompra.variables?.id ?? null : null}
+            onGuardarPrecioCompra={(id, precioCompra) => mutacionPrecioCompra.mutate({ id, precioCompra })}
+          />
+        )}
+
+        {!isLoading && !isError && productosFiltrados.length > 0 && vista === 'cuadricula' && (
           <div className="gg-productos-grid">
             {productosFiltrados.map((producto) => (
               <Card
