@@ -514,7 +514,7 @@ export function ProductosScreen({ onCerrarSesion }: ProductosScreenProps) {
         )}
       </main>
 
-      <CuentaViva onCobrar={() => setCobrando(true)} />
+      <CuentaViva onCobrar={() => setCobrando(true)} productos={productos ?? []} />
 
       {cobrando && (
         <CobrarModal

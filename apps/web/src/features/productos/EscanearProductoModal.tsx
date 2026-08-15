@@ -5,6 +5,7 @@ import { Modal } from '../../components/Modal'
 import { Button } from '../../components/Button'
 import { EscanearCamara, type EscanearCamaraHandle } from '../../components/EscanearCamara'
 import { AgregarProductoLibre } from '../ventas/AgregarProductoLibre'
+import { filtrarProductosPorTexto } from '../../lib/buscarProductos'
 import { precioEfectivo } from '../../lib/precio'
 import './escanear-producto-modal.css'
 
@@ -46,18 +47,10 @@ export function EscanearProductoModal({
     }
   }
 
-  const resultadosBusqueda = useMemo(() => {
-    const q = busqueda.trim().toLowerCase()
-    if (!q) return []
-    return productos
-      .filter((p) => p.activo !== false)
-      .filter((p) =>
-        [p.nombre, p.categoriaNombre, p.marcaNombre, p.codigoInterno]
-          .filter(Boolean)
-          .some((campo) => campo!.toLowerCase().includes(q)),
-      )
-      .slice(0, 8)
-  }, [productos, busqueda])
+  const resultadosBusqueda = useMemo(
+    () => filtrarProductosPorTexto(productos, busqueda, 8),
+    [productos, busqueda],
+  )
 
   return (
     <Modal title="Escanear producto" onClose={onClose}>

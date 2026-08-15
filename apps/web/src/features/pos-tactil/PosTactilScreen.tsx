@@ -7,6 +7,7 @@ import { AppHeader } from '../../components/AppHeader'
 import { Card } from '../../components/Card'
 import { useCarrito } from '../../lib/carrito'
 import { AgregarProductoLibre } from '../ventas/AgregarProductoLibre'
+import { filtrarProductosPorTexto } from '../../lib/buscarProductos'
 import { precioEfectivo } from '../../lib/precio'
 import { useConfirm } from '../../lib/confirm'
 import { useEscaneoCodigoBarras } from '../../lib/useEscaneoCodigoBarras'
@@ -79,18 +80,10 @@ export function PosTactilScreen({ onCerrarSesion }: PosTactilScreenProps) {
     [productos],
   )
 
-  const resultadosBusqueda = useMemo(() => {
-    const q = busqueda.trim().toLowerCase()
-    if (!q || !productos) return []
-    return productos
-      .filter((p) => p.activo !== false)
-      .filter((p) =>
-        [p.nombre, p.categoriaNombre, p.marcaNombre, p.codigoInterno, p.codigoBarras]
-          .filter(Boolean)
-          .some((campo) => campo!.toLowerCase().includes(q)),
-      )
-      .slice(0, 12)
-  }, [productos, busqueda])
+  const resultadosBusqueda = useMemo(
+    () => filtrarProductosPorTexto(productos ?? [], busqueda, 12),
+    [productos, busqueda],
+  )
 
   function agregarYLimpiar(producto: Producto) {
     carrito.agregarProducto(producto)
@@ -334,7 +327,7 @@ export function PosTactilScreen({ onCerrarSesion }: PosTactilScreenProps) {
         )}
       </main>
 
-      <CuentaViva onCobrar={() => setCobrando(true)} />
+      <CuentaViva onCobrar={() => setCobrando(true)} productos={productos ?? []} />
 
       {cobrando && (
         <CobrarModal
