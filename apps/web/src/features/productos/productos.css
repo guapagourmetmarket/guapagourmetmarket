@@ -465,12 +465,30 @@
 
 .gg-tabla-productos th {
   text-align: left;
-  padding: 10px 12px;
+  padding: 0;
   font-size: 12px;
   font-weight: 700;
   color: var(--c-muted);
   border-bottom: 1px solid var(--c-sand);
   white-space: nowrap;
+}
+
+.gg-tabla-orden-boton {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  width: 100%;
+  padding: 10px 12px;
+  border: none;
+  background: none;
+  font: inherit;
+  font-weight: 700;
+  color: inherit;
+  cursor: pointer;
+}
+
+.gg-tabla-orden-boton:hover {
+  color: var(--c-ink);
 }
 
 .gg-tabla-productos td {
@@ -517,9 +535,16 @@
   min-width: 180px;
 }
 
+.gg-tabla-marca,
 .gg-tabla-categoria {
   color: var(--c-muted);
   white-space: nowrap;
+}
+
+.gg-tabla-agotado {
+  color: #b91c1c;
+  font-weight: 700;
+  font-size: 12px;
 }
 
 .gg-tabla-precio-venta,

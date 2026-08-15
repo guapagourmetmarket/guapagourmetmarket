@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { AlertTriangle, Leaf, Pencil } from 'lucide-react'
+import { useMemo, useState } from 'react'
+import { AlertTriangle, ChevronDown, ChevronUp, Leaf, Pencil } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import type { Producto } from '@guapa/shared'
 
@@ -54,6 +54,25 @@ function CeldaPrecioCompra({ producto, onGuardar, guardando }: CeldaPrecioCompra
   )
 }
 
+type Campo = 'nombre' | 'marcaNombre' | 'categoriaNombre' | 'precioCompra' | 'precioVenta' | 'existencias'
+
+const COLUMNAS: { campo: Campo; etiqueta: string }[] = [
+  { campo: 'nombre', etiqueta: 'Nombre' },
+  { campo: 'marcaNombre', etiqueta: 'Marca' },
+  { campo: 'categoriaNombre', etiqueta: 'Categoría' },
+  { campo: 'precioCompra', etiqueta: 'Precio de compra' },
+  { campo: 'precioVenta', etiqueta: 'Precio de venta' },
+  { campo: 'existencias', etiqueta: 'Disponibilidad' },
+]
+
+function valorDeCampo(producto: Producto, campo: Campo): string | number {
+  const v = producto[campo]
+  if (campo === 'nombre' || campo === 'marcaNombre' || campo === 'categoriaNombre') {
+    return (v as string | undefined)?.toLowerCase() ?? ''
+  }
+  return (v as number | undefined) ?? 0
+}
+
 interface ProductosTablaProps {
   productos: Producto[]
   guardandoId: string | null
@@ -61,13 +80,35 @@ interface ProductosTablaProps {
 }
 
 /**
- * Vista de lista, pensada para revisar muchos productos de un vistazo y
- * corregir el precio de compra ahí mismo, sin abrir cada ficha. Ordenada de
- * menor a mayor precio de compra para que los que quedaron en $0/$1 "de
- * afán" queden primero.
+ * Vista de lista, pensada para revisar muchos productos de un vistazo,
+ * ordenarlos por lo que se necesite (nombre, marca, categoría, precio,
+ * disponibilidad) y corregir el precio de compra ahí mismo, sin abrir cada
+ * ficha. Por defecto ordena de menor a mayor precio de compra, para que los
+ * que quedaron en $0/$1 "de afán" queden primero.
  */
 export function ProductosTabla({ productos, guardandoId, onGuardarPrecioCompra }: ProductosTablaProps) {
-  const ordenados = [...productos].sort((a, b) => a.precioCompra - b.precioCompra)
+  const [ordenPor, setOrdenPor] = useState<Campo>('precioCompra')
+  const [ascendente, setAscendente] = useState(true)
+
+  function ordenarPor(campo: Campo) {
+    if (campo === ordenPor) {
+      setAscendente((v) => !v)
+    } else {
+      setOrdenPor(campo)
+      setAscendente(true)
+    }
+  }
+
+  const ordenados = useMemo(() => {
+    const copia = [...productos]
+    copia.sort((a, b) => {
+      const va = valorDeCampo(a, ordenPor)
+      const vb = valorDeCampo(b, ordenPor)
+      const cmp = typeof va === 'string' ? va.localeCompare(vb as string) : va - (vb as number)
+      return ascendente ? cmp : -cmp
+    })
+    return copia
+  }, [productos, ordenPor, ascendente])
 
   return (
     <div className="gg-tabla-productos-wrap">
@@ -76,11 +117,15 @@ export function ProductosTabla({ productos, guardandoId, onGuardarPrecioCompra }
           <tr>
             <th></th>
             <th>Código interno</th>
-            <th>Nombre</th>
-            <th>Categoría</th>
-            <th>Precio de compra</th>
-            <th>Precio de venta</th>
-            <th>Existencias</th>
+            {COLUMNAS.map(({ campo, etiqueta }) => (
+              <th key={campo}>
+                <button type="button" className="gg-tabla-orden-boton" onClick={() => ordenarPor(campo)}>
+                  {etiqueta}
+                  {ordenPor === campo &&
+                    (ascendente ? <ChevronUp size={13} /> : <ChevronDown size={13} />)}
+                </button>
+              </th>
+            ))}
             <th></th>
           </tr>
         </thead>
@@ -101,6 +146,7 @@ export function ProductosTabla({ productos, guardandoId, onGuardarPrecioCompra }
               </td>
               <td className="gg-tabla-codigo">{producto.codigoInterno}</td>
               <td className="gg-tabla-nombre">{producto.nombre}</td>
+              <td className="gg-tabla-marca">{producto.marcaNombre ?? '—'}</td>
               <td className="gg-tabla-categoria">{producto.categoriaNombre}</td>
               <td>
                 <CeldaPrecioCompra
@@ -110,7 +156,13 @@ export function ProductosTabla({ productos, guardandoId, onGuardarPrecioCompra }
                 />
               </td>
               <td className="gg-tabla-precio-venta">{formatoCOP.format(producto.precioVenta)}</td>
-              <td className="gg-tabla-existencias">{producto.existencias}</td>
+              <td className="gg-tabla-existencias">
+                {producto.existencias === 0 ? (
+                  <span className="gg-tabla-agotado">Agotado</span>
+                ) : (
+                  producto.existencias
+                )}
+              </td>
               <td>
                 <Link
                   to={`/productos/${producto.id}/editar`}
